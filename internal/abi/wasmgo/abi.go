@@ -23,14 +23,14 @@ func (w *wasmGo) getInt32(addr int32) int32 {
 }
 
 func (w *wasmGo) setInt32(addr int32, val int32) {
-	data := make([]byte, 4)
+	data := make([]byte, 0, 4)
 	buf := bytes.NewBuffer(data)
 	err := binary.Write(buf, binary.LittleEndian, val)
 	if err != nil {
 		panic(err)
 	}
 
-	_, err = w.writeMem(addr, data)
+	_, err = w.writeMem(addr, buf.Bytes())
 	if err != nil {
 		panic(err)
 	}
@@ -49,14 +49,14 @@ func (w *wasmGo) getInt64(addr int32) int64 {
 }
 
 func (w *wasmGo) setInt64(addr int32, val int64) {
-	data := make([]byte, 8)
+	data := make([]byte, 0, 8)
 	buf := bytes.NewBuffer(data)
 	err := binary.Write(buf, binary.LittleEndian, val)
 	if err != nil {
 		panic(err)
 	}
 
-	_, err = w.writeMem(addr, data)
+	_, err = w.writeMem(addr, buf.Bytes())
 	if err != nil {
 		panic(err)
 	}
@@ -102,8 +102,7 @@ func (w *wasmGo) goRuntimeWasmWrite(sp int32) {
 //     func (w *wasmGo) goRuntimeNanotime() int64
 func (w *wasmGo) goRuntimeNanotime(sp int32) {
 	now := time.Now().UnixNano()
-	log.Printf("runtime.nanotime() => %d", now)
-	w.setInt64(sp+8, int64(time.Now().UnixNano()))
+	w.setInt64(sp+8, int64(now))
 }
 
 // goRuntimeWalltime implements the go runtime function runtime.walltime. It uses

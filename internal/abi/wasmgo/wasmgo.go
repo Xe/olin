@@ -1,6 +1,7 @@
 package wasmgo
 
 import (
+	"log"
 	"time"
 
 	"github.com/Xe/olin/internal/abi"
@@ -22,8 +23,10 @@ func (w *wasmGo) writeMem(ptr int32, data []byte) (int, error) {
 	ctr := 0
 	for i, d := range data {
 		w.vm.Memory[ptr+int32(i)] = d
+		log.Printf("memory[%x] = %x", ptr+int32(i), w.vm.Memory[ptr+int32(i)])
 		ctr++
 	}
 
+	log.Printf("wasmGo.writeMem(%x, byte slice of len %d): %d", ptr, len(data), ctr)
 	return ctr, nil
 }
