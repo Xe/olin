@@ -129,7 +129,12 @@ func processTestHTTPFile(t *testing.T, p *Process) {
 		}),
 		Addr: "127.0.0.1:30405",
 	}
-	go hs.ListenAndServe()
+	go func() {
+		err := hs.ListenAndServe()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}()
 	defer hs.Close()
 
 	openAndRunWasmMain(t, p, "./testdata/http.wasm", func(i int64) bool { return i == 0 })
