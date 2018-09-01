@@ -2,10 +2,12 @@ package dagger
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"strconv"
 
 	"github.com/Xe/olin/internal/abi"
+	"github.com/Xe/olin/internal/fileresolver"
 	"github.com/perlin-network/life/exec"
 )
 
@@ -48,6 +50,7 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 
 				fd, err := p.open(furl, flags)
 				if err != nil {
+					// TODO(Xe): Log
 					return int64(-1 * int64(err.(Error).Errno))
 				}
 
@@ -64,7 +67,42 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 
 				n, err := p.files[int(fd)].Write(mem)
 				if err != nil {
+					// TODO(Xe): Log
 					return -1
+				}
+
+				return int64(n)
+			}
+		case "sync":
+			return func(vm *exec.VirtualMachine) int64 {
+				f := vm.GetCurrentFrame()
+				fd := f.Locals[0]
+
+				err := p.files[fd].Sync()
+				if err != nil {
+					// TODO(Xe): Log
+					return -1
+				}
+
+				return 0
+			}
+
+		case "read":
+			return func(vm *exec.VirtualMachine) int64 {
+				f := vm.GetCurrentFrame()
+				fd := f.Locals[0]
+				ptr := f.Locals[1]
+				len := f.Locals[2]
+
+				buf := make([]byte, int(len))
+				n, err := p.files[fd].Read(buf)
+				if err != nil {
+					// TODO(Xe): Log
+					return -1
+				}
+
+				for i, d := range buf {
+					vm.Memory[int(ptr)+i] = d
 				}
 
 				return int64(n)
@@ -92,6 +130,9 @@ func (p *Process) open(furl string, flags uint32) (int, error) {
 		}
 
 		file = abi.NewOSFile(uintptr(fdNum), u.Host)
+
+	case "http", "https":
+		file, _ = fileresolver.HTTP(&http.Client{}, u)
 
 	default:
 		return -1, makeError(ErrorUnknownScheme, fmt.Errorf("dagger: open: unknown scheme %s", u.Scheme))

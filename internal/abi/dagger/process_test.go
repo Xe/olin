@@ -2,6 +2,8 @@ package dagger
 
 import (
 	"io/ioutil"
+	"log"
+	"net/http"
 	"reflect"
 	"runtime"
 	"syscall"
@@ -25,6 +27,7 @@ func TestProcess(t *testing.T) {
 		processCantOpenUnknownScheme,
 		processTestOpenWasm,
 		processTestHelloWorld,
+		processTestHTTPFile,
 	}
 
 	for _, cs := range cases {
@@ -114,4 +117,18 @@ func processTestOpenWasm(t *testing.T, p *Process) {
 
 func processTestHelloWorld(t *testing.T, p *Process) {
 	openAndRunWasmMain(t, p, "./testdata/helloworld.wasm", func(i int64) bool { return i == 0 })
+}
+
+func processTestHTTPFile(t *testing.T, p *Process) {
+	hs := &http.Server{
+		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			log.Printf("got request from wasm :D")
+			http.Error(w, "success", http.StatusOK)
+		}),
+		Addr: "127.0.0.1:30405",
+	}
+	go hs.ListenAndServe()
+	defer hs.Close()
+
+	openAndRunWasmMain(t, p, "./testdata/http.wasm", func(i int64) bool { return i == 0 })
 }
