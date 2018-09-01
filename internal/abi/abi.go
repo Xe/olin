@@ -22,6 +22,7 @@ type ABI interface {
 	Namer
 
 	Files() []File
+	Open(File)
 }
 
 // File is the most common denominator for most of what you usefully need out of

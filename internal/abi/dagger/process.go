@@ -15,10 +15,18 @@ import (
 // Process is a higher level wrapper around a set of files for dagger
 // modules.
 type Process struct {
-	abi.ABI
-
 	name  string
 	files []abi.File
+}
+
+// Files returns the process' list of open files.
+func (p Process) Files() []abi.File {
+	return p.files
+}
+
+// NewProcess creates a new process.
+func NewProcess(name string) abi.ABI {
+	return &Process{name: name}
 }
 
 // insertFile adds a file to the set of files and returns its descriptor.
@@ -125,6 +133,11 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 	}
 
 	return nil
+}
+
+// Open makes this Process track an arbitrary extra file.
+func (p *Process) Open(f abi.File) {
+	p.insertFile(f)
 }
 
 // ResolveGlobal does nothing, currently.
