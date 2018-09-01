@@ -101,6 +101,8 @@ func (w *wasmGo) goRuntimeWasmWrite(sp int32) {
 //
 //     func (w *wasmGo) goRuntimeNanotime() int64
 func (w *wasmGo) goRuntimeNanotime(sp int32) {
+	now := time.Now().UnixNano()
+	log.Printf("runtime.nanotime() => %d", now)
 	w.setInt64(sp+8, int64(time.Now().UnixNano()))
 }
 

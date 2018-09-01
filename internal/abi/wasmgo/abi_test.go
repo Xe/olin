@@ -14,6 +14,18 @@ import (
 	"github.com/perlin-network/life/exec"
 )
 
+func (w *wasmGo) ensureExitStatus(t *testing.T, exited bool, status int32) {
+	t.Helper()
+
+	if w.Exited != exited {
+		t.Errorf("exited: wanted: %v, got: %v", exited, w.Exited)
+	}
+
+	if w.StatusCode != status {
+		t.Errorf("status code: wanted: %d, got: %d", status, w.StatusCode)
+	}
+}
+
 func getFunctionName(i interface{}) string {
 	return runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()
 }
@@ -44,6 +56,7 @@ func TestWasmGo(t *testing.T) {
 
 func testNothing(t *testing.T, w *wasmGo) {
 	openAndRunWasmRun(t, w, "./testdata/nothing.wasm")
+	defer w.ensureExitStatus(t, true, 0)
 }
 
 func openAndRunWasmRun(t *testing.T, w *wasmGo, fname string) {
