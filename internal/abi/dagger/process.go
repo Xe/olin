@@ -2,6 +2,7 @@ package dagger
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -94,7 +95,7 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 
 				err := p.files[fd].Sync()
 				if err != nil {
-					// TODO(Xe): Log
+					log.Printf("sync error: %d (%s) %v", fd, p.files[fd].Name(), err)
 					return -1
 				}
 
