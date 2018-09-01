@@ -37,6 +37,7 @@ func (p *Process) insertFile(file abi.File) int {
 // Name returns this process's name.
 func (p *Process) Name() string { return p.name }
 
+// ResolveFunc resolves dagger's ABI and importable functions.
 func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 	switch module {
 	case "dagger":
@@ -55,6 +56,19 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 				}
 
 				return int64(fd)
+			}
+		case "close":
+			return func(vm *exec.VirtualMachine) int64 {
+				f := vm.GetCurrentFrame()
+				fd := int(f.Locals[0])
+
+				err := p.files[fd].Close()
+				if err != nil {
+					// TODO(Xe): Log
+					return -1
+				}
+
+				return 0
 			}
 		case "write":
 			return func(vm *exec.VirtualMachine) int64 {
@@ -86,7 +100,6 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 
 				return 0
 			}
-
 		case "read":
 			return func(vm *exec.VirtualMachine) int64 {
 				f := vm.GetCurrentFrame()
@@ -113,6 +126,7 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 	return nil
 }
 
+// ResolveGlobal does nothing, currently.
 func (p *Process) ResolveGlobal(module, field string) int64 { return 0 }
 
 func (p *Process) open(furl string, flags uint32) (int, error) {

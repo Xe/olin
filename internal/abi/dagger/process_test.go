@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/Xe/olin/internal/abi"
-	"github.com/kr/pretty"
 	"github.com/perlin-network/life/exec"
 )
 
@@ -106,13 +105,16 @@ func openAndRunWasmMain(t *testing.T, p *Process, fname string, isok func(int64)
 	}
 
 	if !isok(ret) {
-		pretty.Println(p)
 		t.Fatalf("%s returned %d which is not ok", fname, ret)
 	}
 }
 
 func processTestOpenWasm(t *testing.T, p *Process) {
 	openAndRunWasmMain(t, p, "./testdata/open.wasm", func(i int64) bool { return i == 0 })
+}
+
+func processTestCloseWasm(t *testing.T, p *Process) {
+	openAndRunWasmMain(t, p, "./testdata/close.wasm", func(i int64) bool { return i == 0 })
 }
 
 func processTestHelloWorld(t *testing.T, p *Process) {
