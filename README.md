@@ -1,8 +1,8 @@
 # olin
 
-> Intelligent networks are able to operate from a single language with translation interfaces that enable global intercourse. This means language is no longer a barrier to communication. Intelligent networks will introduce a meta-language that translates both real-time written and spoken applications. It will revolutionize the genetic mind's global construct, and facilitate the digitalization of your global economy.
+[![Build Status](https://travis-ci.org/Xe/olin.svg?branch=master)](https://travis-ci.org/Xe/olin) 
 
-olin is an environment to run and operate functions as a service projects using
+Olin is an environment to run and operate functions as a service projects using
 event sourcing and webassembly under the hood. Your handler code shouldn't need
 to care that there is an event queue involved. Your handler should just do what
 your handler needs to do.
@@ -152,6 +152,45 @@ extern int sync(int fd);
 
 This is for some backends to forcibly make async operations into sync operations.
 
+## Go ABI
+
+Olin also includes support for running webassembly modules created by [Go 1.11's webassembly support](https://golang.org/wiki/WebAssembly).
+It uses [the `wasmgo` ABI][wasmgo] package in order to do things. Right now
+this is incredibly basic, but should be extendable to more things in the future.
+
+As an example:
+
+```go
+// +build js,wasm ignore
+// hello_world.go
+
+package main
+
+func main() {
+	println("Hello, world!")
+}
+```
+
+when compiled like this:
+
+```console
+$ GOARCH=wasm GOOS=js go1.11 build -o hello_world.wasm hello_world.go
+```
+
+produces the following output when run with the testing shim:
+
+```
+=== RUN   TestWasmGo/github.com/Xe/olin/internal/abi/wasmgo.testHelloWorld
+Hello, world!
+--- PASS: TestWasmGo (1.66s)
+    --- PASS: TestWasmGo/github.com/Xe/olin/internal/abi/wasmgo.testHelloWorld (1.66s)
+```
+
+Currently Go binaries cannot interface with the Dagger ABI. There is [an issue](https://github.com/Xe/olin/issues/5)
+open to track the solution to this.
+
+Future posts will include more detail about using Go on top of Olin. 
+
 ## Project Meta
 
 To follow the project, check it on GitHub [here][olin]. To talk about it on Slack,
@@ -162,4 +201,4 @@ join the [Go community Slack][goslack] and join `#olin`.
 [syscall]: https://en.wikipedia.org/wiki/System_call
 [olin]: https://github.com/Xe/olin
 [goslack]: https://invite.slack.golangbridge.org
-
+[wasmgo]: https://github.com/Xe/olin/tree/master/internal/abi/wasmgo
