@@ -25,7 +25,7 @@ func (p Process) Files() []abi.File {
 }
 
 // NewProcess creates a new process.
-func NewProcess(name string) abi.ABI {
+func NewProcess(name string) *Process {
 	return &Process{name: name}
 }
 
@@ -46,88 +46,109 @@ func (p *Process) insertFile(file abi.File) int {
 // Name returns this process's name.
 func (p *Process) Name() string { return p.name }
 
+func (p *Process) OpenFD(furl string, flags uint32) int64 {
+	fd, err := p.open(furl, flags)
+
+	if err != nil {
+		log.Printf("%s: OpenFD(%s, %x): %v", p.name, furl, flags, err)
+		return int64(-1 * int64(err.(Error).Errno))
+	}
+
+	return int64(fd)
+}
+
+func (p *Process) CloseFD(fd int64) int64 {
+	err := p.files[fd].Close()
+	if err != nil {
+		log.Printf("%s: CloseFD(%d): %v", p.name, fd, err)
+		return -1
+	}
+
+	return 0
+}
+
+func (p *Process) WriteFD(fd int64, data []byte) int64 {
+	n, err := p.files[int(fd)].Write(data)
+	if err != nil {
+		log.Printf("%s: WriteFD(%d, []byte{%d}): %v", p.name, fd, len(data), err)
+		return -1
+	}
+
+	return int64(n)
+}
+
+func (p *Process) SyncFD(fd int64) int64 {
+	err := p.files[fd].Sync()
+	if err != nil {
+		log.Printf("%s: Sync(%d) %v", p.name, fd, err)
+		return -1
+	}
+
+	return 0
+}
+
+func (p *Process) ReadFD(fd int64, buf []byte) int64 {
+	n, err := p.files[fd].Read(buf)
+	if err != nil {
+		log.Printf("%s: ReadFD(%d, []byte{%d}): %v", p.name, fd, len(buf), err)
+		return -1
+	}
+
+	return int64(n)
+}
+
 // ResolveFunc resolves dagger's ABI and importable functions.
 func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 	switch module {
 	case "dagger":
 		switch field {
-		case "open":
+		case "open": // :: String -> Int32 -> Int64
 			return func(vm *exec.VirtualMachine) int64 {
 				f := vm.GetCurrentFrame()
 				furlPtr := uint32(f.Locals[0])
 				flags := uint32(f.Locals[1])
 				furl := string(readMem(vm.Memory, furlPtr))
 
-				fd, err := p.open(furl, flags)
-				if err != nil {
-					// TODO(Xe): Log
-					return int64(-1 * int64(err.(Error).Errno))
-				}
-
-				return int64(fd)
+				return p.OpenFD(furl, flags)
 			}
-		case "close":
+		case "close": // :: Int64 -> IO Int64
 			return func(vm *exec.VirtualMachine) int64 {
 				f := vm.GetCurrentFrame()
-				fd := int(f.Locals[0])
+				fd := f.Locals[0]
 
-				err := p.files[fd].Close()
-				if err != nil {
-					// TODO(Xe): Log
-					return -1
-				}
-
-				return 0
+				return p.CloseFD(fd)
 			}
-		case "write":
+		case "write": // :: Int64 -> String -> IO Int64
 			return func(vm *exec.VirtualMachine) int64 {
 				f := vm.GetCurrentFrame()
 				fd := f.Locals[0]
 				ptr := f.Locals[1]
 				len := f.Locals[2]
-
 				mem := vm.Memory[int(ptr):int(ptr+len)]
 
-				n, err := p.files[int(fd)].Write(mem)
-				if err != nil {
-					// TODO(Xe): Log
-					return -1
-				}
-
-				return int64(n)
+				return p.WriteFD(fd, mem)
 			}
-		case "sync":
+		case "sync": // :: Int64 -> IO Int64
 			return func(vm *exec.VirtualMachine) int64 {
 				f := vm.GetCurrentFrame()
 				fd := f.Locals[0]
 
-				err := p.files[fd].Sync()
-				if err != nil {
-					log.Printf("sync error: %d (%s) %v", fd, p.files[fd].Name(), err)
-					return -1
-				}
-
-				return 0
+				return p.SyncFD(fd)
 			}
-		case "read":
+		case "read": // :: Int64 -> String -> IO Int64
 			return func(vm *exec.VirtualMachine) int64 {
 				f := vm.GetCurrentFrame()
 				fd := f.Locals[0]
-				ptr := f.Locals[1]
+				ptr := int32(f.Locals[1])
 				len := f.Locals[2]
-
 				buf := make([]byte, int(len))
-				n, err := p.files[fd].Read(buf)
-				if err != nil {
-					// TODO(Xe): Log
-					return -1
-				}
+				ret := p.ReadFD(fd, buf)
 
 				for i, d := range buf {
-					vm.Memory[int(ptr)+i] = d
+					vm.Memory[ptr+int32(i)] = d
 				}
 
-				return int64(n)
+				return ret
 			}
 		}
 	}

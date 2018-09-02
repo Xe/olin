@@ -3,12 +3,12 @@ package wasmgo
 import (
 	"time"
 
-	"github.com/Xe/olin/internal/abi"
+	"github.com/Xe/olin/internal/abi/dagger"
 	"github.com/perlin-network/life/exec"
 )
 
 type wasmGo struct {
-	child abi.ABI
+	child *dagger.Process
 
 	BootTime   time.Time
 	Exited     bool

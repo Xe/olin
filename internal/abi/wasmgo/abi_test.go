@@ -35,6 +35,7 @@ type testWasmGoFragment func(t *testing.T, w *wasmGo)
 func TestWasmGo(t *testing.T) {
 	cases := []testWasmGoFragment{
 		testNothing,
+		testDagger,
 	}
 
 	for _, cs := range cases {
@@ -56,6 +57,12 @@ func TestWasmGo(t *testing.T) {
 
 func testNothing(t *testing.T, w *wasmGo) {
 	openAndRunWasmRun(t, w, "./testdata/nothing.wasm")
+	defer w.ensureExitStatus(t, true, 0)
+}
+
+func testDagger(t *testing.T, w *wasmGo) {
+	t.Skip("need syscall/js :(")
+	openAndRunWasmRun(t, w, "./testdata/dagger.wasm")
 	defer w.ensureExitStatus(t, true, 0)
 }
 

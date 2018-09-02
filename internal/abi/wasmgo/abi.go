@@ -142,7 +142,12 @@ func (w *wasmGo) goRuntimeGetRandomData(sp int32) {
 	w.writeMem(sp+8, data)
 }
 
-func (wasmGo) notImplemented(sp int32) { panic("not implemented") }
+func (w *wasmGo) notImplemented(module, field string) goABIFunc {
+	return func(sp int32) {
+		w.vm.PrintStackTrace()
+		log.Panicf("not implemented: %s %s", module, field)
+	}
+}
 
 type goABIFunc func(int32)
 
@@ -182,7 +187,6 @@ func (w *wasmGo) runGoABI(doer func(int32)) exec.FunctionImport {
 func (w *wasmGo) ResolveGlobal(module, field string) int64 { return 0 }
 
 func (w *wasmGo) ResolveFunc(module, field string) exec.FunctionImport {
-	log.Printf("resolveFunc(%q, %q)", module, field)
 	val := w.child.ResolveFunc(module, field)
 	if val != nil {
 		return val
@@ -212,9 +216,11 @@ func (w *wasmGo) ResolveFunc(module, field string) exec.FunctionImport {
 			return w.runGoABI(w.goRuntimeClearScheduledCallback)
 		case "runtime.getRandomData":
 			return w.runGoABI(w.goRuntimeGetRandomData)
+		case "github.com/Xe/olin/dagger.openFD":
+			return w.runGoABI(w.daggerOpenFD)
 		default:
 			log.Printf("unknown module+field %s %s, using shim", module, field)
-			return w.runGoABI(w.notImplemented)
+			return w.runGoABI(w.notImplemented(module, field))
 		}
 	default:
 		log.Panicf("unknown module+field %s %s", module, field)
