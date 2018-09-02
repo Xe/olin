@@ -7,5 +7,3 @@ env:
  - GO111MODULE=on
 
 install: true
-
-script: go test -v -mod=vendor ./...
