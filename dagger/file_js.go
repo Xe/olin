@@ -1,3 +1,5 @@
+// +build js,wasm go1.11
+
 package dagger
 
 import (
