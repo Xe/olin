@@ -5,6 +5,8 @@ import (
 	"crypto/rand"
 	"encoding/binary"
 	"log"
+	"reflect"
+	"runtime"
 	"time"
 
 	"github.com/perlin-network/life/exec"
@@ -178,15 +180,24 @@ func (w *wasmGo) runGoABI(doer func(int32)) exec.FunctionImport {
 
 		f := vm.GetCurrentFrame()
 		sp := int32(f.Locals[0])
+
+		//log.Printf("%s(%d)", getFunctionName(doer), sp)
 		doer(sp)
+
 		return 0
 	}
+}
+
+func getFunctionName(i interface{}) string {
+	return runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()
 }
 
 // ResolveGlobal does nothing, currently.
 func (w *wasmGo) ResolveGlobal(module, field string) int64 { return 0 }
 
 func (w *wasmGo) ResolveFunc(module, field string) exec.FunctionImport {
+	log.Printf("wasmgo: resolving %s %s", module, field)
+
 	val := w.child.ResolveFunc(module, field)
 	if val != nil {
 		return val

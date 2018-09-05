@@ -2,8 +2,6 @@ package wasmgo
 
 import (
 	"io/ioutil"
-	"reflect"
-	"runtime"
 	"syscall"
 	"testing"
 	"time"
@@ -24,10 +22,6 @@ func (w *wasmGo) ensureExitStatus(t *testing.T, exited bool, status int32) {
 	if w.StatusCode != status {
 		t.Errorf("status code: wanted: %d, got: %d", status, w.StatusCode)
 	}
-}
-
-func getFunctionName(i interface{}) string {
-	return runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()
 }
 
 type testWasmGoFragment func(t *testing.T, w *wasmGo)
