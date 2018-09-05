@@ -3,12 +3,12 @@
 package main
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/Xe/olin/dagger"
 )
 
 func main() {
 	fd := dagger.OpenFile("fd://1", 0)
-	println(fmt.Sprint(fd))
+	println(strconv.Itoa(int(fd)))
 }

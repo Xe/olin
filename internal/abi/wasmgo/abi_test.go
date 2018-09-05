@@ -61,7 +61,6 @@ func testNothing(t *testing.T, w *wasmGo) {
 }
 
 func testDagger(t *testing.T, w *wasmGo) {
-	t.Skip("need syscall/js :(")
 	openAndRunWasmRun(t, w, "./testdata/dagger.wasm")
 	defer w.ensureExitStatus(t, true, 0)
 }
