@@ -1,0 +1,13 @@
+[package]
+name = "testdata"
+version = "0.1.0"
+authors = ["Christine Dodrill <me@christine.website>"]
+
+[lib]
+crate-type = ["cdylib"]
+
+[build]
+target = "wasm32-unknown-unknown"
+
+[dependencies]
+cwa = "0.1.0"
