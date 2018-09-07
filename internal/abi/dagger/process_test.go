@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/Xe/olin/internal/abi"
+	"github.com/Xe/olin/internal/fileresolver"
 	"github.com/perlin-network/life/exec"
 )
 
@@ -57,7 +57,7 @@ func ensureErrorCode(t *testing.T, err error, code Errno) {
 }
 
 func processInsertFile(t *testing.T, p *Process) {
-	o := abi.NewOSFile(uintptr(syscall.Stdout), "stdout")
+	o := fileresolver.NewOSFile(uintptr(syscall.Stdout), "stdout")
 	i := p.insertFile(o)
 	i2 := p.insertFile(o)
 

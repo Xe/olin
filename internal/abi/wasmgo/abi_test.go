@@ -6,9 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Xe/olin/internal/abi"
-
 	"github.com/Xe/olin/internal/abi/dagger"
+	"github.com/Xe/olin/internal/fileresolver"
 	"github.com/perlin-network/life/exec"
 )
 
@@ -35,9 +34,9 @@ func TestWasmGo(t *testing.T) {
 	for _, cs := range cases {
 		t.Run(getFunctionName(cs), func(t *testing.T) {
 			p := dagger.NewProcess(getFunctionName(cs))
-			p.Open(abi.NewOSFile(uintptr(syscall.Stdin), "stdin"))
-			p.Open(abi.NewOSFile(uintptr(syscall.Stdout), "stdout"))
-			p.Open(abi.NewOSFile(uintptr(syscall.Stderr), "stderr"))
+			p.Open(fileresolver.NewOSFile(uintptr(syscall.Stdin), "stdin"))
+			p.Open(fileresolver.NewOSFile(uintptr(syscall.Stdout), "stdout"))
+			p.Open(fileresolver.NewOSFile(uintptr(syscall.Stderr), "stderr"))
 
 			w := &wasmGo{
 				child:     p,
