@@ -12,6 +12,7 @@ import (
 )
 
 var (
+	mainFunc   = flag.String("main-func", "main", "main function to call (because rust is broken)")
 	jitEnabled = flag.Bool("jit-enabled", false, "enable jit?")
 	gas        = flag.Int("gas", 65536*64, "number of instructions the VM can perform")
 )
@@ -51,7 +52,8 @@ func main() {
 		log.Fatalf("%s: %v", fname, err)
 	}
 
-	main, ok := vm.GetFunctionExport("main")
+	log.Printf("loading function %s", *mainFunc)
+	main, ok := vm.GetFunctionExport(*mainFunc)
 	if !ok {
 		log.Fatalf("%s: no main function exported", fname)
 	}

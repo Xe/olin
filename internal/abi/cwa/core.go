@@ -57,7 +57,7 @@ func (p *Process) ResolveGlobal(module, field string) int64 { return 0 }
 // ResolveFunc resolves the CommonWA ABI and importable functions.
 func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 	switch module {
-	case "cwa":
+	case "cwa", "env":
 		switch field {
 		case "log_write":
 			return func(vm *exec.VirtualMachine) int64 {
