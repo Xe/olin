@@ -1,0 +1,23 @@
+package fileresolver
+
+import "github.com/Xe/olin/internal/abi"
+
+// Zero is a file that does nothing.
+func Zero() abi.File {
+	return zeroFile{}
+}
+
+type zeroFile struct{}
+
+func (zeroFile) Write(p []byte) (int, error) { return len(p), nil }
+func (zeroFile) Sync() error                 { return nil }
+func (zeroFile) Close() error                { return nil }
+func (zeroFile) Name() string                { return "zero" }
+
+func (zeroFile) Read(p []byte) (int, error) {
+	for i := range p {
+		p[i] = 0
+	}
+
+	return len(p), nil
+}
