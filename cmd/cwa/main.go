@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"time"
 
 	"github.com/Xe/olin/internal/abi/cwa"
 	"github.com/perlin-network/life/exec"
@@ -19,8 +20,8 @@ var (
 
 func init() {
 	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
-		fmt.Fprintf(flag.CommandLine.Output(), "  %s <file.wasm>", os.Args[0])
+		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n\n", os.Args[0])
+		fmt.Fprintf(flag.CommandLine.Output(), "  %s <file.wasm>\n\n", os.Args[0])
 		flag.PrintDefaults()
 	}
 }
@@ -60,14 +61,19 @@ func main() {
 		log.Fatalf("%s: no main function exported", fname)
 	}
 
+	log.Printf("executing %s (%d)", *mainFunc, main)
+	t0 := time.Now()
 	ret, err := vm.RunWithGasLimit(main, *gas)
 	if err != nil {
 		log.Fatalf("%s: vm error: %v", fname, err)
 	}
+	log.Printf("execution time: %s", time.Since(t0))
 
 	if ret != 0 {
 		log.Fatalf("%s: exit status %d", fname, ret)
 	}
+
+	log.Printf("memory pages: %d", len(vm.Memory)/65536)
 
 	os.Exit(int(ret))
 }
