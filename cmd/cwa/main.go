@@ -42,7 +42,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	p := cwa.NewProcess(fname, argv, map[string]string{})
+	p := cwa.NewProcess(fname, argv, map[string]string{
+		"MAGIC_CONCH": "yes",
+	})
 
 	cfg := exec.VMConfig{
 		EnableJIT: *jitEnabled,
