@@ -1,6 +1,10 @@
-package abi
+package fileresolver
 
-import "syscall"
+import (
+	"syscall"
+
+	"github.com/Xe/olin/internal/abi"
+)
 
 // OSFile implements File backed by a raw operating system file.
 //
@@ -12,7 +16,7 @@ type OSFile struct {
 
 // NewOSFile creates a file backed by an OS file descriptor without buffering.
 // This is kinda dangerous. Only do this if you know what you are doing.
-func NewOSFile(fd uintptr, name string) File {
+func NewOSFile(fd uintptr, name string) abi.File {
 	return OSFile{fd: fd, name: name}
 }
 

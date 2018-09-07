@@ -178,7 +178,7 @@ func (p *Process) open(furl string, flags uint32) (int, error) {
 			return -1, makeError(ErrorBadURLInput, err)
 		}
 
-		file = abi.NewOSFile(uintptr(fdNum), u.Host)
+		file = fileresolver.NewOSFile(uintptr(fdNum), u.Host)
 
 	case "http", "https":
 		file, _ = fileresolver.HTTP(&http.Client{}, u)
