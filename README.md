@@ -30,129 +30,47 @@ I expect this project to last decades. I want the binary modules I upload today
 to be still working in 5 years, assuming its dependencies outside of the module 
 still work. 
 
-## Dagger
+## Blogposts
+
+Before asking questions or using Olin in this early state, I ask you please read
+these blogposts outlining the point of this project and some other bikeshedding
+I have put out on the topic:
+
+- https://christine.website/blog/olin-1-why-09-1-2018
+- https://christine.website/blog/olin-2-the-future-09-5-2018
+
+These will explain a lot that hasn't been fit into here yet.
+
+## ABI's Supported
+
+### Common WebAssembly
+
+Olin includes support for binaries linked against the [Common WebAssembly](https://github.com/CommonWA/cwa-spec)
+specification. Please see the tests in `cmd/cwa` for more information. Currently
+the Common WebAssembly is fairly basic, but at the same time there are currently
+the most tests targeting Common Webassembly.
+The tests for the Common WebAssembly spec can be found [here](https://github.com/Xe/olin/blob/master/cmd/cwa/testdata/test.rs).
+
+### Dagger
 
 > The dagger of light that renders your self-importance a decisive death
 
-Dagger is the first ABI that will be used for interfacing with the outside world.
-This will be mostly for an initial spike out of the basic ideas to see what it's 
-like while the rest of the plan is being stabilized and implemented.
-The core idea is that everything is a file, to the point that the file descriptor
-and file handle array are the only real bits of persistent state for the process.
-HTTP sessions, logging writers, TCP sockets, operating system files, cryptographic 
-random readers, everything is done via filesystem system calls.
+Dagger is currently in use for testing purposes. It defines five simple system 
+calls (`open`, `read`, `write`, `sync` and `close`) and allows the user to chain
+them as they wish. `open` returns the file descriptor that is going to be the 
+first argument of all of the other functions.
 
-Consider this the first draft of Dagger, everything here is subject to change.
-This is going to be the experimental phase.
-
-### Base Environment
-
-When a dagger process is opened, the following files are open:
-
-- 0: standard input: the semantic "input" of the program.
-- 1: standard output: the standard output of the program.
-- 2: standard error: error output for the program.
-
-### File Handlers
-
-In the open call (defined later), a file URL is specified instead of a file name.
-This allows for Dagger to natively offer programs using it quick access to common
-services like HTTP, logging or pretty much anything else.
-
-I'm playing with the following handlers currently:
-
-- http and https (Write request as http/1.1 request and sync(), Read response as http/1.1 response and close())
-- rand - cryptographically secure random data
-- time - unix timestamp in a little-endian encoded int64 on every read() - `time://utc`
-
-I'd like to add the following handlers in the future:
-
-- file - filesystem files on the host OS (dangerous!)
-- tcp - TCP connections
-- tcp+tls - TCP connections with TLS
-- meta - metadata about the runtime or the event
-
-### Handler Function
-
-Each Dagger module can only handle one data type. This is intentional. This 
-forces users to make a separate handler for each type of data they want to 
-handle. The handler function reads its input from standard input and then 
-returns `0` if whatever it needs to do "worked" (for some definition of success).
-
-TODO(Xe): Find better way to say:
-
-This function could be exposed in clang by doing:
-
-```c
-__attribute__ ((visibility ("default")))
-int handle() {
-  // read all of standard input to memory and handle it
-  return 0; // success
-}
-```
-
-### System Calls
-
-A [system call][syscall] is how computer programs interface with the outside
-world. When a dagger program makes a system call, the amount of time the program
-spends waiting for that system call is collected and recorded based on what
-underlying resource took care of the call. This means, in theory, users of olin
-could alert on HTTP requests from one service to another taking longer amounts
-of time very trivially.
-
-Dagger uses the following system calls:
-
-- open
-- close
-- read
-- write
-- sync
-
-#### open
+To use these functions from C, import them like such from the `dagger` module:
 
 ```c
 extern int open(const char *furl, int flags);
-```
-
-This opens a file with the given handler and flags (provided the handler supports
-them) and returns its file descriptor. This descriptor is used in all later calls.
-
-#### close
-
-```c
 extern int close(int fd);
-```
-
-Close closes a file and returns if it failed or not. If this call returns nonzero,
-you don't know what state the world is in. Panic.
-
-#### read
-
-```c
 extern int read(int fd, void *buf, int nbyte);
-```
-
-Read attempts to read up to count bytes from file descriptor fd into the buffer 
-starting at buf.
-
-#### write
-
-```c
 extern int write(int fd, void *buf, int nbyte);
-```
-
-Write writes up to count bytes from the buffer starting at buf to the file 
-referred to by the file descriptor fd.
-
-#### sync
-
-```c
 extern int sync(int fd);
 ```
 
-This is for some backends to forcibly make async operations into sync operations.
-
-## Go ABI
+### Go
 
 Olin also includes support for running webassembly modules created by [Go 1.11's webassembly support](https://golang.org/wiki/WebAssembly).
 It uses [the `wasmgo` ABI][wasmgo] package in order to do things. Right now
@@ -190,6 +108,8 @@ Currently Go binaries cannot interface with the Dagger ABI. There is [an issue](
 open to track the solution to this.
 
 Future posts will include more detail about using Go on top of Olin. 
+
+Under the hood, the Olin implementation of the Go ABI currently uses Dagger.
 
 ## Project Meta
 
