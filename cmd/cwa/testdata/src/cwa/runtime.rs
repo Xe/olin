@@ -1,4 +1,4 @@
-use raw;
+use cwa::raw;
 
 /// Returns the major part of the spec version implemented by host runtime.
 pub fn spec_major() -> i32 {

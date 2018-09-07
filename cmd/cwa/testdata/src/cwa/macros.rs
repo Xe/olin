@@ -2,13 +2,13 @@
 macro_rules! println {
     () => (print!("\n"));
     ($fmt:expr) => ({
-        $crate::io::with_stdout(|h| {
+        $crate::cwa::io::with_stdout(|h| {
             use std::io::Write;
             write!(h, concat!($fmt, "\n")).unwrap();
         });
     });
     ($fmt:expr, $($arg:tt)*) => ({
-        $crate::io::with_stdout(|h| {
+        $crate::cwa::io::with_stdout(|h| {
             use std::io::Write;
             write!(h, concat!($fmt, "\n"), $($arg)*).unwrap();
         });
@@ -19,13 +19,13 @@ macro_rules! println {
 macro_rules! eprintln {
     () => (print!("\n"));
     ($fmt:expr) => ({
-        $crate::io::with_stderr(|h| {
+        $crate::cwa::io::with_stderr(|h| {
             use std::io::Write;
             write!(h, concat!($fmt, "\n")).unwrap();
         });
     });
     ($fmt:expr, $($arg:tt)*) => ({
-        $crate::io::with_stderr(|h| {
+        $crate::cwa::io::with_stderr(|h| {
             use std::io::Write;
             write!(h, concat!($fmt, "\n"), $($arg)*).unwrap();
         });
