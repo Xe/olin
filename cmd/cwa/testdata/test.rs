@@ -90,7 +90,7 @@ pub extern "C" fn cwa_main() -> i32 {
     log(Level::Info, "trying to open a log:// file");
     let mut fout: Resource;
     let fout_maybe: Option<Resource>;
-    fout_maybe = Resource::open("log://test-log-please-ignore");
+    fout_maybe = Resource::open("log://?prefix=test-log-please-ignore");
     match fout_maybe {
         Some(r) => fout = r,
         None => return 1,
