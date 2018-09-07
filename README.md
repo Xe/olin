@@ -1,6 +1,6 @@
 # olin
 
-[![Build Status](https://travis-ci.org/Xe/olin.svg?branch=master)](https://travis-ci.org/Xe/olin) 
+[![Build Status](https://travis-ci.org/Xe/olin.svg?branch=master)](https://travis-ci.org/Xe/olin) [![Go Report Card](https://goreportcard.com/badge/github.com/Xe/olin)](https://goreportcard.com/report/github.com/Xe/olin) [![GoDoc](https://godoc.org/github.com/Xe/olin?status.svg)](https://godoc.org/github.com/Xe/olin) ![powered by WebAssembly](https://img.shields.io/badge/powered%20by-WebAssembly-orange.svg)
 
 Olin is an environment to run and operate functions as a service projects using
 event sourcing and webassembly under the hood. Your handler code shouldn't need
