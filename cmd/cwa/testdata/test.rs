@@ -54,8 +54,10 @@ pub extern "C" fn cwa_main() -> i32 {
         major = runtime_spec_major();
     }
 
+    log(Level::Info, &format!("minor: {}, major: {}", minor, major));
+
     if major != 0 && minor != 0 {
-        log(Level::Error, &format!("minor: {}, major: {}", minor, major));
+        log(Level::Error, "version is wrong");
         return 1;
     }
     log(Level::Info, "passed");
@@ -71,10 +73,7 @@ pub extern "C" fn cwa_main() -> i32 {
         return res;
     }
 
-    let runtime_name_str: &str;
-    unsafe {
-        runtime_name_str = core::str::from_utf8_unchecked(&rt_name[..res as usize]);
-    }
+    let runtime_name_str: &str = unsafe { std::str::from_utf8_unchecked(&rt_name[..res as usize]) };
 
     log(Level::Info, runtime_name_str);
 
@@ -108,11 +107,7 @@ pub extern "C" fn cwa_main() -> i32 {
             return res;
         }
 
-        let arg_str: &str;
-        unsafe {
-            arg_str = core::str::from_utf8_unchecked(&arg_val[..res as usize]);
-        }
-
+        let arg_str: &str = unsafe{ core::str::from_utf8_unchecked(&arg_val[..res as usize]) };
         log(Level::Info, &format!("arg {}: {}", x, arg_str));
     }
     log(Level::Info, "passed");
