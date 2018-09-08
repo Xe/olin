@@ -3,6 +3,8 @@ package fileresolver
 import "github.com/Xe/olin/internal/abi"
 
 // Zero is a file that does nothing.
+//
+// For more information, please see the spec here: https://github.com/CommonWA/cwa-spec/blob/master/schemes/zero.md
 func Zero() abi.File {
 	return zeroFile{}
 }
