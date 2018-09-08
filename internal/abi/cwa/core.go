@@ -222,6 +222,12 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 
 				return 0
 			}
+		case "time_now":
+			return func(vm *exec.VirtualMachine) int64 {
+				p.SetVM(vm)
+
+				return p.timeNow()
+			}
 		default:
 			log.Panicf("unknown import %s::%s", module, field)
 		}
