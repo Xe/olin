@@ -4,8 +4,8 @@ use std::io::{Read, Write};
 use std::mem;
 use std::str;
 
-mod cwa;
-use cwa::*;
+extern crate libcwa;
+use libcwa::*;
 
 #[no_mangle]
 pub extern "C" fn cwa_main() -> i32 {

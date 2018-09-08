@@ -2,7 +2,6 @@
 
 use std::io::{self, Read, Write};
 
-//#[link(name = "cwa", wasm_import_module = "cwa")]
 pub mod sys {
     extern {
         pub fn log_write(level: i32, text_ptr: *const u8, text_len: usize);
