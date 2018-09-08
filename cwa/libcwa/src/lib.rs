@@ -27,7 +27,7 @@ pub mod sys {
     }
 }
 
-mod err {
+pub mod err {
     use std::io;
 
     pub const UNKNOWN: i32 = -1;
