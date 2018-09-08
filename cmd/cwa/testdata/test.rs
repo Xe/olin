@@ -1,9 +1,7 @@
 #![allow(warnings)]
 
-extern crate core;
+use std::io::{Read, Write};
 use std::mem;
-use std::io::Read;
-use std::io::Write;
 use std::str;
 
 mod cwa;
@@ -11,133 +9,121 @@ use cwa::*;
 
 #[no_mangle]
 pub extern "C" fn cwa_main() -> i32 {
-    log(Level::Info, "expecting spec major=0 and min=0");
-    let minor: i32 = unsafe { runtime_spec_minor() };
-    let major: i32 = unsafe { runtime_spec_major() };
+    match friendly_main() {
+        Ok(()) => 0,
+        Err(e) => e,
+    }
+}
 
-    log(Level::Info, &format!("minor: {}, major: {}", minor, major));
+#[inline(always)]
+pub extern "C" fn friendly_main() -> Result<(), i32> {
+    log::info("expecting spec major=0 and min=0");
+    let minor: i32 = runtime::spec_major();
+    let major: i32 = runtime::spec_major();
+
+    log::info(&format!("minor: {}, major: {}", minor, major));
 
     if major != 0 && minor != 0 {
-        log(Level::Error, "version is wrong");
-        return 1;
+        log::error("version is wrong");
+        return Err(1);
     }
-    log(Level::Info, "passed");
+    log::info("passed");
 
-    log(Level::Info, "getting runtime name, should be olin");
-    let mut rt_name = [0u8; 16];
-    let res: i32 = unsafe { runtime_name(rt_name.as_mut_ptr(), 16) };
+    log::info("getting runtime name, should be olin");
+    let mut rt_name = [0u8; 32];
+    let runtime_name = runtime::name_buf(rt_name.as_mut()).ok_or_else(|| {
+        log::error("Runtime name larger than 32 byte limit");
+        1
+    })?;
 
-    if res < 0 {
-        return res;
+    log::info(runtime_name);
+
+    if runtime_name != "olin" {
+        log::error("Got runtime name, not olin");
+        return Err(1);
     }
+    log::info("passed");
 
-    let runtime_name_str: &str = unsafe { std::str::from_utf8_unchecked(&rt_name[..res as usize]) };
+    log::info("sleeping");
+    runtime::msleep(1);
+    log::info("passed");
 
-    log(Level::Info, runtime_name_str);
-
-    if runtime_name_str != "olin" {
-        log(Level::Error, "Got runtime name, not olin");
-        return 1;
-    }
-    log(Level::Info, "passed");
-
-    log(Level::Info, "sleeping");
-    unsafe {
-        runtime_msleep(1);
-    }
-    log(Level::Info, "passed");
-
-    log(Level::Info, "checking argc/argv");
-    let argc: i32 = unsafe { startup_arg_len() };
-    log(Level::Info, &format!("argc: {}", argc));
+    log::info("checking argc/argv");
+    let argc: i32 = startup::arg_len();
+    log::info(&format!("argc: {}", argc));
 
     for x in 0..argc {
         let mut arg_val = [0u8; 64];
-        let res: i32 = unsafe { startup_arg_at(x as i32, arg_val.as_mut_ptr(), 64) };
-
-        if res < 0 {
-            return res;
-        }
-
-        let arg_str: &str = unsafe{ core::str::from_utf8_unchecked(&arg_val[..res as usize]) };
-        log(Level::Info, &format!("arg {}: {}", x, arg_str));
+        let arg = startup::arg_at_buf(x, &mut arg_val).ok_or_else(|| {
+            log::error(&format!("arg {} missing", x));
+            1
+        })?;
+        log::info(&format!("arg {}: {}", x, arg));
     }
-    log(Level::Info, "passed");
+    log::info("passed");
 
-    log(Level::Info, "env[\"MAGIC_CONCH\"] = \"yes\"");
+    log::info("env[\"MAGIC_CONCH\"] = \"yes\"");
     let envvar_name = "MAGIC_CONCH";
     let res: i32;
     let mut envvar_val = [0u8; 64];
-    let val_str: &str;
-    unsafe {
-        res = env_get(envvar_name.as_bytes().as_ptr(), envvar_name.len(), envvar_val.as_mut_ptr(), 64);
-    }
+    let envvar_val = env::get_buf(envvar_name.as_bytes(), &mut envvar_val)
+        .map(|s| str::from_utf8(s).expect("envvar wasn't UTF-8"))
+        .map_err(|e| {
+            log::error(&format!("couldn't get: {:?}", e));
+            1
+        })?;
 
-    if res < 0 {
-        return res;
+    if envvar_val != "yes" {
+        log::error(&format!("wanted yes, got: {}", envvar_val));
+        return Err(1);
     }
+    log::info("passed");
 
-    unsafe {
-        val_str = core::str::from_utf8_unchecked(&envvar_val[..res as usize]);
-    }
+    log::info("trying to open a log:// file");
+    {
+        let mut fout: Resource =
+            Resource::open("log://?prefix=test-log-please-ignore").map_err(|e| {
+                log::error(&format!("couldn't open: {:?}", e));
+                1
+            })?;
 
-    if val_str != "yes" {
-        log(Level::Error, &format!("wanted yes, got: {}", val_str));
-        return 1;
-    }
-    log(Level::Info, "passed");
-
-    log(Level::Info, "trying to open a log:// file");
-    let mut fout: Resource;
-    let fout_maybe: Option<Resource>;
-    fout_maybe = Resource::open("log://?prefix=test-log-please-ignore");
-    match fout_maybe {
-        Some(r) => fout = r,
-        None => return 1,
-    }
-
-    let log_msg = "hi from inside log file".as_bytes();
-    let res = fout.write(log_msg);
-    if !res.is_ok() {
-        log(Level::Error, "can't write message to log file");
-        log(Level::Error, &format!("error: {}", res.err().unwrap()));
-    }
-    std::mem::drop(fout);
-    log(Level::Info, "successfully closed the file");
-
-    log(Level::Info, "opening a zero:// file");
-    let mut fout: Resource;
-    let fout_maybe: Option<Resource>;
-    fout_maybe = Resource::open("zero://");
-    match fout_maybe {
-        Some(r) => fout = r,
-        None => return 1,
-    }
-
-    log(Level::Info, "reading zeroes");
-    let mut zeroes = [0u8, 16];
-    let res = fout.read(&mut zeroes);
-    if !res.is_ok() {
-        log(Level::Error, "can't read zeroes from zero file");
-        log(Level::Error, &format!("error: {}", res.err().unwrap()));
-    }
-
-    /* XXX(Xe): Rust is broken
-    log(Level::Info, "verifying all zeroes are valid");
-    for x in 0..16 {
-        if zeroes[x] != 0 {
-            log(Level::Error, &format!("expected zeroes[{}] to be 0, got: {}", x, zeroes[x]));
-            return 1;
+        let res = fout.write(b"hi from inside log file");
+        if let Err(err) = res {
+            log::error("can't write message to log file");
+            log::error(&format!("error: {:?}", err));
         }
     }
-    */
+    log::info("successfully closed the file");
 
-    std::mem::drop(fout);
-    log(Level::Info, "closed file");
+    log::info("opening a zero:// file");
+    {
+        let mut fout: Resource = Resource::open("zero://").map_err(|e| {
+            log::error(&format!("error: {:?}", e));
+            1
+        })?;
 
-    log(Level::Info, "all functions passed basic usage");
+        log::info("reading zeroes");
+        let mut zeroes = [0u8, 16];
+        let res = fout.read(&mut zeroes);
+        if let Err(err) = res {
+            log::error("can't read zeroes from zero file");
+            log::error(&format!("error: {}", err));
+        }
 
-    return 0;
+        log::info("verifying all zeroes are valid");
+        for (x, val) in zeroes.iter().enumerate() {
+            let val: u8 = *val;
+            if val != 0 {
+                log::error(&format!("expected zeroes[{}] to be 0, got: {}", x, val));
+                return Err(1);
+            }
+        }
+    }
+    log::info("closed file");
+
+    log::info("all functions passed basic usage");
+
+    Ok(())
 }
 
 fn main() {}
