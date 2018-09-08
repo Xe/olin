@@ -1,0 +1,7 @@
+[package]
+name = "cwagi"
+version = "0.1.0"
+authors = ["Christine Dodrill <me@christine.website>"]
+
+[dependencies]
+libcwa = { path = "../libcwa" }
