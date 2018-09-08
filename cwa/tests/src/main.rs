@@ -8,6 +8,7 @@ extern crate libcwa;
 use libcwa::*;
 
 mod http;
+mod time;
 
 #[no_mangle]
 pub extern "C" fn cwa_main() -> i32 {
@@ -25,6 +26,17 @@ pub extern "C" fn cwa_main() -> i32 {
     log::info("http test");
     let result: i32;
     match http::test() {
+        Ok(()) => result = 0,
+        Err(e) => result = e as i32,
+    }
+
+    if result != 0 {
+        return result;
+    }
+
+    log::info("time test");
+    let result: i32;
+    match time::test() {
         Ok(()) => result = 0,
         Err(e) => result = e as i32,
     }
