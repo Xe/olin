@@ -113,10 +113,6 @@ func processTestOpenWasm(t *testing.T, p *Process) {
 	openAndRunWasmMain(t, p, "./testdata/open.wasm", func(i int64) bool { return i == 0 })
 }
 
-func processTestCloseWasm(t *testing.T, p *Process) {
-	openAndRunWasmMain(t, p, "./testdata/close.wasm", func(i int64) bool { return i == 0 })
-}
-
 func processTestHelloWorld(t *testing.T, p *Process) {
 	openAndRunWasmMain(t, p, "./testdata/helloworld.wasm", func(i int64) bool { return i == 0 })
 }
