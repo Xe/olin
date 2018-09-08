@@ -92,7 +92,7 @@ func (m *Module) populateTables() error {
 	if m.Table == nil || len(m.Table.Entries) == 0 || m.Elements == nil || len(m.Elements.Entries) == 0 {
 		return nil
 	}
-/*
+
 	for _, elem := range m.Elements.Entries {
 		// the MVP dictates that index should always be zero, we shuold
 		// probably check this
@@ -106,7 +106,7 @@ func (m *Module) populateTables() error {
 		}
 		offset, ok := val.(int32)
 		if !ok {
-			return InvalidValueTypeInitExprError{reflect.Int32, reflect.TypeOf(val).Kind()}
+			return InvalidValueTypeInitExprError{reflect.Int32, reflect.TypeOf(offset).Kind()}
 		}
 
 		table := m.TableIndexSpace[int(elem.Index)]
@@ -119,7 +119,7 @@ func (m *Module) populateTables() error {
 			copy(table[int(offset):], elem.Elems)
 			m.TableIndexSpace[int(elem.Index)] = table
 		}
-	}*/
+	}
 
 	logger.Printf("There are %d entries in the table index space.", len(m.TableIndexSpace))
 	return nil
@@ -140,7 +140,7 @@ func (m *Module) populateLinearMemory() error {
 		return nil
 	}
 	// each module can only have a single linear memory in the MVP
-/*
+
 	for _, entry := range m.Data.Entries {
 		if entry.Index != 0 {
 			return InvalidLinearMemoryIndexError(entry.Index)
@@ -152,7 +152,7 @@ func (m *Module) populateLinearMemory() error {
 		}
 		offset, ok := val.(int32)
 		if !ok {
-			return InvalidValueTypeInitExprError{reflect.Int32, reflect.TypeOf(val).Kind()}
+			return InvalidValueTypeInitExprError{reflect.Int32, reflect.TypeOf(offset).Kind()}
 		}
 
 		memory := m.LinearMemoryIndexSpace[int(entry.Index)]
@@ -165,7 +165,7 @@ func (m *Module) populateLinearMemory() error {
 			copy(memory[int(offset):], entry.Data)
 			m.LinearMemoryIndexSpace[int(entry.Index)] = memory
 		}
-	}*/
+	}
 
 	return nil
 }

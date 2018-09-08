@@ -35,8 +35,7 @@ func (fct *Function) IsHost() bool {
 // Module represents a parsed WebAssembly module:
 // http://webassembly.org/docs/modules/
 type Module struct {
-	Version  uint32
-	Sections []Section
+	Version uint32
 
 	Types    *SectionTypes
 	Import   *SectionImports
@@ -49,7 +48,6 @@ type Module struct {
 	Elements *SectionElements
 	Code     *SectionCode
 	Data     *SectionData
-	Customs  []*SectionCustom
 
 	// The function index space of the module
 	FunctionIndexSpace []Function
@@ -60,22 +58,14 @@ type Module struct {
 	TableIndexSpace        [][]uint32
 	LinearMemoryIndexSpace [][]byte
 
+	Other []RawSection // Other holds the custom sections if any
+
 	imports struct {
 		Funcs    []uint32
 		Globals  int
 		Tables   int
 		Memories int
 	}
-}
-
-// Custom returns a custom section with a specific name, if it exists.
-func (m *Module) Custom(name string) *SectionCustom {
-	for _, s := range m.Customs {
-		if s.Name == name {
-			return s
-		}
-	}
-	return nil
 }
 
 // NewModule creates a new empty module
