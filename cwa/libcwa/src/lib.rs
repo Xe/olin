@@ -23,6 +23,7 @@ pub mod sys {
         pub fn resource_read(id: i32, data_ptr: *mut u8, data_len: usize) -> i32;
         pub fn resource_write(id: i32, data_ptr: *const u8, data_len: usize) -> i32;
         pub fn resource_close(id: i32);
+        pub fn resource_flush(id: i32) -> i32;
     }
 }
 
@@ -218,7 +219,6 @@ impl Resource {
     }
 
     pub unsafe fn from_raw(handle: i32) -> Resource {
-        // TODO: Deal with invalid handles (< 0)
         Resource(handle)
     }
 }
@@ -257,7 +257,13 @@ impl Write for Resource {
     }
 
     fn flush(&mut self) -> io::Result<()> {
-        // TODO
-        Ok(())
+        let ret: i32 = unsafe { sys::resource_flush(self.0) };
+        if ret == 0 {
+            return Ok(());
+        }
+
+        return Err(err::check_io(ret)
+                   .map_err(io::Error::from)
+                   .unwrap_err());
     }
 }
