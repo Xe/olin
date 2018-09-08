@@ -1,0 +1,12 @@
+FROM xena/go:1.11 AS build
+COPY . /olin
+WORKDIR /olin
+RUN apk add --no-cache git
+RUN GOBIN=/ go install ./cmd/cwa-cgi
+
+FROM xena/alpine
+COPY ./run/run.sh /run.sh
+COPY --from=build /olin/cmd/cwa-cgi/testdata/test.wasm /main.wasm
+COPY --from=build /olin/cwa-cgi /cwa-cgi
+WORKDIR /
+CMD sh /run.sh
