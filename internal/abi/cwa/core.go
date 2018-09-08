@@ -2,6 +2,7 @@ package cwa
 
 import (
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/Xe/olin/internal/abi"
@@ -12,6 +13,7 @@ import (
 func NewProcess(name string, argv []string, env map[string]string) *Process {
 	return &Process{
 		name:   name,
+		hc:     &http.Client{},
 		logger: log.New(os.Stdout, name+": ", log.LstdFlags),
 		env:    env,
 		argv:   argv,
@@ -24,6 +26,7 @@ func NewProcess(name string, argv []string, env map[string]string) *Process {
 type Process struct {
 	name string
 
+	hc     *http.Client
 	logger *log.Logger
 	env    map[string]string
 	vm     *exec.VirtualMachine

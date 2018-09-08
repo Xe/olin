@@ -31,6 +31,13 @@ func (p *Process) open(urlPtr, urlLen uint32) (int32, error) {
 		file = fileresolver.Null()
 	case "zero":
 		file = fileresolver.Zero()
+	case "http", "https":
+		var err error
+		file, err = fileresolver.HTTP(p.hc, uu)
+		if err != nil {
+			p.logger.Printf("can't resource_open(%q): %v", u, err)
+			return 0, UnknownError
+		}
 	default:
 		return 0, NotFoundError
 	}
