@@ -34,13 +34,11 @@ pub fn test() -> Result<(), i32> {
     });
 
     log::info("reading response");
-    let mut resp_data = [0u8, 2048];
+    let mut resp_data = [0u8; 2048];
     fout.read(&mut resp_data).map_err(|e| {
         log::error(&format!("can't read response: {:?}", e));
         1
     });
-
-    log::warning(&format!("{:?}", resp_data));
 
     log::info("parsing response");
     let mut headers = [httparse::EMPTY_HEADER; 16];
@@ -49,6 +47,8 @@ pub fn test() -> Result<(), i32> {
         log::error(&format!("can't parse response: {:?}", e));
         1
     });
+
+
 
     log::info(
         &format!("version: {:?}, code: {:?}, reason: {:?}",

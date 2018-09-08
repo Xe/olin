@@ -120,7 +120,7 @@ pub extern "C" fn friendly_main() -> Result<(), i32> {
         })?;
 
         log::info("reading zeroes");
-        let mut zeroes = [0u8, 16];
+        let mut zeroes = [0u8; 16];
         let res = fout.read(&mut zeroes);
         if let Err(err) = res {
             log::error("can't read zeroes from zero file");
