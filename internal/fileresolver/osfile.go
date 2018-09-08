@@ -20,8 +20,8 @@ func NewOSFile(fd uintptr, name string) abi.File {
 	return OSFile{fd: fd, name: name}
 }
 
-// Sync does nothing.
-func (OSFile) Sync() error { return nil }
+// Flush does nothing.
+func (OSFile) Flush() error { return nil }
 
 // Name returns the file's name.
 func (o OSFile) Name() string { return o.name }

@@ -101,7 +101,7 @@ func (p *Process) flush(fid int32) error {
 		return InvalidArgumentError
 	}
 
-	err := f.Sync()
+	err := f.Flush()
 	if err != nil {
 		p.logger.Printf("flush error for fid %d (%s): %v", fid, f.Name(), err)
 		return UnknownError

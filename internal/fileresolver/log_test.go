@@ -31,6 +31,6 @@ func TestLog(t *testing.T) {
 
 	_, err = lf.Read(val)
 	assert(err)
-	assert(lf.Sync())
+	assert(lf.Flush())
 	assert(lf.Close())
 }
