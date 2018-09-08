@@ -9,6 +9,20 @@ import (
 	"github.com/Xe/olin/internal/abi"
 )
 
+// HTTP creates a new HTTP transport that pretends to be a file. A process can
+// (and should) have as many of these open as they need active HTTP connections.
+// Users of this package are suggested to use the same underlying HTTP client as
+// much as makes sense.
+//
+// To use this file:
+//
+//    - write your request body to the file
+//    - sync the file (this blocks for the duration of the HTTP request)
+//    - read the response body from the file
+//    - close the file when you are done reading the response
+//
+// A new HTTP file will be required for every request on the guest side, but it
+// will be for the best.
 func HTTP(cl *http.Client, u *url.URL) (abi.File, error) {
 	return &httpFile{
 		cl:   cl,

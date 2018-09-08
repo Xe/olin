@@ -52,7 +52,7 @@ func ensureErrorCode(t *testing.T, err error, code Errno) {
 
 	merr := wantError(t, err)
 	if merr.Errno != code {
-		t.Fatalf("wanted error code to be %d (%s), got: %d (%s)", code, code, merr.Errno, merr.Errno)
+		t.Fatalf("wanted error code to be %d (%s), got: %d (%s)", code, code, merr.Errno, merr.Errno.String())
 	}
 }
 

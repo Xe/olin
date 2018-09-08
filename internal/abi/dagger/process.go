@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 
 	"github.com/Xe/olin/internal/abi"
@@ -46,6 +47,8 @@ func (p *Process) insertFile(file abi.File) int {
 // Name returns this process's name.
 func (p *Process) Name() string { return p.name }
 
+// OpenFD opens a file descriptor for this Process with the given file url
+// string and flags integer.
 func (p *Process) OpenFD(furl string, flags uint32) int64 {
 	fd, err := p.open(furl, flags)
 
@@ -57,6 +60,7 @@ func (p *Process) OpenFD(furl string, flags uint32) int64 {
 	return int64(fd)
 }
 
+// CloseFD closes a file descriptor.
 func (p *Process) CloseFD(fd int64) int64 {
 	err := p.files[fd].Close()
 	if err != nil {
@@ -64,9 +68,13 @@ func (p *Process) CloseFD(fd int64) int64 {
 		return -1
 	}
 
+	p.files[fd] = nil
+
 	return 0
 }
 
+// WriteFD writes the given data to a file descriptor, returning -1 if it failed
+// somehow.
 func (p *Process) WriteFD(fd int64, data []byte) int64 {
 	n, err := p.files[int(fd)].Write(data)
 	if err != nil {
@@ -77,6 +85,7 @@ func (p *Process) WriteFD(fd int64, data []byte) int64 {
 	return int64(n)
 }
 
+// SyncFD runs a file's sync operation and returns -1 if it failed.
 func (p *Process) SyncFD(fd int64) int64 {
 	err := p.files[fd].Sync()
 	if err != nil {
@@ -87,6 +96,7 @@ func (p *Process) SyncFD(fd int64) int64 {
 	return 0
 }
 
+// ReadFD reads data from the given FD into the byte buffer.
 func (p *Process) ReadFD(fd int64, buf []byte) int64 {
 	n, err := p.files[fd].Read(buf)
 	if err != nil {
@@ -172,6 +182,10 @@ func (p *Process) open(furl string, flags uint32) (int, error) {
 
 	var file abi.File
 	switch u.Scheme {
+	case "log":
+		q := u.Query()
+		file = fileresolver.Log(os.Stdout, q.Get("prefix"), log.LstdFlags)
+
 	case "fd":
 		fdNum, err := strconv.Atoi(u.Host)
 		if err != nil {
