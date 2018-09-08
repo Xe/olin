@@ -13,6 +13,7 @@ import (
 )
 
 var (
+	minPages   = flag.Int("min-pages", 32, "number of memory pages to open (default is 2 MB)")
 	mainFunc   = flag.String("main-func", "main", "main function to call (because rust is broken)")
 	jitEnabled = flag.Bool("jit-enabled", false, "enable jit?")
 	gas        = flag.Int("gas", 65536*64, "number of instructions the VM can perform")
@@ -48,7 +49,8 @@ func main() {
 	})
 
 	cfg := exec.VMConfig{
-		EnableJIT: *jitEnabled,
+		EnableJIT:          *jitEnabled,
+		DefaultMemoryPages: *minPages,
 	}
 	vm, err := exec.NewVirtualMachine(data, cfg, p)
 	if err != nil {
