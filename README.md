@@ -19,7 +19,7 @@ as things grow. Not to mention adding in tracing, metrics and log aggreation.
 
 I would like to change this.
 
-I would like to make a perscriptive environment kinda like [Google Cloud Functions][gcf]
+I would like to make a prescriptive environment kinda like [Google Cloud Functions][gcf]
 or [AWS Lambda][lambda] backed by a durable message queue and with handlers
 compiled to webassembly to ensure forward compatibility. As such, the ABI 
 involved will be versioned, documented and tested. Multiple ABI's will eventually
