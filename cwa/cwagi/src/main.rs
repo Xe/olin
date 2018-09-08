@@ -74,8 +74,6 @@ fn getenv(name: &str) -> Option<String> {
 }
 
 fn respond_to(ctx: Context) -> Response {
-
-
     match ctx.request_uri.as_str() {
         "/cadey" => Response { status: 200, body: "you are awesome!".to_owned() },
         _        => Response { status: 404, body: "try /cadey".to_owned() }
