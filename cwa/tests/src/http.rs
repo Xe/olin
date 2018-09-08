@@ -48,8 +48,6 @@ pub fn test() -> Result<(), i32> {
         1
     });
 
-
-
     log::info(
         &format!("version: {:?}, code: {:?}, reason: {:?}",
                  resp.version, resp.code, resp.reason));
