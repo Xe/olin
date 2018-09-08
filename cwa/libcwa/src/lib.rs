@@ -26,6 +26,10 @@ pub mod sys {
         pub fn resource_flush(id: i32) -> i32;
 
         pub fn time_now() -> i64;
+
+        pub fn io_get_stdin() -> i32;
+        pub fn io_get_stdout() -> i32;
+        pub fn io_get_stderr() -> i32;
     }
 }
 
@@ -281,5 +285,19 @@ pub mod time {
 
     pub fn ts() -> i64 {
         unsafe { ::sys::time_now() }
+    }
+}
+
+pub mod stdio {
+    pub fn inp() -> ::Resource {
+        unsafe { ::Resource::from_raw(::sys::io_get_stdin()) }
+    }
+
+    pub fn out() -> ::Resource {
+        unsafe { ::Resource::from_raw(::sys::io_get_stdout()) }
+    }
+
+    pub fn err() -> ::Resource {
+        unsafe { ::Resource::from_raw(::sys::io_get_stderr()) }
     }
 }

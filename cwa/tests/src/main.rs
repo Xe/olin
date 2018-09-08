@@ -9,6 +9,7 @@ use libcwa::*;
 
 mod http;
 mod time;
+mod stdio;
 
 #[no_mangle]
 pub extern "C" fn cwa_main() -> i32 {
@@ -37,6 +38,17 @@ pub extern "C" fn cwa_main() -> i32 {
     log::info("time test");
     let result: i32;
     match time::test() {
+        Ok(()) => result = 0,
+        Err(e) => result = e as i32,
+    }
+
+    if result != 0 {
+        return result;
+    }
+
+    log::info("stdio test");
+    let result: i32;
+    match stdio::test() {
         Ok(()) => result = 0,
         Err(e) => result = e as i32,
     }
