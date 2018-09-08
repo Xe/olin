@@ -1,6 +1,8 @@
 package cwa
 
 import (
+	"bytes"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -18,6 +20,10 @@ func NewProcess(name string, argv []string, env map[string]string) *Process {
 		env:    env,
 		argv:   argv,
 		files:  map[int32]abi.File{},
+
+		Stdin:  bytes.NewBuffer(nil),
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
 	}
 }
 
@@ -32,6 +38,9 @@ type Process struct {
 	vm     *exec.VirtualMachine
 	argv   []string
 	files  map[int32]abi.File
+
+	Stdin          io.Reader
+	Stdout, Stderr io.Writer
 }
 
 // Name returns this process' name.
@@ -227,6 +236,24 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 				p.SetVM(vm)
 
 				return p.timeNow()
+			}
+		case "io_get_stdin":
+			return func(vm *exec.VirtualMachine) int64 {
+				p.SetVM(vm)
+
+				return int64(p.ioGetStdin())
+			}
+		case "io_get_stdout":
+			return func(vm *exec.VirtualMachine) int64 {
+				p.SetVM(vm)
+
+				return int64(p.ioGetStdout())
+			}
+		case "io_get_stderr":
+			return func(vm *exec.VirtualMachine) int64 {
+				p.SetVM(vm)
+
+				return int64(p.ioGetStderr())
 			}
 		default:
 			log.Panicf("unknown import %s::%s", module, field)
