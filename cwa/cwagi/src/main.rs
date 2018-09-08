@@ -35,7 +35,6 @@ pub fn friendly_main() -> Result<(), i32> {
     let method = getenv("REQUEST_METHOD").unwrap();
     let request_uri = getenv("REQUEST_URI").unwrap();
 
-    log::info("getting stdio");
     let fin = stdio::inp();
     let mut fout = stdio::out();
 
@@ -45,19 +44,17 @@ pub fn friendly_main() -> Result<(), i32> {
         body: fin,
     };
 
-    log::info("built request");
-
     let resp: Response = respond_to(ctx);
     let set: std::vec::Vec<u8> = serialize(resp);
 
     let len = fout.write(set.as_slice()).map_err(|e| {
-        libcwa::log::error(&format!("can't write resulting response: {:?}", e));
+        log::error(&format!("can't write resulting response: {:?}", e));
         1
     }).unwrap();
 
     if len != set.len() {
-        libcwa::log::warning("wasn't able to write entire response");
-        libcwa::log::warning(&format!("wanted: {}, got: {}", set.len(), len));
+        log::warning("wasn't able to write entire response");
+        log::warning(&format!("wanted: {}, got: {}", set.len(), len));
     }
 
     Ok(())

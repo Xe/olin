@@ -43,6 +43,10 @@ type Process struct {
 	Stdout, Stderr io.Writer
 }
 
+// Setenv updates a process' environment. This does not inform the process. It
+// is up to the running process to detect these values have changed.
+func (p *Process) Setenv(m map[string]string) { p.env = m }
+
 // Name returns this process' name.
 func (p *Process) Name() string { return p.name }
 
