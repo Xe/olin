@@ -5,4 +5,3 @@ authors = ["Christine Dodrill <me@christine.website>"]
 
 [dependencies]
 libcwa = { path = "../libcwa" }
-http = "0.1"
