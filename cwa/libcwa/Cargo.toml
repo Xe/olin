@@ -9,3 +9,4 @@ repository = "https://github.com/Xe/olin"
 homepage = "https://github.com/Xe/olin"
 
 [dependencies]
+chrono = "0.4"

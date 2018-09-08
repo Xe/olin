@@ -24,6 +24,8 @@ pub mod sys {
         pub fn resource_write(id: i32, data_ptr: *const u8, data_len: usize) -> i32;
         pub fn resource_close(id: i32);
         pub fn resource_flush(id: i32) -> i32;
+
+        pub fn time_now() -> i64;
     }
 }
 
@@ -265,5 +267,19 @@ impl Write for Resource {
         return Err(err::check_io(ret)
                    .map_err(io::Error::from)
                    .unwrap_err());
+    }
+}
+
+pub mod time {
+    extern crate chrono;
+
+    use time::chrono::TimeZone;
+
+    pub fn now() -> chrono::DateTime<chrono::Utc> {
+        return chrono::Utc.timestamp(ts(), 0);
+    }
+
+    pub fn ts() -> i64 {
+        unsafe { ::sys::time_now() }
     }
 }
