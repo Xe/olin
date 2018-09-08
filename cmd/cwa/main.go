@@ -38,7 +38,6 @@ func main() {
 	}
 
 	fname := argv[0]
-	argv = argv[1:]
 
 	data, err := ioutil.ReadFile(fname)
 	if err != nil {
