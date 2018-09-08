@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -47,6 +48,8 @@ func main() {
 	p := cwa.NewProcess(fname, argv, map[string]string{
 		"MAGIC_CONCH": "yes",
 	})
+
+	p.Stdin = bytes.NewBuffer([]byte("cwa test environment"))
 
 	cfg := exec.VMConfig{
 		EnableJIT:          *jitEnabled,
