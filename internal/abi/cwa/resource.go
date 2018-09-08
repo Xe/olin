@@ -94,3 +94,18 @@ func (p *Process) close(fid int32) error {
 
 	return nil
 }
+
+func (p *Process) flush(fid int32) error {
+	f, ok := p.files[fid]
+	if !ok {
+		return InvalidArgumentError
+	}
+
+	err := f.Sync()
+	if err != nil {
+		p.logger.Printf("flush error for fid %d (%s): %v", fid, f.Name(), err)
+		return UnknownError
+	}
+
+	return nil
+}
