@@ -56,6 +56,8 @@ func (p *Process) write(fid int32, dataPtr, dataLen uint32) (int32, error) {
 		return 0, InvalidArgumentError
 	}
 
+	p.logger.Printf("writing %d bytes to %d (%s)", dataLen, fid, f.Name())
+
 	n, err := f.Write(mem)
 	if err != nil {
 		p.logger.Printf("write error for fid %d (%s): %v", fid, f.Name(), err)
@@ -70,6 +72,8 @@ func (p *Process) read(fid int32, dataPtr, dataLen uint32) (int32, error) {
 	if !ok {
 		return 0, InvalidArgumentError
 	}
+
+	p.logger.Printf("reading %d bytes from %d (%s)", dataLen, fid, f.Name())
 
 	outp := make([]byte, int(dataLen))
 	n, err := f.Read(outp)

@@ -40,6 +40,8 @@ pub fn test() -> Result<(), i32> {
         1
     });
 
+    log::warning(&format!("{:?}", resp_data));
+
     log::info("parsing response");
     let mut headers = [httparse::EMPTY_HEADER; 16];
     let mut resp = httparse::Response::new(&mut headers);
@@ -47,6 +49,10 @@ pub fn test() -> Result<(), i32> {
         log::error(&format!("can't parse response: {:?}", e));
         1
     });
+
+    log::info(
+        &format!("version: {:?}, code: {:?}, reason: {:?}",
+                 resp.version, resp.code, resp.reason));
 
     log::info("HTTP tests passed");
     Ok(())

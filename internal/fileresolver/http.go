@@ -3,6 +3,7 @@ package fileresolver
 import (
 	"bufio"
 	"bytes"
+	"log"
 	"net/http"
 	"net/url"
 
@@ -82,6 +83,8 @@ func (h *httpFile) Flush() error {
 	if err != nil {
 		return err
 	}
+
+	log.Printf("%s: %d bytes waiting in resp", h.u, h.resp.Len())
 
 	return nil
 }
