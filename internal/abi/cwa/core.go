@@ -21,7 +21,7 @@ func NewProcess(name string, argv []string, env map[string]string) *Process {
 		argv:   argv,
 		files:  map[int32]abi.File{},
 
-		Stdin:  bytes.NewBuffer(nil),
+		Stdin:  bytes.NewBuffer([]byte("")),
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
 	}
