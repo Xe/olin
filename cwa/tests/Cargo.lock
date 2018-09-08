@@ -2,10 +2,18 @@
 name = "cwa-tests"
 version = "0.1.0"
 dependencies = [
+ "httparse 1.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "libcwa 0.1.0",
 ]
+
+[[package]]
+name = "httparse"
+version = "1.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "libcwa"
 version = "0.1.0"
 
+[metadata]
+"checksum httparse 1.3.2 (registry+https://github.com/rust-lang/crates.io-index)" = "7b6288d7db100340ca12873fd4d08ad1b8f206a9457798dfb17c018a33fee540"

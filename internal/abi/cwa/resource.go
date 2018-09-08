@@ -31,6 +31,13 @@ func (p *Process) open(urlPtr, urlLen uint32) (int32, error) {
 		file = fileresolver.Null()
 	case "zero":
 		file = fileresolver.Zero()
+	case "http", "https":
+		var err error
+		file, err = fileresolver.HTTP(p.hc, uu)
+		if err != nil {
+			p.logger.Printf("can't resource_open(%q): %v", u, err)
+			return 0, UnknownError
+		}
 	default:
 		return 0, NotFoundError
 	}
@@ -49,6 +56,8 @@ func (p *Process) write(fid int32, dataPtr, dataLen uint32) (int32, error) {
 		return 0, InvalidArgumentError
 	}
 
+	p.logger.Printf("writing %d bytes to %d (%s)", dataLen, fid, f.Name())
+
 	n, err := f.Write(mem)
 	if err != nil {
 		p.logger.Printf("write error for fid %d (%s): %v", fid, f.Name(), err)
@@ -63,6 +72,8 @@ func (p *Process) read(fid int32, dataPtr, dataLen uint32) (int32, error) {
 	if !ok {
 		return 0, InvalidArgumentError
 	}
+
+	p.logger.Printf("reading %d bytes from %d (%s)", dataLen, fid, f.Name())
 
 	outp := make([]byte, int(dataLen))
 	n, err := f.Read(outp)
