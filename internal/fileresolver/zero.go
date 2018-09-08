@@ -12,7 +12,7 @@ func Zero() abi.File {
 type zeroFile struct{}
 
 func (zeroFile) Write(p []byte) (int, error) { return len(p), nil }
-func (zeroFile) Sync() error                 { return nil }
+func (zeroFile) Flush() error                { return nil }
 func (zeroFile) Close() error                { return nil }
 func (zeroFile) Name() string                { return "zero" }
 

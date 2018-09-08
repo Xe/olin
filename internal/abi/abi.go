@@ -33,8 +33,8 @@ type File interface {
 	io.Writer
 	Namer
 
-	// Sync isn't required for all backends, but it is used for some, such as HTTP.
-	Sync() error
+	// Flush isn't required for all backends, but it is used for some, such as HTTP.
+	Flush() error
 }
 
 // FileOpener opens a given file by URL.

@@ -27,6 +27,6 @@ func TestNull(t *testing.T) {
 		assert(fmt.Errorf("wanted n to be 0, got: %d", n))
 	}
 
-	assert(nu.Sync())
+	assert(nu.Flush())
 	assert(nu.Close())
 }

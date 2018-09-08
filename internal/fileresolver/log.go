@@ -25,7 +25,7 @@ type logFile struct {
 }
 
 func (logFile) Read(p []byte) (int, error) { return 0, nil }
-func (logFile) Sync() error                { return nil }
+func (logFile) Flush() error               { return nil }
 func (logFile) Close() error               { return nil }
 func (l logFile) Name() string             { return l.prefix }
 

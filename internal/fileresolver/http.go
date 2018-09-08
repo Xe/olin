@@ -17,7 +17,7 @@ import (
 // To use this file:
 //
 //    - write your request body to the file
-//    - sync the file (this blocks for the duration of the HTTP request)
+//    - flush the file (this blocks for the duration of the HTTP request)
 //    - read the response body from the file
 //    - close the file when you are done reading the response
 //
@@ -55,7 +55,7 @@ func (h *httpFile) Read(p []byte) (int, error) {
 	return h.resp.Read(p)
 }
 
-func (h *httpFile) Sync() error {
+func (h *httpFile) Flush() error {
 	buf := bufio.NewReader(h.req)
 	mreq, err := http.ReadRequest(buf)
 	if err != nil {

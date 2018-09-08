@@ -87,7 +87,7 @@ func (p *Process) WriteFD(fd int64, data []byte) int64 {
 
 // SyncFD runs a file's sync operation and returns -1 if it failed.
 func (p *Process) SyncFD(fd int64) int64 {
-	err := p.files[fd].Sync()
+	err := p.files[fd].Flush()
 	if err != nil {
 		log.Printf("%s: Sync(%d) %v", p.name, fd, err)
 		return -1

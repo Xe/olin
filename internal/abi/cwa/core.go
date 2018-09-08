@@ -205,6 +205,20 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 
 				return 0
 			}
+		case "resource_flush":
+			return func(vm *exec.VirtualMachine) int64 {
+				p.SetVM(vm)
+
+				f := vm.GetCurrentFrame()
+				fid := int32(f.Locals[0])
+
+				err := p.flush(fid)
+				if err != nil {
+					return int64(ErrorCode(err))
+				}
+
+				return 0
+			}
 		default:
 			log.Panicf("unknown import %s::%s", module, field)
 		}

@@ -36,7 +36,7 @@ func TestHTTP(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = f.Sync()
+	err = f.Flush()
 	if err != nil {
 		t.Fatal(err)
 	}

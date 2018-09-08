@@ -108,6 +108,7 @@ pub extern "C" fn friendly_main() -> Result<(), i32> {
         if let Err(err) = res {
             log::error("can't read zeroes from zero file");
             log::error(&format!("error: {}", err));
+            return Err(1);
         }
 
         log::info("verifying all zeroes are valid");
@@ -118,6 +119,12 @@ pub extern "C" fn friendly_main() -> Result<(), i32> {
                 return Err(1);
             }
         }
+
+        log::info("flushing zero file");
+        fout.flush().map_err(|e| {
+            log::error(&format!("error: {:?}", e));
+            1
+        })?;
     }
     log::info("closed file");
 

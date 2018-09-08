@@ -27,6 +27,6 @@ func TestZero(t *testing.T) {
 		assert(fmt.Errorf("wanted n to be len(val) (%d), got: %d", len(val), n))
 	}
 
-	assert(ze.Sync())
+	assert(ze.Flush())
 	assert(ze.Close())
 }
