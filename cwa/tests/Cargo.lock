@@ -1,0 +1,11 @@
+[[package]]
+name = "cwa-tests"
+version = "0.1.0"
+dependencies = [
+ "libcwa 0.1.0",
+]
+
+[[package]]
+name = "libcwa"
+version = "0.1.0"
+
