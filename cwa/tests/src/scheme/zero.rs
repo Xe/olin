@@ -23,6 +23,21 @@ pub extern "C" fn test() -> Result<(), i32> {
         1
     });
 
+    log::info("verifying all zeroes are valid");
+    for (x, val) in inp.iter().enumerate() {
+        let val: u8 = *val;
+        if val != 0 {
+            log::error(&format!("expected zeroes[{}] to be 0, got: {}", x, val));
+            return Err(1);
+        }
+    }
+
+    log::info("flushing zero file");
+    fout.flush().map_err(|e| {
+        log::error(&format!("error: {:?}", e));
+        1
+    })?;
+
     log::info("scheme::zero tests passed");
     Ok(())
 }

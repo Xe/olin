@@ -23,6 +23,12 @@ pub extern "C" fn test() -> Result<(), i32> {
         1
     });
 
+    log::info("flushing null file");
+    fout.flush().map_err(|e| {
+        log::error(&format!("error: {:?}", e));
+        1
+    })?;
+
     log::info("scheme::null tests passed");
     Ok(())
 }
