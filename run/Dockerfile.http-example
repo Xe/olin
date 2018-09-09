@@ -2,7 +2,7 @@ FROM xena/go:1.10 AS build
 RUN apk add --no-cache build-base
 COPY . /root/go/src/github.com/Xe/olin
 WORKDIR /root/go/src/github.com/Xe/olin
-RUN GOBIN=/ go install ./cmd/cwa-cgi
+RUN GOBIN=/ go install -tags heroku ./cmd/cwa-cgi
 
 FROM xena/alpine
 COPY ./run/run.sh /run.sh
