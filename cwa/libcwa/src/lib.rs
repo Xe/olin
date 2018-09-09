@@ -2,6 +2,9 @@
 
 use std::io::{self, Read, Write};
 
+#[macro_use]
+pub mod macros;
+
 pub mod panic;
 
 pub mod sys {
@@ -121,30 +124,44 @@ pub mod env {
         }
     }
 
-    pub fn get(key: &[u8]) -> Option<Vec<u8>> {
-        const INITIAL_CAPACITY: usize = 64;
-        let mut value = Vec::with_capacity(INITIAL_CAPACITY);
-        let ret = unsafe {
-            sys::env_get(
-                key.as_ptr(),
-                key.len(),
-                value.as_mut_ptr(),
-                INITIAL_CAPACITY,
-            )
-        };
-        match ret {
-            err::NOT_FOUND => None,
-            len if (len as usize) <= INITIAL_CAPACITY => {
-                unsafe { value.set_len(len as usize) };
-                Some(value)
+    /// Returns the environment variable associated with `key`.
+    /// If there is no environment variable with the specified key or the value is not valid
+    /// UTF-8, `None` is returned.
+    pub fn get(key: &str) -> Option<String> {
+        let key = key.as_bytes();
+        let mut current_len: usize = 32;
+        loop {
+            let mut val: Vec<u8> = Vec::with_capacity(current_len);
+            let real_len: i32;
+
+            unsafe {
+                val.set_len(current_len);
+                real_len = sys::env_get(
+                    slice_raw_ptr_or_null!(key),
+                    key.len(),
+                    slice_raw_ptr_or_null_mut!(&mut val),
+                    val.len()
+                );
             }
-            new_len => {
-                let new_len = new_len as usize;
-                value.reserve_exact(new_len - INITIAL_CAPACITY);
-                unsafe { sys::env_get(key.as_ptr(), key.len(), value.as_mut_ptr(), new_len) };
-                unsafe { value.set_len(new_len) };
-                Some(value)
+
+            if real_len < 0 {
+                return None;
             }
+
+            let real_len = real_len as usize;
+            if real_len > current_len {
+                current_len = real_len;
+                continue;
+            }
+
+            unsafe {
+                val.set_len(real_len);
+            }
+
+            return match String::from_utf8(val) {
+                Ok(v) => Some(v),
+                Err(_) => None
+            };
         }
     }
 }

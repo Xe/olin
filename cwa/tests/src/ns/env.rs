@@ -24,16 +24,14 @@ pub extern "C" fn test() -> Result<(), i32> {
     }
     log::info("passed");
 
-    /* TODO(Xe): re-enable when https://github.com/Xe/olin/issues/22 is fixed
     log::info("look for variable that does not exist");
-    match env::get("DOES_NOT_EXIST".as_bytes()){
+    match env::get("DOES_NOT_EXIST") {
         None => log::info("this does not exist! :D"),
         Some(_) => {
             log::error("DOES_NOT_EXIST exists");
             return Err(1);
         },
     }
-    */
 
     log::info("ns::env tests passed");
     Ok(())
