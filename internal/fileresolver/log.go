@@ -12,7 +12,11 @@ import (
 //
 // For more information, please see the spec here: https://github.com/CommonWA/cwa-spec/blob/master/schemes/log.md
 func Log(writer io.Writer, prefix string, flag int) abi.File {
-	l := log.New(writer, prefix+": ", flag)
+	lprefix := prefix
+	if prefix != "" {
+		lprefix += ": "
+	}
+	l := log.New(writer, lprefix, flag)
 	return logFile{
 		l:      l,
 		prefix: prefix,
