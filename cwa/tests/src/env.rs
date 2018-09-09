@@ -4,6 +4,7 @@ use libcwa::log;
 use libcwa::env;
 use std::str;
 
+/// This tests for https://github.com/CommonWA/cwa-spec/blob/master/ns/env.md
 pub extern "C" fn test() -> Result<(), i32> {
     log::info("running env tests");
 
