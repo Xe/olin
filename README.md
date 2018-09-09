@@ -7,6 +7,8 @@ event sourcing and webassembly under the hood. Your handler code shouldn't need
 to care that there is an event queue involved. Your handler should just do what
 your handler needs to do.
 
+To view Olin in action, click [here](https://olin-http-example.herokuapp.com/).
+
 ## Background
 
 Very frequently, I end up needing to write applications that basically end up
