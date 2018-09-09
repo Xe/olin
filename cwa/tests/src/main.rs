@@ -18,6 +18,7 @@ pub extern "C" fn cwa_main() -> i32 {
         scheme::http::test,
         scheme::log::test,
         scheme::null::test,
+        scheme::random::test,
         scheme::zero::test,
    ];
 
