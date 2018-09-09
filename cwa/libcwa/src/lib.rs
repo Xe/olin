@@ -30,6 +30,9 @@ pub mod sys {
         pub fn io_get_stdin() -> i32;
         pub fn io_get_stdout() -> i32;
         pub fn io_get_stderr() -> i32;
+
+        pub fn random_i32() -> i32;
+        pub fn random_i64() -> i64;
     }
 }
 
@@ -299,5 +302,15 @@ pub mod stdio {
 
     pub fn err() -> ::Resource {
         unsafe { ::Resource::from_raw(::sys::io_get_stderr()) }
+    }
+}
+
+pub mod random {
+    pub fn i31() -> i32 {
+        unsafe { ::sys::random_i32() }
+    }
+
+    pub fn i63() -> i64 {
+        unsafe { ::sys::random_i64() }
     }
 }
