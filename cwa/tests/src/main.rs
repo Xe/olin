@@ -3,6 +3,7 @@
 extern crate libcwa;
 
 mod ns;
+mod regression;
 mod scheme;
 
 #[no_mangle]
@@ -17,6 +18,7 @@ pub extern "C" fn cwa_main() -> i32 {
         ns::startup::test,
         ns::stdio::test,
         ns::time::test,
+        regression::issue22::test,
         scheme::http::test,
         scheme::log::test,
         scheme::null::test,
