@@ -2,6 +2,7 @@ extern crate libcwa;
 
 use libcwa::env;
 use libcwa::log;
+use libcwa::startup;
 use libcwa::stdio;
 use libcwa::runtime;
 use std::io::Write;
@@ -72,22 +73,48 @@ fn getenv(name: &str) -> Option<String> {
     Some(result)
 }
 
-fn runtime_info(_ctx: Context) -> Response {
+fn runtime_info(ctx: Context) -> Response {
     let mut result = String::new();
-    result.push_str("Hello, I am served from Rust compiled to wasm32-unknown-unknown.\n");
+    result.push_str("Hello, I am served from Rust compiled to wasm32-unknown-unknown.\n\n");
     result.push_str("I know the following about the environment I am running in:\n");
 
     let minor: i32 = runtime::spec_major();
     let major: i32 = runtime::spec_major();
     let rt_name: String = runtime::name();
 
-    result.push_str(&format!("I am running in {}, which implements version {}.{} of the CommonWebAssembly API.\n", rt_name, major, minor));
+    result.push_str(&format!(" - I am running in {}, which implements version {}.{} of the CommonWebAssembly API.\n", rt_name, major, minor));
 
-    result.push_str(&format!("I think the current time is {}\n", libcwa::time::now()));
+    result.push_str(&format!(" - I think the current time is {}\n", libcwa::time::now()));
 
-    result.push_str(&format!("RUN_ID: {:?}, WORKER_ID: {:?}\n", getenv("RUN_ID"), getenv("WORKER_ID")));
+    result.push_str(&format!(" - RUN_ID: {:?}\n - WORKER_ID: {:?}\n", getenv("RUN_ID"), getenv("WORKER_ID")));
+    result.push_str(&format!(" - Method: {}\n - Request URI: {}\n", ctx.method, ctx.request_uri));
 
-    result.push_str("\nHere is my source code: https://github.com/Xe/olin/blob/master/cwa/cwagi/src/main.rs");
+    let argc: i32 = startup::arg_len();
+
+    result.push_str(&format!(" - argc: {}\n", argc));
+
+    for x in 0..argc {
+        let mut arg_val = [0u8; 64];
+        let arg = startup::arg_at_buf(x, &mut arg_val).ok_or_else(|| {
+            log::error(&format!("arg {} missing", x));
+            panic!("arg missing");
+        }).unwrap();
+        result.push_str(&format!(" - arg {}: {}\n", x, arg));
+    }
+
+    result.push_str("\nHere is my source code: https://github.com/Xe/olin/blob/master/cwa/cwagi/src/main.rs\n\n");
+
+    result.push_str("If you would like to learn more about this project, please \ntake a look at the following links:\n");
+    result.push_str(" - https://github.com/Xe/olin\n");
+    result.push_str(" - https://christine.website/blog/olin-1-why-09-1-2018\n");
+    result.push_str(" - https://christine.website/blog/olin-2-the-future-09-5-2018\n\n");
+
+    result.push_str("If you know of a Rust HTTP library that lets users hijack\n");
+    result.push_str("the transport layer (and can offer code examples, please, I'm\n");
+    result.push_str("still new to Rust) so that it could be adapted to Olin's\n");
+    result.push_str("native HTTP support, here is its test: https://github.com/Xe/olin/blob/master/cwa/tests/src/scheme/http.rs\n\n");
+
+    result.push_str("Have a good day and be well, creator.");
 
     Response {
         status: 200,

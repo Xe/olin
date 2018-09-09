@@ -100,7 +100,9 @@ func (vp *VMPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		log.Printf("work: %d, vms: %d", vpWorkLen, vpVmsLen)
 
 		if vpWorkLen > vpVmsLen {
-			vp.createVM()
+			if vpVmsLen > vp.maxSize {
+				vp.createVM()
+			}
 		}
 	}
 
