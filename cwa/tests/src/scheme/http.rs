@@ -2,9 +2,12 @@ extern crate libcwa;
 extern crate httparse;
 
 use libcwa::*;
-use std::io::{self, Read, Write};
+use libcwa::Resource;
+use std::io::{Read, Write};
 
-pub fn test() -> Result<(), i32> {
+pub extern "C" fn test() -> Result<(), i32> {
+    log::info("running scheme::http tests");
+
     let reqd = "GET /404 HTTP/1.1\r\nHost: printerfacts.herokuapp.com\r\nUser-Agent: Bit-banging it in rust\r\n\r\n";
     let mut headers = [httparse::EMPTY_HEADER; 16];
     let mut req = httparse::Request::new(&mut headers);
@@ -52,6 +55,6 @@ pub fn test() -> Result<(), i32> {
         &format!("version: {:?}, code: {:?}, reason: {:?}",
                  resp.version, resp.code, resp.reason));
 
-    log::info("HTTP tests passed");
+    log::info("scheme::http tests passed");
     Ok(())
 }

@@ -1,9 +1,11 @@
 extern crate libcwa;
 
-use libcwa::*;
-use std::io::{self, Read, Write};
+use libcwa::{log, stdio};
+use std::io::{Read, Write};
 
-pub fn test() -> Result<(), i32> {
+pub extern "C" fn test() -> Result<(), i32> {
+    log::info("running ns::stdio tests");
+
     log::info("stdout");
     {
         let mut fout = stdio::out();
@@ -32,6 +34,6 @@ pub fn test() -> Result<(), i32> {
         });
     }
 
-    log::info("stdio tests passed");
+    log::info("ns::stdio tests passed");
     Ok(())
 }
