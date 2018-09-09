@@ -15,7 +15,7 @@ func TestLog(t *testing.T) {
 	}
 
 	buf := bytes.NewBuffer(nil)
-	lf := Log(buf, "fun: ", 0)
+	lf := Log(buf, "fun", 0)
 
 	val := []byte("looking forward to the weekend")
 	n, err := lf.Write(val)
