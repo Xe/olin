@@ -16,7 +16,7 @@ import (
 	"github.com/Xe/ln"
 	"github.com/Xe/ln/opname"
 	"github.com/Xe/olin/internal/abi/cwa"
-	"github.com/google/uuid"
+	"github.com/pborman/uuid"
 	"github.com/perlin-network/life/exec"
 )
 
@@ -37,7 +37,6 @@ func (v *vmServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	runID := uuid.New()
 
 	f := ln.F{
-		"gas_limit":    *gas,
 		"main_func":    v.mainFunc,
 		"process_name": v.p.Name(),
 		"run_id":       runID,
@@ -54,10 +53,11 @@ func (v *vmServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		"REQUEST_URI":    r.RequestURI,
 		"QUERY_STRING":   r.URL.Query().Encode(),
 		"RUN_ID":         runID,
+		"WORKER_ID":      uuid.New(),
 	})
 
 	t0 := time.Now()
-	ret, err := v.vm.RunWithGasLimit(v.mainFunc, *gas)
+	ret, err := v.vm.Run(v.mainFunc)
 	if err != nil {
 		http.Error(w, "internal server error: VM error, run ID: "+runID, http.StatusInternalServerError)
 		go func() {

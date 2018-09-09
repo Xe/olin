@@ -85,6 +85,8 @@ fn runtime_info(_ctx: Context) -> Response {
 
     result.push_str(&format!("I think the current time is {}\n", libcwa::time::now()));
 
+    result.push_str(&format!("RUN_ID: {:?}, WORKER_ID: {:?}\n", getenv("RUN_ID"), getenv("WORKER_ID")));
+
     result.push_str("\nHere is my source code: https://github.com/Xe/olin/blob/master/cwa/cwagi/src/main.rs");
 
     Response {
