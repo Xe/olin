@@ -78,7 +78,7 @@ fn runtime_info(ctx: Context) -> Response {
     result.push_str("Hello, I am served from Rust compiled to wasm32-unknown-unknown.\n\n");
     result.push_str("I know the following about the environment I am running in:\n");
 
-    let minor: i32 = runtime::spec_major();
+    let minor: i32 = runtime::spec_minor();
     let major: i32 = runtime::spec_major();
     let rt_name: String = runtime::name();
 
