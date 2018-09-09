@@ -9,6 +9,7 @@ mod scheme;
 pub extern "C" fn cwa_main() -> i32 {
     let funcs = [
         ns::env::test,
+        ns::random::test,
         ns::resource::test,
         ns::runtime::test,
         ns::startup::test,
@@ -18,7 +19,7 @@ pub extern "C" fn cwa_main() -> i32 {
         scheme::log::test,
         scheme::null::test,
         scheme::zero::test,
-    ];
+   ];
 
     for x in 0..funcs.len() {
         match funcs[x]() {
