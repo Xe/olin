@@ -23,10 +23,9 @@ func (p *Process) open(urlPtr, urlLen uint32) (int32, error) {
 	switch uu.Scheme {
 	case "log":
 		prefix := q.Get("prefix")
-		if prefix != "" {
-			prefix = prefix + ": "
-		}
 		file = fileresolver.Log(os.Stdout, p.name+": "+prefix, log.LstdFlags)
+	case "random":
+		file = fileresolver.Random()
 	case "null":
 		file = fileresolver.Null()
 	case "zero":

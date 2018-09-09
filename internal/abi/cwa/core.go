@@ -259,6 +259,18 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 
 				return int64(p.ioGetStderr())
 			}
+		case "random_i32":
+			return func(vm *exec.VirtualMachine) int64 {
+				p.SetVM(vm)
+
+				return int64(p.randI32())
+			}
+		case "random_i64":
+			return func(vm *exec.VirtualMachine) int64 {
+				p.SetVM(vm)
+
+				return p.randI64()
+			}
 		default:
 			log.Panicf("unknown import %s::%s", module, field)
 		}
