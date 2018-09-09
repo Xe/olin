@@ -1,14 +1,4 @@
 #[macro_export]
-macro_rules! main {
-    ($body:block) => {
-        #[no_mangle]
-        pub extern "C" fn cwa_main() -> i32 {
-            { $body }
-        }
-    }
-}
-
-#[macro_export]
 macro_rules! slice_raw_ptr_or_null {
     ($t:expr) => {
         if $t.len() == 0 {
