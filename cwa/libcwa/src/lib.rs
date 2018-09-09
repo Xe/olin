@@ -153,7 +153,7 @@ pub mod runtime {
     pub fn spec_major() -> i32 {
         unsafe { sys::runtime_spec_major() }
     }
-    pub fn runtime_spec_minor() -> i32 {
+    pub fn spec_minor() -> i32 {
         unsafe { sys::runtime_spec_minor() }
     }
 
