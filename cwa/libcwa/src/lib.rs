@@ -2,6 +2,8 @@
 
 use std::io::{self, Read, Write};
 
+mod http;
+
 pub mod sys {
     extern {
         pub fn log_write(level: i32, text_ptr: *const u8, text_len: usize);
@@ -37,7 +39,9 @@ pub mod sys {
 }
 
 mod err {
+    use std::error::Error as STDError;
     use std::io;
+    use std::fmt;
 
     pub const UNKNOWN: i32 = -1;
     pub const INVALID_ARGUMENT: i32 = -2;
@@ -45,7 +49,7 @@ mod err {
     pub const NOT_FOUND: i32 = -4;
 
     #[repr(i32)]
-    #[derive(Debug)]
+    #[derive(Clone, Debug)]
     pub enum Error {
         Unknown = UNKNOWN,
         InvalidArgument = INVALID_ARGUMENT,
@@ -63,6 +67,23 @@ mod err {
             }
         }
     }
+
+    impl self::fmt::Display for self::Error {
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            let val = self.clone() as i32;
+            match Error::check(/*ur*/val) /* before u reck urself */ {
+                Ok(_) => write!(f, "this is not an error: {:?}", self),
+                Err(ref e) => write!(f, "{:?}", e),
+            }
+        }
+    }
+
+    impl self::STDError for self::Error {
+        fn cause(&self) -> Option<&STDError> {
+            None
+        }
+    }
+
     pub fn check_io(error: i32) -> Result<i32, io::ErrorKind> {
         match error {
             n if n >= 0 => Ok(n),
