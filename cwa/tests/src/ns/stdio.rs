@@ -4,7 +4,7 @@ use libcwa::{log, stdio};
 use std::io::{Read, Write};
 
 pub extern "C" fn test() -> Result<(), i32> {
-    log::info("running stdio tests");
+    log::info("running ns::stdio tests");
 
     log::info("stdout");
     {
@@ -34,6 +34,6 @@ pub extern "C" fn test() -> Result<(), i32> {
         });
     }
 
-    log::info("stdio tests passed");
+    log::info("ns::stdio tests passed");
     Ok(())
 }

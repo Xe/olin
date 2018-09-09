@@ -6,7 +6,7 @@ use std::str;
 
 /// This tests for https://github.com/CommonWA/cwa-spec/blob/master/ns/env.md
 pub extern "C" fn test() -> Result<(), i32> {
-    log::info("running env tests");
+    log::info("running ns::env tests");
 
     log::info("env[\"MAGIC_CONCH\"] = \"yes\"");
     let envvar_name = "MAGIC_CONCH";
@@ -35,6 +35,6 @@ pub extern "C" fn test() -> Result<(), i32> {
     }
     */
 
-    log::info("env tests passed");
+    log::info("ns::env tests passed");
     Ok(())
 }

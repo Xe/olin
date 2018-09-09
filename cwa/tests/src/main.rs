@@ -2,24 +2,19 @@
 
 extern crate libcwa;
 
-mod env;
 mod http;
-mod time;
-mod resource;
-mod runtime;
-mod startup;
-mod stdio;
+mod ns;
 
 #[no_mangle]
 pub extern "C" fn cwa_main() -> i32 {
     let funcs = [
-        env::test,
+        ns::env::test,
+        ns::resource::test,
+        ns::runtime::test,
+        ns::startup::test,
+        ns::stdio::test,
+        ns::time::test,
         http::test,
-        time::test,
-        resource::test,
-        runtime::test,
-        startup::test,
-        stdio::test,
     ];
 
     for x in 0..funcs.len() {

@@ -4,7 +4,7 @@ use libcwa::{log, runtime};
 
 /// This tests for https://github.com/CommonWA/cwa-spec/blob/master/ns/runtime.md
 pub extern "C" fn test() -> Result<(), i32> {
-    log::info("running runtime tests");
+    log::info("running ns::runtime tests");
 
     log::info("expecting spec major=0 and min=0");
     let minor: i32 = runtime::spec_major();
@@ -37,6 +37,6 @@ pub extern "C" fn test() -> Result<(), i32> {
     runtime::msleep(1);
     log::info("passed");
 
-    log::info("runtime tests passed");
+    log::info("ns::runtime tests passed");
     Ok(())
 }

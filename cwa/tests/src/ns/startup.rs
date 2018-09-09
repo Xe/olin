@@ -4,7 +4,7 @@ use libcwa::{log, startup};
 
 /// This tests for https://github.com/CommonWA/cwa-spec/blob/master/ns/startup.md
 pub extern "C" fn test() -> Result<(), i32> {
-    log::info("running startup tests");
+    log::info("running ns::startup tests");
 
     log::info("checking argc/argv");
     let argc: i32 = startup::arg_len();
@@ -20,5 +20,6 @@ pub extern "C" fn test() -> Result<(), i32> {
     }
     log::info("passed");
 
+    log::info("ns::startup tests passed");
     Ok(())
 }

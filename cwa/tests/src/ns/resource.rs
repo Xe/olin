@@ -5,7 +5,7 @@ use libcwa::{log, Resource};
 
 /// This tests for https://github.com/CommonWA/cwa-spec/blob/master/ns/runtime.md
 pub extern "C" fn test() -> Result<(), i32> {
-    log::info("running resource tests");
+    log::info("running ns::resource tests");
 
     log::info("trying to open a log:// file");
     {
@@ -56,6 +56,6 @@ pub extern "C" fn test() -> Result<(), i32> {
     }
     log::info("closed file");
 
-    log::info("resource tests passed");
+    log::info("ns::resource tests passed");
     Ok(())
 }
