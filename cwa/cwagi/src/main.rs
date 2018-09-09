@@ -12,6 +12,8 @@ fn main() {}
 
 #[no_mangle]
 pub extern "C" fn cwa_main() -> i32 {
+    libcwa::panic::set_hook();
+
     match friendly_main() {
         Ok(()) => 0,
         Err(e) => e as i32,

@@ -7,6 +7,8 @@ mod scheme;
 
 #[no_mangle]
 pub extern "C" fn cwa_main() -> i32 {
+    libcwa::panic::set_hook();
+
     let funcs = [
         ns::env::test,
         ns::random::test,

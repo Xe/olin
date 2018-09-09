@@ -2,6 +2,8 @@
 
 use std::io::{self, Read, Write};
 
+pub mod panic;
+
 pub mod sys {
     extern {
         pub fn log_write(level: i32, text_ptr: *const u8, text_len: usize);
