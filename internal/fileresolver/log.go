@@ -12,7 +12,7 @@ import (
 //
 // For more information, please see the spec here: https://github.com/CommonWA/cwa-spec/blob/master/schemes/log.md
 func Log(writer io.Writer, prefix string, flag int) abi.File {
-	l := log.New(writer, prefix, flag)
+	l := log.New(writer, prefix+": ", flag)
 	return logFile{
 		l:      l,
 		prefix: prefix,
@@ -27,7 +27,7 @@ type logFile struct {
 func (logFile) Read(p []byte) (int, error) { return 0, nil }
 func (logFile) Flush() error               { return nil }
 func (logFile) Close() error               { return nil }
-func (l logFile) Name() string             { return l.prefix }
+func (l logFile) Name() string             { return "log " + l.prefix }
 
 func (l logFile) Write(p []byte) (int, error) {
 	res := len(string(p))
