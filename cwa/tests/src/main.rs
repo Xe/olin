@@ -1,3 +1,7 @@
+#![allow(unused_must_use)]
+
+extern crate libcwa;
+
 mod env;
 mod http;
 mod time;

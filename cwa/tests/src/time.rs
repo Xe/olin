@@ -2,7 +2,7 @@ extern crate chrono;
 extern crate libcwa;
 
 use time::chrono::TimeZone;
-use self::libcwa::*;
+use libcwa::{log, time};
 
 /// This tests for https://github.com/CommonWA/cwa-spec/blob/master/ns/time.md
 pub extern "C" fn test() -> Result<(), i32> {

@@ -1,9 +1,9 @@
 extern crate libcwa;
 extern crate httparse;
 
-use self::libcwa::*;
-use self::libcwa::Resource;
-use std::io::{self, Read, Write};
+use libcwa::*;
+use libcwa::Resource;
+use std::io::{Read, Write};
 
 pub extern "C" fn test() -> Result<(), i32> {
     log::info("running HTTP tests");

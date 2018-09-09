@@ -1,8 +1,7 @@
 extern crate libcwa;
 
-use self::libcwa::log;
-use self::libcwa::env;
-
+use libcwa::log;
+use libcwa::env;
 use std::str;
 
 pub extern "C" fn test() -> Result<(), i32> {
@@ -10,7 +9,6 @@ pub extern "C" fn test() -> Result<(), i32> {
 
     log::info("env[\"MAGIC_CONCH\"] = \"yes\"");
     let envvar_name = "MAGIC_CONCH";
-    let res: i32;
     let mut envvar_val = [0u8; 64];
     let envvar_val = env::get_buf(envvar_name.as_bytes(), &mut envvar_val)
         .map(|s| str::from_utf8(s).expect("envvar wasn't UTF-8"))
