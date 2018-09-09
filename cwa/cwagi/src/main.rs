@@ -4,7 +4,7 @@ use libcwa::env;
 use libcwa::log;
 use libcwa::stdio;
 use libcwa::runtime;
-use std::io::{Read, Write};
+use std::io::Write;
 use std::string::String;
 
 fn main() {}
@@ -74,7 +74,7 @@ fn getenv(name: &str) -> Option<String> {
     Some(result)
 }
 
-fn runtime_info(ctx: Context) -> Response {
+fn runtime_info(_ctx: Context) -> Response {
     let mut result = String::new();
     result.push_str("Hello, I am served from Rust compiled to wasm32-unknown-unknown.\n");
     result.push_str("I know the following about the environment I am running in:\n");
@@ -97,9 +97,8 @@ fn runtime_info(ctx: Context) -> Response {
 
 fn respond_to(ctx: Context) -> Response {
     match ctx.request_uri.as_str() {
-        "/runtime" => runtime_info(ctx),
-        "/cadey"   => Response { status: 200, body: "you are awesome!, try /runtime".to_owned() },
-        _          => Response { status: 404, body: "try /cadey".to_owned() }
+        "/cadey" => Response { status: 200, body: "you are awesome!".to_owned() },
+        _        => runtime_info(ctx),
     }
 }
 
