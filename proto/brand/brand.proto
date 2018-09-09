@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package within.olin.brand;
+option go_package = "brand";
+
+enum Kind {
+     UNKNOWN = 0;
+     CWAGI = 1;
+     DAEMON = 2;
+     INTERACTIVE = 3;
+}
+
+message Brand {
+        VMOptions opts = 1;
+        Metadata meta = 2;
+}
+
+message VMOptions {
+        bool enable_jit = 1;
+        int32 default_pages = 2; // each page is 64k, don't hurt yourself
+        int32 max_pages = 3; // 0 for no limit
+        string main_func = 4; // normally "cwa_main"
+}
+
+message Metadata {
+        string expected_runtime = 1;
+        Kind binary_kind = 2;
+        string author = 3;
+        string name = 4;
+}
