@@ -56,8 +56,8 @@ func main() {
 	mux := http.NewServeMux()
 	mux.Handle("/", vp)
 	mux.Handle("/expvar", expvar.Handler())
-	mux.HandleFunc("/killall", func(w http.ResponseWriter, r *http.Request) {
-		vp.Close()
+	mux.HandleFunc("/reboot", func(w http.ResponseWriter, r *http.Request) {
+		os.Exit(0)
 	})
 
 	ln.Log(opname.With(ctx, "listenAndServe"), f)
