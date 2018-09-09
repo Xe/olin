@@ -1,6 +1,6 @@
-extern crate libcwa;
+extern crate olin;
 
-use libcwa::{env, log};
+use olin::{env, log};
 
 pub extern "C" fn test() -> Result<(), i32> {
     log::info("testing for issue 22: https://github.com/Xe/olin/issues/22");

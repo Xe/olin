@@ -1,8 +1,8 @@
-extern crate libcwa;
+extern crate olin;
 extern crate httparse;
 
-use libcwa::*;
-use libcwa::Resource;
+use olin::*;
+use olin::Resource;
 use std::io::{Read, Write};
 
 pub extern "C" fn test() -> Result<(), i32> {

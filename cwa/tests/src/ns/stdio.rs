@@ -1,6 +1,6 @@
-extern crate libcwa;
+extern crate olin;
 
-use libcwa::{log, stdio};
+use olin::{log, stdio};
 use std::io::{Read, Write};
 
 pub extern "C" fn test() -> Result<(), i32> {

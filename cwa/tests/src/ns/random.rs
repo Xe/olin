@@ -1,6 +1,6 @@
-extern crate libcwa;
+extern crate olin;
 
-use libcwa::{log, random};
+use olin::{log, random};
 
 pub extern "C" fn test() -> Result<(), i32> {
     log::info("running ns::random tests");
