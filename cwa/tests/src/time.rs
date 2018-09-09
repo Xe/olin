@@ -2,10 +2,10 @@ extern crate chrono;
 extern crate libcwa;
 
 use time::chrono::TimeZone;
-use std::io;
-use libcwa::*;
+use self::libcwa::*;
 
-pub fn test() -> Result<(), i32> {
+/// This tests for https://github.com/CommonWA/cwa-spec/blob/master/ns/time.md
+pub extern "C" fn test() -> Result<(), i32> {
     let now: i64 = time::ts();
     let dt = chrono::Utc.timestamp(now, 0);
 
