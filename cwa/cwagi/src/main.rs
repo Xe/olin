@@ -11,8 +11,6 @@ fn main() {}
 
 #[no_mangle]
 pub extern "C" fn cwa_main() -> i32 {
-    log::info("booted");
-
     match friendly_main() {
         Ok(()) => 0,
         Err(e) => e as i32,
