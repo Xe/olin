@@ -3,6 +3,7 @@ extern crate libcwa;
 use std::io::Write;
 use libcwa::{log, Resource};
 
+/// This tests for https://github.com/CommonWA/cwa-spec/blob/master/schemes/log.md
 pub extern "C" fn test() -> Result<(), i32> {
     log::info("running scheme::log tests");
 
