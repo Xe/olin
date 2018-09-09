@@ -52,7 +52,6 @@ func (vp *VMPool) Close() error {
 
 	for _, mvm := range vp.vms {
 		mvm.cancel()
-		vp.vmCtr.Add(-1)
 	}
 
 	return nil
@@ -102,13 +101,6 @@ func (vp *VMPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		if vpWorkLen > vpVmsLen {
 			vp.createVM()
-		} else {
-			log.Printf("removing a VM")
-			vp.lock.Lock()
-			vm := vp.vms[0]
-			vm.cancel()
-			vp.vms = vp.vms[1:]
-			vp.lock.Unlock()
 		}
 	}
 
