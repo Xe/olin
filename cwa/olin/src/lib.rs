@@ -1,5 +1,3 @@
-#![allow(warnings)]
-
 use std::io::{self, Read, Write};
 
 #[macro_use]
@@ -8,7 +6,7 @@ pub mod macros;
 pub mod panic;
 
 pub mod sys {
-    extern {
+    extern "C" {
         pub fn log_write(level: i32, text_ptr: *const u8, text_len: usize);
         pub fn env_get(
             key_ptr: *const u8,
@@ -125,44 +123,33 @@ pub mod env {
     }
 
     /// Returns the environment variable associated with `key`.
-    /// If there is no environment variable with the specified key or the value is not valid
-    /// UTF-8, `None` is returned.
+    /// If there is no environment variable with the specified key, `None` is returned.
     pub fn get(key: &str) -> Option<String> {
-        let key = key.as_bytes();
-        let mut current_len: usize = 32;
-        loop {
-            let mut val: Vec<u8> = Vec::with_capacity(current_len);
-            let real_len: i32;
-
-            unsafe {
-                val.set_len(current_len);
-                real_len = sys::env_get(
-                    slice_raw_ptr_or_null!(key),
-                    key.len(),
-                    slice_raw_ptr_or_null_mut!(&mut val),
-                    val.len()
-                );
+        const INITIAL_CAPACITY: usize = 64;
+        let mut value = Vec::with_capacity(INITIAL_CAPACITY);
+        let ret = unsafe {
+            sys::env_get(
+                key.as_ptr(),
+                key.len(),
+                value.as_mut_ptr(),
+                INITIAL_CAPACITY,
+            )
+        };
+        // Olin guarantees that the CWA environment is UTF-8.
+        match ret {
+            err::NOT_FOUND => None,
+            len if (len as usize) <= INITIAL_CAPACITY => {
+                unsafe { value.set_len(len as usize) };
+                Some(value)
             }
-
-            if real_len < 0 {
-                return None;
+            new_len => {
+                let new_len = new_len as usize;
+                value.reserve_exact(new_len - INITIAL_CAPACITY);
+                unsafe { sys::env_get(key.as_ptr(), key.len(), value.as_mut_ptr(), new_len) };
+                unsafe { value.set_len(new_len) };
+                Some(value)
             }
-
-            let real_len = real_len as usize;
-            if real_len > current_len {
-                current_len = real_len;
-                continue;
-            }
-
-            unsafe {
-                val.set_len(real_len);
-            }
-
-            return match String::from_utf8(val) {
-                Ok(v) => Some(v),
-                Err(_) => None
-            };
-        }
+        }.map(|v| unsafe { String::from_utf8_unchecked(v) })
     }
 }
 
@@ -188,13 +175,12 @@ pub mod runtime {
     }
     pub fn name() -> String {
         const MAX_LEN: usize = 32;
-        let mut out = String::with_capacity(MAX_LEN);
+        let mut out = Vec::with_capacity(MAX_LEN);
         {
-            let mut out = unsafe { out.as_mut_vec() };
             let len = unsafe { sys::runtime_name(out.as_mut_ptr(), MAX_LEN) };
             unsafe { out.set_len(len as usize) };
         }
-        out
+        unsafe { String::from_utf8_unchecked(out) }
     }
 
     pub fn msleep(ms: i32) {
@@ -287,12 +273,10 @@ impl Write for Resource {
     fn flush(&mut self) -> io::Result<()> {
         let ret: i32 = unsafe { sys::resource_flush(self.0) };
         if ret == 0 {
-            return Ok(());
+            Ok(())
+        } else {
+            err::check_io(ret).map(|_| ()).map_err(io::Error::from)
         }
-
-        return Err(err::check_io(ret)
-                   .map_err(io::Error::from)
-                   .unwrap_err());
     }
 }
 
@@ -302,7 +286,7 @@ pub mod time {
     use time::chrono::TimeZone;
 
     pub fn now() -> chrono::DateTime<chrono::Utc> {
-        return chrono::Utc.timestamp(ts(), 0);
+        chrono::Utc.timestamp(ts(), 0)
     }
 
     pub fn ts() -> i64 {

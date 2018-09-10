@@ -7,15 +7,14 @@ use std::io::{Read, Write};
 pub extern "C" fn test() -> Result<(), i32> {
     log::info("running scheme::random tests");
 
-    let mut fin: Resource =
-        Resource::open("random://").map_err(|e| {
-            log::error(&format!("couldn't open: {:?}", e));
-            1
-        })?;
+    let mut fin: Resource = Resource::open("random://").map_err(|e| {
+        log::error(&format!("couldn't open: {:?}", e));
+        1
+    })?;
 
     let mut inp = [0u8; 16];
     fin.read(&mut inp).map_err(|e| {
-        log::error(&format!("couldn't read: {:?}",e));
+        log::error(&format!("couldn't read: {:?}", e));
         1
     })?;
 
@@ -28,4 +27,3 @@ pub extern "C" fn test() -> Result<(), i32> {
     log::info("scheme::random tests passed");
     Ok(())
 }
-

@@ -1,10 +1,10 @@
-extern crate libcwa;
+extern crate olin;
 
-use libcwa::env;
-use libcwa::log;
-use libcwa::startup;
-use libcwa::stdio;
-use libcwa::runtime;
+use olin::env;
+use olin::log;
+use olin::runtime;
+use olin::startup;
+use olin::stdio;
 use std::io::Write;
 use std::string::String;
 
@@ -12,7 +12,7 @@ fn main() {}
 
 #[no_mangle]
 pub extern "C" fn cwa_main() -> i32 {
-    libcwa::panic::set_hook();
+    olin::panic::set_hook();
 
     match friendly_main() {
         Ok(()) => 0,
@@ -24,7 +24,7 @@ pub extern "C" fn cwa_main() -> i32 {
 struct Context<'a> {
     pub method: String,
     pub request_uri: String,
-    pub body: &'a libcwa::Resource,
+    pub body: &'a olin::Resource,
 }
 
 #[derive(Debug)]
@@ -34,25 +34,27 @@ struct Response {
 }
 
 pub fn friendly_main() -> Result<(), i32> {
-    let method = getenv("REQUEST_METHOD").unwrap();
-    let request_uri = getenv("REQUEST_URI").unwrap();
+    let method = env::get("REQUEST_METHOD").ok_or(1)?;
+    let request_uri = env::get("REQUEST_URI").ok_or(1)?;
 
     let fin = stdio::inp();
     let mut fout = stdio::out();
 
     let ctx: Context = Context {
-        method: method,
-        request_uri: request_uri,
+        method,
+        request_uri,
         body: &fin,
     };
 
-    let resp: Response = respond_to(ctx);
-    let set: std::vec::Vec<u8> = serialize(resp);
+    let resp: Response = respond_to(&ctx);
+    let set: std::vec::Vec<u8> = serialize(&resp);
 
-    let len = fout.write(set.as_slice()).map_err(|e| {
-        log::error(&format!("can't write resulting response: {:?}", e));
-        1
-    }).unwrap();
+    let len = fout
+        .write(set.as_slice())
+        .map_err(|e| {
+            log::error(&format!("can't write resulting response: {:?}", e));
+            1
+        })?;
 
     if len != set.len() {
         log::warning("wasn't able to write entire response");
@@ -62,34 +64,34 @@ pub fn friendly_main() -> Result<(), i32> {
     Ok(())
 }
 
-fn getenv(name: &str) -> Option<String> {
-    let result = env::get(&name.as_bytes());
-    if result.is_none()
-    {
-        ()
-    }
-
-    let result = result.unwrap().to_vec();
-    let result: String = String::from_utf8(result).unwrap();
-
-    Some(result)
-}
-
-fn runtime_info(ctx: Context) -> Response {
+fn runtime_info(ctx: &Context) -> Response {
     let mut result = String::new();
-    result.push_str("Hello, I am served from Rust compiled to wasm32-unknown-unknown.\n\n");
-    result.push_str("I know the following about the environment I am running in:\n");
+    result.push_str("Hello, I am served from Rust compiled to wasm32-unknown-unknown.\n
+I know the following about the environment I am running in:\n");
 
     let minor: i32 = runtime::spec_minor();
     let major: i32 = runtime::spec_major();
     let rt_name: String = runtime::name();
 
-    result.push_str(&format!(" - I am running in {}, which implements version {}.{} of the\n   CommonWebAssembly API.\n", rt_name, major, minor));
+    result.push_str(&format!(
+        " - I am running in {}, which implements version {}.{} of the\n   CommonWebAssembly API.\n",
+        rt_name, major, minor
+    ));
 
-    result.push_str(&format!(" - I think the current time is {}\n", libcwa::time::now()));
+    result.push_str(&format!(
+        " - I think the current time is {}\n",
+        olin::time::now()
+    ));
 
-    result.push_str(&format!(" - RUN_ID:    {:?}\n - WORKER_ID: {:?}\n", getenv("RUN_ID"), getenv("WORKER_ID")));
-    result.push_str(&format!(" - Method: {}\n - Request URI: {}\n", ctx.method, ctx.request_uri));
+    result.push_str(&format!(
+        " - RUN_ID:    {:?}\n - WORKER_ID: {:?}\n",
+        env::get("RUN_ID"),
+        env::get("WORKER_ID")
+    ));
+    result.push_str(&format!(
+        " - Method: {}\n - Request URI: {}\n",
+        ctx.method, ctx.request_uri
+    ));
 
     let argc: i32 = startup::arg_len();
 
@@ -97,36 +99,43 @@ fn runtime_info(ctx: Context) -> Response {
 
     for x in 0..argc {
         let mut arg_val = [0u8; 64];
-        let arg = startup::arg_at_buf(x, &mut arg_val).ok_or_else(|| {
-            log::error(&format!("arg {} missing", x));
-            panic!("arg missing");
-        }).unwrap();
+        let arg = startup::arg_at_buf(x, &mut arg_val)
+            .ok_or_else(|| {
+                log::error(&format!("arg {} missing", x));
+                panic!("arg missing");
+            }).unwrap();
         result.push_str(&format!(" - arg {}: {}\n", x, arg));
     }
 
-    result.push_str("\nHere is my source code: \n  https://github.com/Xe/olin/blob/master/cwa/cwagi/src/main.rs\n\n");
+    result.push_str(
+        "\n
+Here is my source code: 
+  https://github.com/Xe/olin/blob/master/cwa/cwagi/src/main.rs
 
-    result.push_str("If you would like to learn more about this project, please \ntake a look at the following links:\n");
-    result.push_str(" - https://github.com/Xe/olin\n");
-    result.push_str(" - https://christine.website/blog/olin-1-why-09-1-2018\n");
-    result.push_str(" - https://christine.website/blog/olin-2-the-future-09-5-2018\n\n");
+If you would like to learn more about this project, please 
+take a look at the following links:
+ - https://github.com/Xe/olin
+ - https://christine.website/blog/olin-1-why-09-1-2018
+ - https://christine.website/blog/olin-2-the-future-09-5-2018
 
-    result.push_str("If you know of a Rust HTTP library that lets users hijack\n");
-    result.push_str("the transport layer (and can offer code examples, please, I'm\n");
-    result.push_str("still new to Rust) so that it could be adapted to Olin's\n");
-    result.push_str("native HTTP support, here is its test: \n  https://github.com/Xe/olin/blob/master/cwa/tests/src/scheme/http.rs\n\n");
+If you know of a Rust HTTP library that lets users hijack
+the transport layer (and can offer code examples, please, I'm
+still new to Rust) so that it could be adapted to Olin's
+native HTTP support, here is its test: 
+  https://github.com/Xe/olin/blob/master/cwa/tests/src/scheme/http.rs
 
-    result.push_str("If you would like to, please feel free to load test the route\n");
-    result.push_str("/cadey. That route does a minimal number of system calls, and\n");
-    result.push_str("should make for the best benchmarking results. There is a more\n");
-    result.push_str("detailed metrics view at /expvar. Olin does a level of automatic\n");
-    result.push_str("load balancing that takes advantage of the Go runtime, so in\n");
-    result.push_str("theory the limits of this program approach the limits of how fast\n");
-    result.push_str("the code running in the WebAssembly environment is.\n\n");
+If you would like to, please feel free to load test the route
+/cadey. That route does a minimal number of system calls, and
+should make for the best benchmarking results. There is a more
+detailed metrics view at /expvar. Olin does a level of automatic
+load balancing that takes advantage of the Go runtime, so in
+theory the limits of this program approach the limits of how fast
+the code running in the WebAssembly environment is.
 
-    result.push_str("And this is just the beginning.\n\n");
+And this is just the beginning.
 
-    result.push_str("Have a good day and be well, creator.");
+Have a good day and be well, creator.",
+    );
 
     Response {
         status: 200,
@@ -134,23 +143,23 @@ fn runtime_info(ctx: Context) -> Response {
     }
 }
 
-fn respond_to(ctx: Context) -> Response {
+fn respond_to(ctx: &Context) -> Response {
     match ctx.request_uri.as_str() {
-        "/cadey" => Response { status: 200, body: "you are awesome!".to_owned() },
-        _        => runtime_info(ctx),
+        "/cadey" => Response {
+            status: 200,
+            body: String::from("you are awesome!"),
+        },
+        _ => runtime_info(ctx),
     }
 }
 
-fn serialize(mut response: Response) -> Vec<u8> {
+fn serialize(response: &Response) -> Vec<u8> {
     let mut output = String::new();
-    output.push_str("HTTP/1.1 ");
-    output.push_str(&format!("{}", response.status));
-    output.push_str("\nContent-Type: text/plain\nCetacean-Powered-By: Cadey~#1337\n\n");
+    output.push_str(&format!(
+        "HTTP/1.1 {}\nContent-Type: text/plain\nCetacean-Powered-By: Cadey~#1337\n\n",
+        response.status
+    ));
 
-    let mut output = output.into_bytes();
-
-    output.append(unsafe { response.body.as_mut_vec() });
-
-    output
+    output.push_str(&response.body);
+    output.into_bytes()
 }
-

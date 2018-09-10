@@ -1,8 +1,8 @@
-extern crate olin;
 extern crate httparse;
+extern crate olin;
 
-use olin::*;
 use olin::Resource;
+use olin::*;
 use std::io::{Read, Write};
 
 pub extern "C" fn test() -> Result<(), i32> {
@@ -18,11 +18,10 @@ pub extern "C" fn test() -> Result<(), i32> {
     });
 
     log::info("opening https://printerfacts.herokuapp.com");
-    let mut fout: Resource =
-        Resource::open("https://printerfacts.herokuapp.com").map_err(|e| {
-            log::error(&format!("couldn't open: {:?}", e));
-            1
-        })?;
+    let mut fout: Resource = Resource::open("https://printerfacts.herokuapp.com").map_err(|e| {
+        log::error(&format!("couldn't open: {:?}", e));
+        1
+    })?;
 
     log::info("writing HTTP request");
     fout.write(reqd.as_bytes()).map_err(|e| {
@@ -51,9 +50,10 @@ pub extern "C" fn test() -> Result<(), i32> {
         1
     });
 
-    log::info(
-        &format!("version: {:?}, code: {:?}, reason: {:?}",
-                 resp.version, resp.code, resp.reason));
+    log::info(&format!(
+        "version: {:?}, code: {:?}, reason: {:?}",
+        resp.version, resp.code, resp.reason
+    ));
 
     log::info("scheme::http tests passed");
     Ok(())

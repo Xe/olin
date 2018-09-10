@@ -6,7 +6,7 @@ macro_rules! slice_raw_ptr_or_null {
         } else {
             &$t[0] as *const _
         }
-    }
+    };
 }
 
 #[macro_export]
@@ -17,5 +17,5 @@ macro_rules! slice_raw_ptr_or_null_mut {
         } else {
             &mut $t[0] as *mut _
         }
-    }
+    };
 }
