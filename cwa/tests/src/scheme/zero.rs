@@ -1,6 +1,6 @@
-extern crate libcwa;
+extern crate olin;
 
-use libcwa::{log, Resource};
+use olin::{log, Resource};
 use std::io::{Read, Write};
 
 /// This tests for https://github.com/CommonWA/cwa-spec/blob/master/schemes/zero.md

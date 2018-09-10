@@ -1,8 +1,8 @@
 [package]
-name = "libcwa"
+name = "olin"
 version = "0.1.0"
 authors = ["Christine Dodrill <me@christine.website>"]
-description = "A small runtime library to help out programs linked against CommonWA. This will only really be useful for the wasm32-unknown-unknown target inside Olin."
+description = "A small runtime library to help out programs linked against CommonWA targeting Olin. This will only be useful on the wasm32-unknown-unknown target."
 license = "MIT"
 license-file = "../../LICENSE"
 repository = "https://github.com/Xe/olin"

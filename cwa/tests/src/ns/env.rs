@@ -1,7 +1,7 @@
-extern crate libcwa;
+extern crate olin;
 
-use libcwa::log;
-use libcwa::env;
+use olin::log;
+use olin::env;
 use std::str;
 
 /// This tests for https://github.com/CommonWA/cwa-spec/blob/master/ns/env.md

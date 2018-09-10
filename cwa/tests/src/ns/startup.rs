@@ -1,6 +1,6 @@
-extern crate libcwa;
+extern crate olin;
 
-use libcwa::{log, startup};
+use olin::{log, startup};
 
 /// This tests for https://github.com/CommonWA/cwa-spec/blob/master/ns/startup.md
 pub extern "C" fn test() -> Result<(), i32> {

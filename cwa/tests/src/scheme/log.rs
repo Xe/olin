@@ -1,7 +1,7 @@
-extern crate libcwa;
+extern crate olin;
 
 use std::io::Write;
-use libcwa::{log, Resource};
+use olin::{log, Resource};
 
 /// This tests for https://github.com/CommonWA/cwa-spec/blob/master/schemes/log.md
 pub extern "C" fn test() -> Result<(), i32> {

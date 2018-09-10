@@ -1,6 +1,6 @@
 #![allow(unused_must_use)]
 
-extern crate libcwa;
+extern crate olin;
 
 mod ns;
 mod regression;
@@ -8,7 +8,7 @@ mod scheme;
 
 #[no_mangle]
 pub extern "C" fn cwa_main() -> i32 {
-    libcwa::panic::set_hook();
+    olin::panic::set_hook();
 
     let funcs = [
         ns::env::test,
