@@ -1,5 +1,6 @@
 extern crate http;
 extern crate olin;
+extern crate std;
 
 use olin::log;
 use std::vec::Vec;
@@ -24,6 +25,7 @@ pub extern "C" fn test() -> Result<(), i32> {
     })?;
 
     log::info(&format!("status: {:?}", resp.status()));
+    log::info(&format!("response body: {}", std::str::from_utf8(&resp_body).unwrap()));
 
     log::info("olintest::http tests passed");
     Ok(())
