@@ -1,2 +1,3 @@
-/target
+target
 *.wasm
+build-script-build

@@ -116,7 +116,9 @@ pub mod env {
         let ret = unsafe { sys::env_get(key.as_ptr(), key.len(), value.as_mut_ptr(), value.len()) };
         match ret {
             err::NOT_FOUND => Err(Error::NotFound),
-            n if (n as usize) <= value.len() => Ok(unsafe { value.get_unchecked_mut(0..n as usize) }),
+            n if (n as usize) <= value.len() => {
+                Ok(unsafe { value.get_unchecked_mut(0..n as usize) })
+            }
             n => Err(Error::TooSmall(n as u32)),
         }
     }
@@ -124,16 +126,9 @@ pub mod env {
     /// Returns the environment variable associated with `key`.
     /// If there is no environment variable with the specified key, `None` is returned.
     pub fn get(key: &str) -> Option<String> {
-        const INITIAL_CAPACITY: usize = 64;
+        const INITIAL_CAPACITY: usize = 128;
         let mut value = Vec::with_capacity(INITIAL_CAPACITY);
-        let ret = unsafe {
-            sys::env_get(
-                key.as_ptr(),
-                key.len(),
-                value.as_mut_ptr(),
-                INITIAL_CAPACITY,
-            )
-        };
+        let ret = unsafe { sys::env_get(key.as_ptr(), key.len(), value.as_mut_ptr(), value.len()) };
         // Olin guarantees that the CWA environment is UTF-8.
         match ret {
             err::NOT_FOUND => None,
@@ -141,6 +136,7 @@ pub mod env {
                 unsafe { value.set_len(len as usize) };
                 Some(value)
             }
+            err_code if err_code < 0 => None,
             new_len => {
                 let new_len = new_len as usize;
                 value.reserve_exact(new_len - INITIAL_CAPACITY);
@@ -280,8 +276,8 @@ impl Write for Resource {
 }
 
 pub mod time {
-    use chrono::{self, TimeZone};
     use super::sys;
+    use chrono::{self, TimeZone};
 
     pub fn now() -> chrono::DateTime<chrono::Utc> {
         chrono::Utc.timestamp(ts(), 0)
