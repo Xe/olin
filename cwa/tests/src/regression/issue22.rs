@@ -12,7 +12,7 @@ pub extern "C" fn test() -> Result<(), i32> {
             log::error("DOES_NOT_EXIST exists");
 
             return Err(1);
-        },
+        }
     }
 
     log::info("issue 22 test passed");

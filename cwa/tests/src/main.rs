@@ -24,11 +24,11 @@ pub extern "C" fn cwa_main() -> i32 {
         scheme::null::test,
         scheme::random::test,
         scheme::zero::test,
-   ];
+    ];
 
-    for x in 0..funcs.len() {
-        match funcs[x]() {
-            Ok(()) => {},
+    for func in &funcs {
+        match func() {
+            Ok(()) => {}
             Err(e) => return e as i32,
         }
     }

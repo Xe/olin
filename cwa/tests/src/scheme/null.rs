@@ -7,11 +7,10 @@ use std::io::{Read, Write};
 pub extern "C" fn test() -> Result<(), i32> {
     log::info("running scheme::null tests");
 
-    let mut fout: Resource =
-        Resource::open("null://").map_err(|e| {
-            log::error(&format!("couldn't open: {:?}", e));
-            1
-        })?;
+    let mut fout: Resource = Resource::open("null://").map_err(|e| {
+        log::error(&format!("couldn't open: {:?}", e));
+        1
+    })?;
 
     fout.write(b"entering rooms of fossil-light").map_err(|e| {
         log::error(&format!("couldn't write: {:?}", e));

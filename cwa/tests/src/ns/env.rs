@@ -1,7 +1,7 @@
 extern crate olin;
 
-use olin::log;
 use olin::env;
+use olin::log;
 use std::str;
 
 /// This tests for https://github.com/CommonWA/cwa-spec/blob/master/ns/env.md
@@ -30,7 +30,7 @@ pub extern "C" fn test() -> Result<(), i32> {
         Some(_) => {
             log::error("DOES_NOT_EXIST exists");
             return Err(1);
-        },
+        }
     }
 
     log::info("ns::env tests passed");
