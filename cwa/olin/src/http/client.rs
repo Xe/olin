@@ -82,15 +82,17 @@ fn serialize_req<'a>(mut req: http::Request<&'a mut std::vec::Vec<u8>>) -> Vec<u
     let mut output = String::new();
     let mut body = req.body_mut().clone();
     let method = req.method().as_str();
+    let host = req.uri().host();
     let path = req.uri().path();
 
     output.push_str(method);
     output.push_str(" ");
     output.push_str(path);
     output.push_str(" HTTP/1.1\r\n");
+    output.push_str(&format!("Host: {}\n", host.unwrap()));
 
     for (key, value) in req.headers().iter() {
-        output.push_str(&format!("{:?}: {:?}", key, value));
+        output.push_str(&format!("{}: {}\n", key.as_str(), value.to_str().unwrap()));
     }
 
     output.push_str("\n\n");
