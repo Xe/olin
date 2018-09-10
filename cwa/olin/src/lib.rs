@@ -1,7 +1,6 @@
-use std::io::{self, Read, Write};
+extern crate chrono;
 
-#[macro_use]
-pub mod macros;
+use std::io::{self, Read, Write};
 
 pub mod panic;
 
@@ -117,7 +116,7 @@ pub mod env {
         let ret = unsafe { sys::env_get(key.as_ptr(), key.len(), value.as_mut_ptr(), value.len()) };
         match ret {
             err::NOT_FOUND => Err(Error::NotFound),
-            n if (n as usize) <= value.len() => Ok(&mut value[0..n as usize]),
+            n if (n as usize) <= value.len() => Ok(unsafe { value.get_unchecked_mut(0..n as usize) }),
             n => Err(Error::TooSmall(n as u32)),
         }
     }
@@ -168,7 +167,7 @@ pub mod runtime {
         match ret {
             err::INVALID_ARGUMENT => None,
             len => {
-                let out = &mut out[0..len as usize];
+                let out = unsafe { out.get_unchecked_mut(0..len as usize) };
                 Some(unsafe { ::std::str::from_utf8_unchecked_mut(out) })
             }
         }
@@ -200,7 +199,7 @@ pub mod startup {
         let ret = unsafe { sys::startup_arg_at(id, out.as_mut_ptr(), out.len()) };
         match ret {
             err::INVALID_ARGUMENT => None,
-            bytes_written => Some(&mut out[0..bytes_written as usize]),
+            bytes_written => Some(unsafe { out.get_unchecked_mut(0..bytes_written as usize) }),
         }
     }
     pub fn arg_os_at(id: i32, capacity: usize) -> Option<Vec<u8>> {
@@ -281,39 +280,40 @@ impl Write for Resource {
 }
 
 pub mod time {
-    extern crate chrono;
-
-    use time::chrono::TimeZone;
+    use chrono::{self, TimeZone};
+    use super::sys;
 
     pub fn now() -> chrono::DateTime<chrono::Utc> {
         chrono::Utc.timestamp(ts(), 0)
     }
 
     pub fn ts() -> i64 {
-        unsafe { ::sys::time_now() }
+        unsafe { sys::time_now() }
     }
 }
 
 pub mod stdio {
-    pub fn inp() -> ::Resource {
-        unsafe { ::Resource::from_raw(::sys::io_get_stdin()) }
+    use super::Resource;
+    pub fn inp() -> Resource {
+        unsafe { Resource::from_raw(::sys::io_get_stdin()) }
     }
 
-    pub fn out() -> ::Resource {
-        unsafe { ::Resource::from_raw(::sys::io_get_stdout()) }
+    pub fn out() -> Resource {
+        unsafe { Resource::from_raw(::sys::io_get_stdout()) }
     }
 
-    pub fn err() -> ::Resource {
-        unsafe { ::Resource::from_raw(::sys::io_get_stderr()) }
+    pub fn err() -> Resource {
+        unsafe { Resource::from_raw(::sys::io_get_stderr()) }
     }
 }
 
 pub mod random {
+    use super::sys;
     pub fn i31() -> i32 {
-        unsafe { ::sys::random_i32() }
+        unsafe { sys::random_i32() }
     }
 
     pub fn i63() -> i64 {
-        unsafe { ::sys::random_i64() }
+        unsafe { sys::random_i64() }
     }
 }
