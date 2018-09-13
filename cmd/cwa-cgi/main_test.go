@@ -122,8 +122,19 @@ func TestHTTPRequest(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("wanted status %d, got: %d", http.StatusOK, resp.StatusCode)
+	}
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	if bytes.Contains(data, []byte{0}) {
+		t.Fatalf("response body was garbage: %x", data)
 	}
 }
 func loadWasm(t *testing.T, fname, main string) *vmServer {
