@@ -3,6 +3,7 @@
 extern crate olin;
 
 mod ns;
+mod olintest;
 mod regression;
 mod scheme;
 
@@ -18,7 +19,10 @@ pub extern "C" fn cwa_main() -> i32 {
         ns::startup::test,
         ns::stdio::test,
         ns::time::test,
+        olintest::http::test,
         regression::issue22::test,
+        regression::issue37::test,
+        regression::issue39::test,
         scheme::http::test,
         scheme::log::test,
         scheme::null::test,

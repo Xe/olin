@@ -2,6 +2,7 @@ extern crate chrono;
 
 use std::io::{self, Read, Write};
 
+pub mod http;
 pub mod panic;
 
 pub mod sys {
@@ -39,6 +40,8 @@ pub mod sys {
 }
 
 mod err {
+    use std::error;
+    use std::fmt;
     use std::io;
 
     pub const UNKNOWN: i32 = -1;
@@ -65,6 +68,15 @@ mod err {
             }
         }
     }
+
+    impl self::fmt::Display for Error {
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            write!(f, "{:?}", self)
+        }
+    }
+
+    impl self::error::Error for Error {}
+
     pub fn check_io(error: i32) -> Result<i32, io::ErrorKind> {
         match error {
             n if n >= 0 => Ok(n),
@@ -123,28 +135,18 @@ pub mod env {
         }
     }
 
-    /// Returns the environment variable associated with `key`.
-    /// If there is no environment variable with the specified key, `None` is returned.
-    pub fn get(key: &str) -> Option<String> {
-        const INITIAL_CAPACITY: usize = 128;
-        let mut value = Vec::with_capacity(INITIAL_CAPACITY);
-        let ret = unsafe { sys::env_get(key.as_ptr(), key.len(), value.as_mut_ptr(), value.len()) };
-        // Olin guarantees that the CWA environment is UTF-8.
-        match ret {
-            err::NOT_FOUND => None,
-            len if (len as usize) <= INITIAL_CAPACITY => {
-                unsafe { value.set_len(len as usize) };
-                Some(value)
-            }
-            err_code if err_code < 0 => None,
-            new_len => {
-                let new_len = new_len as usize;
-                value.reserve_exact(new_len - INITIAL_CAPACITY);
-                unsafe { sys::env_get(key.as_ptr(), key.len(), value.as_mut_ptr(), new_len) };
-                unsafe { value.set_len(new_len) };
-                Some(value)
-            }
-        }.map(|v| unsafe { String::from_utf8_unchecked(v) })
+    pub fn get(key: &str) -> Result<String, Error> {
+        const ENVVAR_LEN: usize = 4096; // at work we don't see longer than 128 usually
+        let key = key.as_bytes();
+        let mut val = [0u8; ENVVAR_LEN];
+        let val = get_buf(&key, &mut val).map_err(|e| {
+            ::log::error(&format!("can't get envvar: {:?}", e));
+            e
+        })?;
+
+        let mut s: String = ::std::string::String::from("");
+        s.push_str(::std::str::from_utf8(&val).unwrap());
+        Ok(s)
     }
 }
 
