@@ -9,3 +9,5 @@ homepage = "https://github.com/Xe/olin"
 
 [dependencies]
 chrono = "0.4"
+http = "0.1"
+httparse = "1.3.2"

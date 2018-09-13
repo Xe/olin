@@ -2,6 +2,7 @@ extern crate chrono;
 
 use std::io::{self, Read, Write};
 
+pub mod http;
 pub mod panic;
 
 pub mod sys {
@@ -39,6 +40,8 @@ pub mod sys {
 }
 
 mod err {
+    use std::error;
+    use std::fmt;
     use std::io;
 
     pub const UNKNOWN: i32 = -1;
@@ -65,6 +68,15 @@ mod err {
             }
         }
     }
+
+    impl self::fmt::Display for Error {
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            write!(f, "{:?}", self)
+        }
+    }
+
+    impl self::error::Error for Error {}
+
     pub fn check_io(error: i32) -> Result<i32, io::ErrorKind> {
         match error {
             n if n >= 0 => Ok(n),
