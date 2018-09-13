@@ -2,13 +2,13 @@ package cwagi
 
 import (
 	"context"
+	"errors"
 	"expvar"
 	"log"
 	"math/rand"
 	"net/http"
 	"sync"
-
-	"github.com/pborman/uuid"
+	"time"
 )
 
 // VMPool is a group of WebAssembly virtual machines dynamically spun up and down.
@@ -19,6 +19,7 @@ type VMPool struct {
 	lock           sync.RWMutex
 	maxSize        int
 	work           chan workData
+	cancel         context.CancelFunc
 	vmCtr          *expvar.Int
 	busyCtr        *expvar.Int
 	requestCtr     *expvar.Int
@@ -26,24 +27,39 @@ type VMPool struct {
 
 // NewPool creates a new pool of WebAssembly workers with the given cwagi-linked code.
 func NewPool(module []byte, name, mainFunc string, initSize, maxSize int) *VMPool {
-	pid := uuid.New()
-
+	ctx, cancel := context.WithCancel(context.Background())
 	vp := &VMPool{
 		module:     module,
 		name:       name,
 		mainFunc:   mainFunc,
 		maxSize:    maxSize,
-		work:       make(chan workData, 32),
-		vmCtr:      expvar.NewInt(pid + "::vmCount"),
-		busyCtr:    expvar.NewInt(pid + "::busyCount"),
-		requestCtr: expvar.NewInt(pid + "::requestCount"),
+		work:       make(chan workData, maxSize+initSize),
+		cancel:     cancel,
+		vmCtr:      expvar.NewInt("vm_count"),
+		busyCtr:    expvar.NewInt("busy_count"),
+		requestCtr: expvar.NewInt("request_count"),
 	}
+
+	go vp.monitor(ctx)
 
 	for range make([]struct{}, initSize) {
 		vp.createVM()
 	}
 
 	return vp
+}
+
+func (vp *VMPool) monitor(ctx context.Context) {
+	t := time.NewTicker(time.Minute)
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-t.C:
+			vp.reapVM()
+		}
+	}
 }
 
 func (vp *VMPool) Close() error {
@@ -60,6 +76,10 @@ func (vp *VMPool) Close() error {
 func (vp *VMPool) createVM() (*managedVM, error) {
 	vp.lock.Lock()
 	defer vp.lock.Unlock()
+
+	if len(vp.vms) == vp.maxSize {
+		return nil, errors.New("max scale")
+	}
 
 	log.Println("creating a new VM")
 	vs, err := NewVM(vp.module, []string{vp.name, "mode", "cwagi"}, vp.name, vp.mainFunc)
@@ -78,6 +98,22 @@ func (vp *VMPool) createVM() (*managedVM, error) {
 	vp.vmCtr.Add(1)
 
 	return mvm, nil
+}
+
+func (vp *VMPool) reapVM() {
+	vp.lock.Lock()
+	defer vp.lock.Unlock()
+
+	log.Println("reaping a VM")
+
+	vpVmsLen := len(vp.vms)
+	if vpVmsLen == 1 {
+		return // don't break things
+	}
+
+	vm := vp.vms[0]
+	vp.vms = vp.vms[1:]
+	vm.cancel()
 }
 
 func (vp *VMPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -100,8 +136,12 @@ func (vp *VMPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		log.Printf("work: %d, vms: %d", vpWorkLen, vpVmsLen)
 
 		if vpWorkLen > vpVmsLen {
-			if vpVmsLen > vp.maxSize {
+			if vpVmsLen < vp.maxSize {
 				vp.createVM()
+			}
+		} else {
+			if rand.Int63()%16 == 0 {
+				vp.reapVM()
 			}
 		}
 	}
