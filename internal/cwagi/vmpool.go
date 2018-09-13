@@ -104,12 +104,12 @@ func (vp *VMPool) reapVM() {
 	vp.lock.Lock()
 	defer vp.lock.Unlock()
 
-	log.Println("reaping a VM")
-
 	vpVmsLen := len(vp.vms)
 	if vpVmsLen == 1 {
 		return // don't break things
 	}
+
+	log.Println("reaping a VM")
 
 	vm := vp.vms[0]
 	vp.vms = vp.vms[1:]
