@@ -26,10 +26,14 @@ pub extern "C" fn test() -> Result<(), i32> {
 
     log::info("look for variable that does not exist");
     match env::get("DOES_NOT_EXIST") {
-        None => log::info("this does not exist! :D"),
-        Some(_) => {
+        Err(env::Error::NotFound) => log::info("this does not exist! :D"),
+        Ok(_) => {
             log::error("DOES_NOT_EXIST exists");
             return Err(1);
+        }
+        _ => {
+            log::error("other error");
+            return Err(2);
         }
     }
 
