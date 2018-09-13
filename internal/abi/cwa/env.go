@@ -1,6 +1,8 @@
 package cwa
 
 func (p *Process) envGet(keyPtr, keyLen, valPtr, valLen uint32) (int32, error) {
+	//p.logger.Printf("getenv: 0x%x:%d, 0x%x:%d", keyPtr, keyLen, valPtr, valLen)
+
 	key := string(readMem(p.vm.Memory, keyPtr, keyLen))
 	val, ok := p.env[key]
 	if !ok {
@@ -8,9 +10,7 @@ func (p *Process) envGet(keyPtr, keyLen, valPtr, valLen uint32) (int32, error) {
 	}
 
 	if len(val) < int(valLen) {
-		for i, by := range []byte(val) {
-			p.vm.Memory[valPtr+uint32(i)] = by
-		}
+		copy(p.vm.Memory[valPtr:], []byte(val))
 	}
 
 	return int32(len(val)), nil

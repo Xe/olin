@@ -34,8 +34,14 @@ struct Response {
 }
 
 pub fn friendly_main() -> Result<(), i32> {
-    let method = env::get("REQUEST_METHOD").ok_or(1)?;
-    let request_uri = env::get("REQUEST_URI").ok_or(1)?;
+    let method = env::get("REQUEST_METHOD").map_err(|e| {
+        log::error(&format!("error getting REQUEST_METHOD: {:?}", e));
+        1
+    })?;
+    let request_uri = env::get("REQUEST_URI").map_err(|e| {
+        log::error(&format!("error getting REQUEST_URI: {:?}", e));
+        1
+    })?;
 
     let fin = stdio::inp();
     let mut fout = stdio::out();
@@ -49,12 +55,10 @@ pub fn friendly_main() -> Result<(), i32> {
     let resp: Response = respond_to(&ctx);
     let set: std::vec::Vec<u8> = serialize(&resp);
 
-    let len = fout
-        .write(set.as_slice())
-        .map_err(|e| {
-            log::error(&format!("can't write resulting response: {:?}", e));
-            1
-        })?;
+    let len = fout.write(set.as_slice()).map_err(|e| {
+        log::error(&format!("can't write resulting response: {:?}", e));
+        1
+    })?;
 
     if len != set.len() {
         log::warning("wasn't able to write entire response");
@@ -66,8 +70,10 @@ pub fn friendly_main() -> Result<(), i32> {
 
 fn runtime_info(ctx: &Context) -> Response {
     let mut result = String::new();
-    result.push_str("Hello, I am served from Rust compiled to wasm32-unknown-unknown.\n
-I know the following about the environment I am running in:\n");
+    result.push_str(
+        "Hello, I am served from Rust compiled to wasm32-unknown-unknown.\n
+I know the following about the environment I am running in:\n",
+    );
 
     let minor: i32 = runtime::spec_minor();
     let major: i32 = runtime::spec_major();
@@ -83,10 +89,20 @@ I know the following about the environment I am running in:\n");
         olin::time::now()
     ));
 
+    let run_id: String = env::get("RUN_ID")
+        .map_err(|e| {
+            log::error(&format!("error getting RUN_ID: {:?}", e));
+            1
+        }).unwrap();
+    let worker_id: String = env::get("WORKER_ID")
+        .map_err(|e| {
+            log::error(&format!("error getting WORKER_ID: {:?}", e));
+            1
+        }).unwrap();
+
     result.push_str(&format!(
-        " - RUN_ID:    {:?}\n - WORKER_ID: {:?}\n",
-        env::get("RUN_ID"),
-        env::get("WORKER_ID")
+        " - RUN_ID:    {}\n - WORKER_ID: {}\n",
+        run_id, worker_id,
     ));
     result.push_str(&format!(
         " - Method: {}\n - Request URI: {}\n",
