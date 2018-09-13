@@ -114,6 +114,7 @@ func (vp *VMPool) reapVM() {
 	vm := vp.vms[0]
 	vp.vms = vp.vms[1:]
 	vm.cancel()
+	vp.vmCtr.Add(-1)
 }
 
 func (vp *VMPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
