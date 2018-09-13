@@ -48,7 +48,7 @@ func (p *Process) open(urlPtr, urlLen uint32) (int32, error) {
 }
 
 func (p *Process) write(fid int32, dataPtr, dataLen uint32) (int32, error) {
-	mem := readMem(p.vm.Memory, dataPtr, dataLen)
+	mem := p.vm.Memory[dataPtr : dataPtr+dataLen]
 
 	f, ok := p.files[fid]
 	if !ok {
