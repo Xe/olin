@@ -20,6 +20,7 @@ pub extern "C" fn cwa_main() -> i32 {
         ns::time::test,
         regression::issue22::test,
         regression::issue37::test,
+        regression::issue39::test,
         scheme::http::test,
         scheme::log::test,
         scheme::null::test,
