@@ -1,3 +1,22 @@
+/// Main modules to perform the low-level operations
+/// described in the Olin specs. In particular the basic
+/// "actions": open, read, write, close, flush on files.
+/// 
+/// Modules:
+/// * sys
+/// * err
+/// * log
+/// * env
+/// * runtime
+/// * startup
+/// * time
+/// * stdio
+/// * random
+///
+/// ```Resource``` struct and its implementations define
+/// a generic class for a resource with `std::io::Read`
+/// and `std::io::Write` traits implemented.
+
 extern crate chrono;
 
 use std::io::{self, Read, Write};
@@ -5,50 +24,67 @@ use std::io::{self, Read, Write};
 pub mod http;
 pub mod panic;
 
+/// system-level operations, interface and FFI access:
+/// * setup and low-level operations
+/// * bindings to environment variables
+/// * bindings for (Go) runtime
 pub mod sys {
     extern "C" {
+        // low-level logger
         pub fn log_write(level: i32, text_ptr: *const u8, text_len: usize);
+
+        // environment variable access        
         pub fn env_get(
             key_ptr: *const u8,
             key_len: usize,
             value_buf_ptr: *mut u8,
             value_buf_len: usize,
         ) -> i32;
+
+        // runtime versioning
         pub fn runtime_spec_major() -> i32;
         pub fn runtime_spec_minor() -> i32;
         pub fn runtime_name(out_ptr: *mut u8, out_len: usize) -> i32;
+        // runtime sleep time
         pub fn runtime_msleep(ms: i32);
 
         pub fn startup_arg_len() -> i32;
         pub fn startup_arg_at(id: i32, out_ptr: *mut u8, out_len: usize) -> i32;
 
+        // low-level resource interface
         pub fn resource_open(url_ptr: *const u8, url_len: usize) -> i32;
         pub fn resource_read(id: i32, data_ptr: *mut u8, data_len: usize) -> i32;
         pub fn resource_write(id: i32, data_ptr: *const u8, data_len: usize) -> i32;
         pub fn resource_close(id: i32);
         pub fn resource_flush(id: i32) -> i32;
 
+        // timing
         pub fn time_now() -> i64;
 
+        // unix-level standard I/O
         pub fn io_get_stdin() -> i32;
         pub fn io_get_stdout() -> i32;
         pub fn io_get_stderr() -> i32;
 
+        // randoms
         pub fn random_i32() -> i32;
         pub fn random_i64() -> i64;
     }
 }
 
+/// Error handling definitions
 mod err {
     use std::error;
     use std::fmt;
     use std::io;
 
+    // as per spec definitions for error
     pub const UNKNOWN: i32 = -1;
     pub const INVALID_ARGUMENT: i32 = -2;
     pub const PERMISSION_DENIED: i32 = -3;
     pub const NOT_FOUND: i32 = -4;
 
+    // Bindings to Rust error handling
     #[repr(i32)]
     #[derive(Debug)]
     pub enum Error {
@@ -69,6 +105,7 @@ mod err {
         }
     }
 
+    // error pretty-print
     impl self::fmt::Display for Error {
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
             write!(f, "{:?}", self)
@@ -88,6 +125,7 @@ mod err {
     }
 }
 
+/// Logging handling definitions
 pub mod log {
     use super::sys;
 
@@ -116,6 +154,7 @@ pub mod log {
     }
 }
 
+/// Access to environment variables
 pub mod env {
     use super::{err, sys};
 
@@ -150,6 +189,7 @@ pub mod env {
     }
 }
 
+/// Access from runtime
 pub mod runtime {
     use super::{err, sys};
 
@@ -185,6 +225,7 @@ pub mod runtime {
     }
 }
 
+/// used to fetch argv/argc
 pub mod startup {
     use super::{err, sys};
     use std::str;
@@ -220,6 +261,12 @@ pub mod startup {
     }
 }
 
+
+/// 
+/// Resources may be readable, may be writable, may be flushable and closable
+/// streams of bytes. A resource is backed by implementation in the containing
+/// runtime based on the URL scheme used in the `open` call.
+///
 #[derive(Debug)]
 pub struct Resource(i32);
 
@@ -229,6 +276,8 @@ impl Resource {
         err::Error::check(res).map(Resource)
     }
 
+    /// wrapper for access by raw characteristics
+    /// For the few times you _actually_ do know the file descriptor.
     pub unsafe fn from_raw(handle: i32) -> Resource {
         Resource(handle)
     }
@@ -277,6 +326,7 @@ impl Write for Resource {
     }
 }
 
+/// Time handler
 pub mod time {
     use super::sys;
     use chrono::{self, TimeZone};
@@ -290,6 +340,7 @@ pub mod time {
     }
 }
 
+/// Bindings from semantic I/O targets to Resources
 pub mod stdio {
     use super::Resource;
     pub fn inp() -> Resource {
@@ -305,6 +356,7 @@ pub mod stdio {
     }
 }
 
+/// Random generators
 pub mod random {
     use super::sys;
     pub fn i31() -> i32 {
