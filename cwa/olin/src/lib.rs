@@ -295,6 +295,8 @@ pub mod startup {
 ///
 /// Please take this into consideration when consuming the results of Resources.
 ///
+/// The implementation of this type uses the functions at https://github.com/CommonWA/cwa-spec/blob/master/ns/resource.md
+///
 #[derive(Debug)]
 pub struct Resource(i32);
 
