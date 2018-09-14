@@ -1,3 +1,21 @@
+/// Main modules to perform the low-level operations
+/// described in the Olin specs. In particular the basic
+/// "actions": open, read, write, close, flush on files.
+/// 
+/// Modules:
+/// * sys
+/// * err
+/// * log
+/// * env
+/// * runtime
+/// * startup
+/// * time
+/// * stdio
+/// * random
+///
+/// The ```Resource``` struct defines a high level wrapper
+/// to the more low level IO calls in sys.
+
 extern crate chrono;
 
 use std::io::{self, Read, Write};
@@ -5,37 +23,63 @@ use std::io::{self, Read, Write};
 pub mod http;
 pub mod panic;
 
+/// system-level operations, interface and FFI access:
+/// * setup and low-level operations
+/// * bindings to environment variables
+/// * bindings for system calls
 pub mod sys {
     extern "C" {
+        // https://github.com/CommonWA/cwa-spec/blob/master/ns/log.md#write
         pub fn log_write(level: i32, text_ptr: *const u8, text_len: usize);
+
+        // https://github.com/CommonWA/cwa-spec/blob/master/ns/env.md#get        
         pub fn env_get(
             key_ptr: *const u8,
             key_len: usize,
             value_buf_ptr: *mut u8,
             value_buf_len: usize,
         ) -> i32;
+
+        // https://github.com/CommonWA/cwa-spec/blob/master/ns/runtime.md#spec_major
         pub fn runtime_spec_major() -> i32;
+        // https://github.com/CommonWA/cwa-spec/blob/master/ns/runtime.md#spec_minor
         pub fn runtime_spec_minor() -> i32;
+        // https://github.com/CommonWA/cwa-spec/blob/master/ns/runtime.md#name
         pub fn runtime_name(out_ptr: *mut u8, out_len: usize) -> i32;
+        // https://github.com/CommonWA/cwa-spec/blob/master/ns/runtime.md#msleep
         pub fn runtime_msleep(ms: i32);
 
+        // https://github.com/CommonWA/cwa-spec/blob/master/ns/startup.md#arg_len
         pub fn startup_arg_len() -> i32;
+        // https://github.com/CommonWA/cwa-spec/blob/master/ns/startup.md#art_at
         pub fn startup_arg_at(id: i32, out_ptr: *mut u8, out_len: usize) -> i32;
 
+        // https://github.com/CommonWA/cwa-spec/blob/master/ns/resource.md#open
         pub fn resource_open(url_ptr: *const u8, url_len: usize) -> i32;
+        // https://github.com/CommonWA/cwa-spec/blob/master/ns/resource.md#read
         pub fn resource_read(id: i32, data_ptr: *mut u8, data_len: usize) -> i32;
+        // https://github.com/CommonWA/cwa-spec/blob/master/ns/resource.md#write
         pub fn resource_write(id: i32, data_ptr: *const u8, data_len: usize) -> i32;
+        // https://github.com/CommonWA/cwa-spec/blob/master/ns/resource.md#close
         pub fn resource_close(id: i32);
+        // https://github.com/CommonWA/cwa-spec/blob/master/ns/resource.md#flush
         pub fn resource_flush(id: i32) -> i32;
 
+        // https://github.com/Xe/cwa-spec/blob/Xe/time/ns/time.md#now
+        // This is special-snowflaked at the moment because there's a disagreement 
+        // about how to do this in the spec at https://github.com/CommonWA/cwa-spec/pull/8
         pub fn time_now() -> i64;
+        
+        // https://github.com/CommonWA/cwa-spec/blob/master/ns/random.md#i32
+        pub fn random_i32() -> i32;
+        // https://github.com/CommonWA/cwa-spec/blob/master/ns/random.md#i64
+        pub fn random_i64() -> i64;
 
+        // Not currently defined by a specification (TODO(Xe): this) but this mirrors
+        // the behavior here: https://github.com/CommonWA/cwa-rs/blob/master/src/raw.rs#L20-L22
         pub fn io_get_stdin() -> i32;
         pub fn io_get_stdout() -> i32;
         pub fn io_get_stderr() -> i32;
-
-        pub fn random_i32() -> i32;
-        pub fn random_i64() -> i64;
     }
 }
 
@@ -44,11 +88,14 @@ mod err {
     use std::fmt;
     use std::io;
 
+    // https://github.com/CommonWA/cwa-spec/blob/master/errors.md
     pub const UNKNOWN: i32 = -1;
     pub const INVALID_ARGUMENT: i32 = -2;
     pub const PERMISSION_DENIED: i32 = -3;
     pub const NOT_FOUND: i32 = -4;
-
+    
+    /// An error abstraction, all of the following values are copied from the spec at:
+    /// https://github.com/CommonWA/cwa-spec/blob/master/errors.md
     #[repr(i32)]
     #[derive(Debug)]
     pub enum Error {
@@ -57,6 +104,7 @@ mod err {
         PermissionDenied = PERMISSION_DENIED,
         NotFound = NOT_FOUND,
     }
+    
     impl Error {
         pub fn check(n: i32) -> Result<i32, Error> {
             match n {
@@ -69,6 +117,8 @@ mod err {
         }
     }
 
+    /// pretty-print the error using Debug-derived code
+    /// XXX(Xe): is this a mistake?
     impl self::fmt::Display for Error {
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
             write!(f, "{:?}", self)
@@ -76,7 +126,7 @@ mod err {
     }
 
     impl self::error::Error for Error {}
-
+    
     pub fn check_io(error: i32) -> Result<i32, io::ErrorKind> {
         match error {
             n if n >= 0 => Ok(n),
@@ -91,6 +141,7 @@ mod err {
 pub mod log {
     use super::sys;
 
+    /// See Level enum defined in https://github.com/CommonWA/cwa-spec/blob/master/ns/log.md#write
     #[repr(i32)]
     #[derive(Debug)]
     pub enum Level {
@@ -99,31 +150,39 @@ pub mod log {
         Info = 6,
     }
 
-    /// Writes a line of log with the specified level to host logger.
+    /// Writes a line of text with the specified level to the host logger.
     pub fn write(level: Level, text: &str) {
         let text = text.as_bytes();
         unsafe { sys::log_write(level as i32, text.as_ptr(), text.len()) }
     }
 
+    /// Convenience wrapper for the error level.
     pub fn error(text: &str) {
         write(Level::Error, text)
     }
+    
+    /// Convenience wrapper for the warning level.
     pub fn warning(text: &str) {
         write(Level::Warning, text)
     }
+    
+    /// Convenience wrapper for the info level.
     pub fn info(text: &str) {
         write(Level::Info, text)
     }
 }
 
+/// Access to environment variables
 pub mod env {
     use super::{err, sys};
 
+    /// https://github.com/CommonWA/cwa-spec/blob/master/ns/env.md#get
     #[derive(Debug)]
     pub enum Error {
         NotFound,
         TooSmall(u32),
     }
+    
     pub fn get_buf<'a>(key: &[u8], value: &'a mut [u8]) -> Result<&'a mut [u8], Error> {
         let ret = unsafe { sys::env_get(key.as_ptr(), key.len(), value.as_mut_ptr(), value.len()) };
         match ret {
@@ -135,6 +194,7 @@ pub mod env {
         }
     }
 
+    /// Return the value of an environment variable or the reason why we can't.
     pub fn get(key: &str) -> Result<String, Error> {
         const ENVVAR_LEN: usize = 4096; // at work we don't see longer than 128 usually
         let key = key.as_bytes();
@@ -170,6 +230,7 @@ pub mod runtime {
             }
         }
     }
+    
     pub fn name() -> String {
         const MAX_LEN: usize = 32;
         let mut out = Vec::with_capacity(MAX_LEN);
@@ -185,6 +246,7 @@ pub mod runtime {
     }
 }
 
+/// used to fetch argv/argc
 pub mod startup {
     use super::{err, sys};
     use std::str;
@@ -220,6 +282,20 @@ pub mod startup {
     }
 }
 
+
+/// 
+/// Resources are maybe readable, maybe writable, maybe flushable and closable
+/// streams of bytes. A resource is backed by implementation in the containing
+/// runtime based on the URL scheme used in the `open` call.
+///
+/// Resources do not always have to be backed by things that exist. Resources
+/// may contain the transient results of API calls. Once the data in a Resource
+/// has been read, that may be the only time that data can ever be read. 
+///
+/// Please take this into consideration when consuming the results of Resources.
+///
+/// The implementation of this type uses the functions at https://github.com/CommonWA/cwa-spec/blob/master/ns/resource.md
+///
 #[derive(Debug)]
 pub struct Resource(i32);
 
@@ -228,7 +304,17 @@ impl Resource {
         let res = unsafe { sys::resource_open(url.as_ptr(), url.len()) };
         err::Error::check(res).map(Resource)
     }
-
+    
+    /// For the few times you _actually_ do know the file descriptor.
+    /// 
+    /// The CommonWA spec doesn't mandate any properties about file descriptors.
+    /// The implementation in Olin uses random file descriptors, meaning that
+    /// unless the stdio module is used, this function should probably never be
+    /// called unless you really know what you are doing.
+    ///
+    /// Passing an invalid file descriptor to this function will result in a
+    /// handle that returns errors on every call to it. This behavior may be 
+    /// useful.
     pub unsafe fn from_raw(handle: i32) -> Resource {
         Resource(handle)
     }
@@ -290,6 +376,7 @@ pub mod time {
     }
 }
 
+/// Bindings from semantic I/O targets to Resources
 pub mod stdio {
     use super::Resource;
     pub fn inp() -> Resource {
