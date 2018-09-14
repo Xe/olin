@@ -1,9 +1,11 @@
+sudo: required
+
+services:
+  - docker
+
 language: go
 
 go: 
- - "1.11.x"
+ - "1.x"
 
-env:
- - GO111MODULE=on
-
-install: true
+script: docker build .
