@@ -13,9 +13,8 @@
 /// * stdio
 /// * random
 ///
-/// ```Resource``` struct and its implementations define
-/// a generic class for a resource with `std::io::Read`
-/// and `std::io::Write` traits implemented.
+/// The ```Resource``` struct defines a high level wrapper
+/// to the more low level IO calls in sys.
 
 extern crate chrono;
 
