@@ -1,3 +1,5 @@
+#![no_main]
+
 extern crate olin;
 
 use olin::env;
@@ -7,8 +9,6 @@ use olin::startup;
 use olin::stdio;
 use std::io::Write;
 use std::string::String;
-
-fn main() {}
 
 #[no_mangle]
 pub extern "C" fn cwa_main() -> i32 {
