@@ -7,6 +7,10 @@ license = "MIT"
 repository = "https://github.com/Xe/olin"
 homepage = "https://github.com/Xe/olin"
 
+[[bin]]
+name = "shaman"
+path = "src/bin/shaman.rs"
+
 [dependencies]
 chrono = "0.4"
 http = "0.1"
