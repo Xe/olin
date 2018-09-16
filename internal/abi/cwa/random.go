@@ -4,10 +4,10 @@ import (
 	"math/rand"
 )
 
-func (p *Process) randI32() int32 {
+func (p *Process) RandI32() int32 {
 	return rand.Int31()
 }
 
-func (p *Process) randI64() int64 {
+func (p *Process) RandI64() int64 {
 	return rand.Int63()
 }

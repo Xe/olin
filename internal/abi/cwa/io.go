@@ -6,19 +6,19 @@ import (
 	"github.com/Xe/olin/internal/fileresolver"
 )
 
-func (p *Process) ioGetStdin() int32 {
+func (p *Process) IOGetStdin() int32 {
 	fid := rand.Int31()
 	p.files[fid] = fileresolver.Reader(p.Stdin, "stdin")
 	return fid
 }
 
-func (p *Process) ioGetStdout() int32 {
+func (p *Process) IOGetStdout() int32 {
 	fid := rand.Int31()
 	p.files[fid] = fileresolver.Writer(p.Stdout, "stdout")
 	return fid
 }
 
-func (p *Process) ioGetStderr() int32 {
+func (p *Process) IOGetStderr() int32 {
 	fid := rand.Int31()
 	p.files[fid] = fileresolver.Writer(p.Stderr, "stderr")
 	return fid

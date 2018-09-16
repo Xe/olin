@@ -1,6 +1,6 @@
 package cwa
 
-func (p *Process) envGet(keyPtr, keyLen, valPtr, valLen uint32) (int32, error) {
+func (p *Process) EnvGet(keyPtr, keyLen, valPtr, valLen uint32) (int32, error) {
 	//p.logger.Printf("getenv: 0x%x:%d, 0x%x:%d", keyPtr, keyLen, valPtr, valLen)
 
 	key := string(readMem(p.vm.Memory, keyPtr, keyLen))

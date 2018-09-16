@@ -84,7 +84,7 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 				msgPtr := uint32(f.Locals[1])
 				msgLen := uint32(f.Locals[2])
 
-				p.log(level, msgPtr, msgLen)
+				p.LogWrite(level, msgPtr, msgLen)
 
 				return 0
 			}
@@ -98,7 +98,7 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 				valPtr := uint32(f.Locals[2])
 				valLen := uint32(f.Locals[3])
 
-				result, err := p.envGet(keyPtr, keyLen, valPtr, valLen)
+				result, err := p.EnvGet(keyPtr, keyLen, valPtr, valLen)
 				if err != nil {
 					return int64(ErrorCode(err))
 				}
@@ -125,7 +125,7 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 				namePtr := uint32(f.Locals[0])
 				nameLen := uint32(f.Locals[1])
 
-				return int64(p.runtimeName(namePtr, nameLen))
+				return int64(p.RuntimeName(namePtr, nameLen))
 			}
 		case "runtime_msleep":
 			return func(vm *exec.VirtualMachine) int64 {
@@ -142,7 +142,7 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 			return func(vm *exec.VirtualMachine) int64 {
 				p.SetVM(vm)
 
-				return int64(p.argLen())
+				return int64(p.ArgLen())
 			}
 		case "startup_arg_at":
 			return func(vm *exec.VirtualMachine) int64 {
@@ -153,7 +153,7 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 				outPtr := uint32(f.Locals[1])
 				outLen := uint32(f.Locals[2])
 
-				result, err := p.argAt(i, outPtr, outLen)
+				result, err := p.ArgAt(i, outPtr, outLen)
 				if err != nil {
 					return int64(ErrorCode(err))
 				}
@@ -168,7 +168,7 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 				urlPtr := uint32(f.Locals[0])
 				urlLen := uint32(f.Locals[1])
 
-				result, err := p.open(urlPtr, urlLen)
+				result, err := p.ResourceOpen(urlPtr, urlLen)
 				if err != nil {
 					return int64(ErrorCode(err))
 				}
@@ -184,7 +184,7 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 				dataPtr := uint32(f.Locals[1])
 				dataLen := uint32(f.Locals[2])
 
-				result, err := p.read(fid, dataPtr, dataLen)
+				result, err := p.ResourceRead(fid, dataPtr, dataLen)
 				if err != nil {
 					return int64(ErrorCode(err))
 				}
@@ -200,7 +200,7 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 				dataPtr := uint32(f.Locals[1])
 				dataLen := uint32(f.Locals[2])
 
-				result, err := p.write(fid, dataPtr, dataLen)
+				result, err := p.ResourceWrite(fid, dataPtr, dataLen)
 				if err != nil {
 					return int64(ErrorCode(err))
 				}
@@ -214,7 +214,7 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 				f := vm.GetCurrentFrame()
 				fid := int32(f.Locals[0])
 
-				err := p.close(fid)
+				err := p.ResourceClose(fid)
 				if err != nil {
 					return int64(ErrorCode(err))
 				}
@@ -228,7 +228,7 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 				f := vm.GetCurrentFrame()
 				fid := int32(f.Locals[0])
 
-				err := p.flush(fid)
+				err := p.ResourceFlush(fid)
 				if err != nil {
 					return int64(ErrorCode(err))
 				}
@@ -239,37 +239,37 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 			return func(vm *exec.VirtualMachine) int64 {
 				p.SetVM(vm)
 
-				return p.timeNow()
+				return p.TimeNow()
 			}
 		case "io_get_stdin":
 			return func(vm *exec.VirtualMachine) int64 {
 				p.SetVM(vm)
 
-				return int64(p.ioGetStdin())
+				return int64(p.IOGetStdin())
 			}
 		case "io_get_stdout":
 			return func(vm *exec.VirtualMachine) int64 {
 				p.SetVM(vm)
 
-				return int64(p.ioGetStdout())
+				return int64(p.IOGetStdout())
 			}
 		case "io_get_stderr":
 			return func(vm *exec.VirtualMachine) int64 {
 				p.SetVM(vm)
 
-				return int64(p.ioGetStderr())
+				return int64(p.IOGetStderr())
 			}
 		case "random_i32":
 			return func(vm *exec.VirtualMachine) int64 {
 				p.SetVM(vm)
 
-				return int64(p.randI32())
+				return int64(p.RandI32())
 			}
 		case "random_i64":
 			return func(vm *exec.VirtualMachine) int64 {
 				p.SetVM(vm)
 
-				return p.randI64()
+				return p.RandI64()
 			}
 		default:
 			log.Panicf("unknown import %s::%s", module, field)

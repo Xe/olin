@@ -10,7 +10,7 @@ import (
 	"github.com/Xe/olin/internal/fileresolver"
 )
 
-func (p *Process) open(urlPtr, urlLen uint32) (int32, error) {
+func (p *Process) ResourceOpen(urlPtr, urlLen uint32) (int32, error) {
 	u := string(readMem(p.vm.Memory, urlPtr, urlLen))
 	uu, err := url.Parse(u)
 	if err != nil {
@@ -47,7 +47,7 @@ func (p *Process) open(urlPtr, urlLen uint32) (int32, error) {
 	return fid, nil
 }
 
-func (p *Process) write(fid int32, dataPtr, dataLen uint32) (int32, error) {
+func (p *Process) ResourceWrite(fid int32, dataPtr, dataLen uint32) (int32, error) {
 	mem := p.vm.Memory[dataPtr : dataPtr+dataLen]
 
 	f, ok := p.files[fid]
@@ -66,7 +66,7 @@ func (p *Process) write(fid int32, dataPtr, dataLen uint32) (int32, error) {
 	return int32(n), nil
 }
 
-func (p *Process) read(fid int32, dataPtr, dataLen uint32) (int32, error) {
+func (p *Process) ResourceRead(fid int32, dataPtr, dataLen uint32) (int32, error) {
 	f, ok := p.files[fid]
 	if !ok {
 		return 0, InvalidArgumentError
@@ -88,7 +88,7 @@ func (p *Process) read(fid int32, dataPtr, dataLen uint32) (int32, error) {
 	return int32(n), nil
 }
 
-func (p *Process) close(fid int32) error {
+func (p *Process) ResourceClose(fid int32) error {
 	f, ok := p.files[fid]
 	if !ok {
 		return InvalidArgumentError
@@ -105,7 +105,7 @@ func (p *Process) close(fid int32) error {
 	return nil
 }
 
-func (p *Process) flush(fid int32) error {
+func (p *Process) ResourceFlush(fid int32) error {
 	f, ok := p.files[fid]
 	if !ok {
 		return InvalidArgumentError
