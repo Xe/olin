@@ -1,0 +1,34 @@
+digraph G {
+  subgraph cluster_0 {
+    style=filled;
+    color=lightgrey;
+    node [style=filled,color=white];
+    cwa_cgi [label="cmd/cwa-cgi"]
+    internal_cwagi [label="internal/cwagi"]
+    internal_abi_cwa [label="internal/abi/cwa"]
+
+    cwa_cgi -> internal_cwagi [label="HTTP request\nfrom user"];
+    internal_cwagi -> internal_abi_cwa [label="Prepare as\nCWAGI request\nto pooled VM"];
+    label = "Go";
+  }
+
+  start -> cwa_cgi;
+  cwa_main -> internal_cwagi [label="i32 return"];
+  internal_cwagi -> cwa_cgi [label="HTTP response\nfrom stdout"];
+  internal_abi_cwa -> cwa_main [label="export cwa_main"];
+  cwa_cgi -> end [label="Success"];
+  inner_workings -> internal_abi_cwa [label="syscalls"];
+  internal_abi_cwa -> inner_workings;
+
+  subgraph cluster_1 {
+    node [style=filled];
+    cwa_main;
+    inner_workings [label="friendly_main"];
+    cwa_main -> inner_workings [label="(normally\ninvisible)"];
+    inner_workings -> cwa_main[label="i32 return"];
+    label="WebAssembly (Rust)";
+  }
+
+  start [shape=Mdiamond,label="request\ncomes in"];
+  end [shape=Msquare,label="End"];
+}
