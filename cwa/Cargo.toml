@@ -4,3 +4,8 @@ members = [
     "olin",
     "tests",
 ]
+
+[profile.release]
+debug = false
+lto = true
+opt-level = 's'
