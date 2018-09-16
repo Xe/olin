@@ -1,0 +1,11 @@
+digraph G {
+  rust [label="Rust"];
+  rust_wasm_tools [label="Rust WASM\nTools"];
+  go [label="Go"];
+  final [label="Final"];
+
+  rust -> rust_wasm_tools [label="*.wasm"];
+  rust_wasm_tools -> go [label="*.tiny.wasm"];
+  go -> final [label="cmd/..."];
+  rust_wasm_tools -> final [label="*.tiny.wasm"];
+}
