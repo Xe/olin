@@ -19,12 +19,15 @@ COPY . /root/go/src/github.com/Xe/olin
 WORKDIR /root/go/src/github.com/Xe/olin
 COPY --from=rust-wasm-tools /olin/cwagi.wasm ./cmd/cwa-cgi/testdata/test.wasm
 COPY --from=rust-wasm-tools /olin/tests.wasm ./cmd/cwa/testdata/test.wasm
-RUN go test ./cmd/... ./internal/...
+RUN go test -v ./cmd/... ./internal/...
 RUN GOBIN=/usr/local/bin go install -tags heroku ./cmd/cwa-cgi
+RUN GOBIN=/usr/local/bin go install ./cmd/cwa
 
 FROM xena/alpine
 COPY ./run/run.sh /run.sh
 COPY --from=rust-wasm-tools /olin/cwagi.wasm /main.wasm
+COPY --from=rust-wasm-tools /olin/tests.wasm /tests.wasm
+COPY --from=go /usr/local/bin/cwa /cwa
 COPY --from=go /usr/local/bin/cwa-cgi /cwa-cgi
 WORKDIR /
 CMD ["/run.sh"]
