@@ -14,7 +14,7 @@ func (p *Process) specMinor() int32 {
 	return names.CommonWASpecMinor
 }
 
-func (p *Process) runtimeName(namePtr, nameLen uint32) int32 {
+func (p *Process) RuntimeName(namePtr, nameLen uint32) int32 {
 	if len(names.CommonWARuntimeName) < int(nameLen) {
 		for i, by := range []byte(names.CommonWARuntimeName) {
 			p.vm.Memory[namePtr+uint32(i)] = by

@@ -1,10 +1,10 @@
 package cwa
 
-func (p *Process) argLen() int32 {
+func (p *Process) ArgLen() int32 {
 	return int32(len(p.argv))
 }
 
-func (p *Process) argAt(i int32, outPtr, outLen uint32) (int32, error) {
+func (p *Process) ArgAt(i int32, outPtr, outLen uint32) (int32, error) {
 	if i > int32(len(p.argv)) {
 		return 0, InvalidArgumentError
 	}

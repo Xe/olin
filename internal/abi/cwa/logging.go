@@ -2,7 +2,7 @@ package cwa
 
 import "strconv"
 
-func (p *Process) log(level int32, msgPtr, msgLen uint32) {
+func (p *Process) LogWrite(level int32, msgPtr, msgLen uint32) {
 	msg := string(readMem(p.vm.Memory, msgPtr, msgLen))
 	p.logger.Printf("%s: %s", levelToString(level), msg)
 }
