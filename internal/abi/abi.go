@@ -1,6 +1,8 @@
 // Package abi is the common interface for all ABI implementations
 package abi
 
+//go:generate ./generate_readme.sh
+
 import (
 	"io"
 	"net/url"

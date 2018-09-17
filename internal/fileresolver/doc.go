@@ -4,3 +4,5 @@
 // errors and massage them into the correct format with as little modification
 // as possible on the resolver side.
 package fileresolver
+
+//go:generate ./generate_readme.sh

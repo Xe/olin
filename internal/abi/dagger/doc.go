@@ -4,3 +4,5 @@ Package dagger is the first attempt at an API for webassembly modules to communi
 Consider this the first draft of Dagger, everything here is subject to change. This is going to be the experimental phase.
 */
 package dagger
+
+//go:generate ./generate_readme.sh

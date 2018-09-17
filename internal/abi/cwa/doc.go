@@ -2,3 +2,5 @@
 //
 // [1]: https://github.com/CommonWA/cwa-spec
 package cwa
+
+//go:generate ./generate_readme.sh
