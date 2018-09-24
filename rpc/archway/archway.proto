@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package within.olin.archway;
+option go_package = "archway";
+
+message Nil {}
+
+message Handler {
+  string id = 1;
+  int64 created_at_unix_utc = 2;
+  string topic = 3;
+  bytes module = 4;
+}
+
+message Handlers {
+  repeated Handler handlers = 1;
+}
+
+message Id {
+  string id = 1;
+}
+
+message Event {
+  string id = 1;
+  int64 created_at_unix_utc = 2;
+  string topic = 3;
+  bytes data = 4;
+}
+
+service Interop {
+  rpc CreateHandler(Handler) returns (Handler) {};
+  rpc DeleteHandler(Id) returns (Handler) {};
+  rpc GetHandler(Id) returns (Handler) {};
+  rpc ListHandlers(Nil) returns (Handlers) {};
+
+  rpc CreateEvent(Event) returns (Nil) {};
+  rpc GetEvent(Id) returns (Event) {};
+}
