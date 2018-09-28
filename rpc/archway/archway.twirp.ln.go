@@ -121,6 +121,7 @@ func (i Handlers) F() ln.F {
 func (i Id) F() ln.F {
 	return ln.F{
 		"id_id": i.Id,
+		"id_topic": i.Topic,
 	}
 }
 

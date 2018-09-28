@@ -110,7 +110,8 @@ func (i Interop) CreateEvent(ctx context.Context, e *archway.Event) (*archway.Ni
 
 	u := url.URL{
 		Scheme: "event",
-		Host:   id,
+		Host:   e.Topic,
+		Path:   id,
 	}
 
 	e.Id = id
@@ -131,7 +132,8 @@ func (i Interop) CreateEvent(ctx context.Context, e *archway.Event) (*archway.Ni
 func (i Interop) GetEvent(ctx context.Context, id *archway.Id) (*archway.Event, error) {
 	u := url.URL{
 		Scheme: "event",
-		Host:   id.GetId(),
+		Host:   id.GetTopic(),
+		Path:   id.GetId(),
 	}
 
 	var e archway.Event

@@ -18,6 +18,7 @@ message Handlers {
 
 message Id {
   string id = 1;
+  string topic = 2;
 }
 
 message Event {
