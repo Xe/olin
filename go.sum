@@ -10,6 +10,9 @@ github.com/pborman/uuid v0.0.0-20180906182336-adf5a7427709 h1:zNBQb37RGLmJybyMcs
 github.com/pborman/uuid v0.0.0-20180906182336-adf5a7427709/go.mod h1:VyrYX9gd7irzKovcSS6BIIEwPRkP2Wm2m9ufcdFSJ34=
 github.com/perlin-network/life v0.0.0-20180827140726-c39ba803f741 h1:XvEq7ZCmgQOuybWKFIuIB3z4sXwG4JhzamyAZgC+Q78=
 github.com/perlin-network/life v0.0.0-20180827140726-c39ba803f741/go.mod h1:57xSeeThaNLPBa4np/M8hjm5HQcWuyqGLJ8A68rBA4Y=
+github.com/perlin-network/life v0.0.0-20181005150058-1eb3d14cb6e7 h1:vG8XDzGFUjdPclRykaxgiXjQDpRaOZ7Zk/XR7RDreU0=
+github.com/perlin-network/life v0.0.0-20181005150058-1eb3d14cb6e7/go.mod h1:fETv2DiCvuXiTsRHgPs2XQBvWqRGvnc59ZhCw9AtFA4=
 github.com/pkg/errors v0.8.0 h1:WdK/asTD0HN+q6hsWO3/vpuAkAr+tw6aNJNDFFf0+qw=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 golang.org/x/net v0.0.0-20180811021610-c39426892332/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
+golang.org/x/tools v0.0.0-20180917221912-90fa682c2a6e/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=
