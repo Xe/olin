@@ -8,6 +8,7 @@ import (
 	"github.com/Xe/olin/internal/abi/cwa"
 	"github.com/Xe/olin/internal/names"
 	"github.com/perlin-network/life/exec"
+	"github.com/perlin-network/life/compiler"
 )
 
 var (
@@ -23,7 +24,7 @@ func init() {
 	})
 
 	cfg := exec.VMConfig{}
-	vm, err = exec.NewVirtualMachine(nothingModule, cfg, p)
+	vm, err = exec.NewVirtualMachine(nothingModule, cfg, p, &compiler.SimpleGasPolicy{})
 	if err != nil {
 		log.Fatal(err)
 	}

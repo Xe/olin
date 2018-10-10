@@ -12,6 +12,7 @@ import (
 
 	"github.com/Xe/olin/internal/abi/cwa"
 	"github.com/perlin-network/life/exec"
+	"github.com/perlin-network/life/compiler"
 )
 
 var (
@@ -78,7 +79,9 @@ func main() {
 		EnableJIT:          *jitEnabled,
 		DefaultMemoryPages: *minPages,
 	}
-	vm, err := exec.NewVirtualMachine(data, cfg, p)
+
+	gp := &compiler.SimpleGasPolicy{GasPerInstruction: 1}
+	vm, err := exec.NewVirtualMachine(data, cfg, p, gp)
 	if err != nil {
 		log.Fatalf("%s: %v", fname, err)
 	}
