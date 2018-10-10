@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/Xe/olin/internal/abi/cwa"
-	"github.com/perlin-network/life/exec"
 	"github.com/perlin-network/life/compiler"
+	"github.com/perlin-network/life/exec"
 )
 
 var (
@@ -58,7 +58,9 @@ func main() {
 
 	fname := argv[0]
 
+	t0 := time.Now()
 	data, err := ioutil.ReadFile(fname)
+	readingFileTime := time.Since(t0)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -81,7 +83,9 @@ func main() {
 	}
 
 	gp := &compiler.SimpleGasPolicy{GasPerInstruction: 1}
+	t0 = time.Now()
 	vm, err := exec.NewVirtualMachine(data, cfg, p, gp)
+	vmInitTime := time.Since(t0)
 	if err != nil {
 		log.Fatalf("%s: %v", fname, err)
 	}
@@ -99,13 +103,17 @@ func main() {
 		log.Printf("executing %s (%d)", *mainFunc, main)
 	}
 
-	t0 := time.Now()
+	t0 = time.Now()
 	ret, err := vm.RunWithGasLimit(main, *gas)
+	vmRunTime := time.Since(t0)
 	if err != nil {
 		log.Fatalf("%s: vm error: %v", fname, err)
 	}
 	if *vmStats || *doTest {
-		log.Printf("execution time: %s", time.Since(t0))
+		log.Printf("reading file time: %s", readingFileTime)
+		log.Printf("vm init time: %s", vmInitTime)
+		log.Printf("vm gas used: %v", vm.Gas)
+		log.Printf("execution time: %s", vmRunTime)
 	}
 
 	if ret != 0 {
