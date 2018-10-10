@@ -11,6 +11,10 @@ homepage = "https://github.com/Xe/olin"
 name = "shaman"
 path = "src/bin/shaman.rs"
 
+[[bin]]
+name = "olinfetch"
+path = "src/bin/olinfetch.rs"
+
 [dependencies]
 chrono = "0.4"
 http = "0.1"
