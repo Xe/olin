@@ -16,6 +16,7 @@ import (
 	"github.com/Xe/ln/opname"
 	"github.com/Xe/olin/internal/abi/cwa"
 	"github.com/pborman/uuid"
+	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"
 )
 
@@ -31,7 +32,8 @@ func NewVM(data []byte, argv []string, name, mainFunc string) (*VMServer, error)
 		EnableJIT:          false,
 		DefaultMemoryPages: 32, // 2 MB
 	}
-	vm, err := exec.NewVirtualMachine(data, cfg, p)
+	gp := compiler.SimpleGasPolicy{GasPerInstruction :1}
+	vm, err := exec.NewVirtualMachine(data, cfg, p, &gp)
 	if err != nil {
 		return nil, err
 	}

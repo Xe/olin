@@ -48,24 +48,26 @@ type VirtualMachine struct {
 	Exited          bool
 	ExitError       interface{}
 	ReturnValue     int64
+	Gas             uint64
 }
 
 // VMConfig denotes a set of options passed to a single VirtualMachine insta.ce
 type VMConfig struct {
-	EnableJIT          bool
-	MaxMemoryPages     int
-	MaxTableSize       int
-	MaxValueSlots      int
-	MaxCallStackDepth  int
-	DefaultMemoryPages int
-	DefaultTableSize   int
+	EnableJIT            bool
+	MaxMemoryPages       int
+	MaxTableSize         int
+	MaxValueSlots        int
+	MaxCallStackDepth    int
+	DefaultMemoryPages   int
+	DefaultTableSize     int
+	GasLimit             uint64
+	DisableFloatingPoint bool
 }
 
 // Frame represents a call frame.
 type Frame struct {
 	FunctionID   int
 	Code         []byte
-	JITInfo      interface{}
 	Regs         []int64
 	Locals       []int64
 	IP           int
@@ -87,9 +89,10 @@ func NewVirtualMachine(
 	code []byte,
 	config VMConfig,
 	impResolver ImportResolver,
+	gasPolicy compiler.GasPolicy,
 ) (_retVM *VirtualMachine, retErr error) {
 	if config.EnableJIT {
-		fmt.Println("Warning: JIT support is incomplete and the internals are likely to change in the future.")
+		fmt.Println("Warning: JIT support is removed.")
 	}
 
 	m, err := compiler.LoadModule(code)
@@ -97,7 +100,9 @@ func NewVirtualMachine(
 		return nil, err
 	}
 
-	functionCode, err := m.CompileForInterpreter()
+	m.DisableFloatingPoint = config.DisableFloatingPoint
+
+	functionCode, err := m.CompileForInterpreter(gasPolicy)
 	if err != nil {
 		return nil, err
 	}
@@ -230,20 +235,6 @@ func (f *Frame) Init(vm *VirtualMachine, functionID int, code compiler.Interpret
 	f.Continuation = 0
 
 	//fmt.Printf("Enter function %d (%s)\n", functionID, vm.Module.FunctionNames[functionID])
-	if vm.Config.EnableJIT {
-		code := &vm.FunctionCode[functionID]
-		if !code.JITDone {
-			if len(code.Bytes) > JITCodeSizeThreshold {
-				if !vm.GenerateCodeForFunction(functionID) {
-					fmt.Printf("codegen for function %d failed\n", functionID)
-				} else {
-					fmt.Printf("codegen for function %d succeeded\n", functionID)
-				}
-			}
-			code.JITDone = true
-		}
-		f.JITInfo = code.JITInfo
-	}
 }
 
 // Destroy destroys a frame. Must be called on return.
@@ -331,6 +322,17 @@ func (vm *VirtualMachine) Ignite(functionID int, params ...int64) {
 	copy(frame.Locals, params)
 }
 
+func (vm *VirtualMachine) AddAndCheckGas(delta uint64) {
+	newGas := vm.Gas + delta
+	if newGas < vm.Gas {
+		panic("gas overflow")
+	}
+	if vm.Config.GasLimit != 0 && newGas > vm.Config.GasLimit {
+		panic("gas limit exceeded")
+	}
+	vm.Gas = newGas
+}
+
 // Execute starts the virtual machines main instruction processing loop.
 // This function may return at any point and is guaranteed to return
 // at least once every 10000 instructions. Caller is responsible for
@@ -359,26 +361,7 @@ func (vm *VirtualMachine) Execute() {
 
 	frame := vm.GetCurrentFrame()
 
-	cycleCount := 0
-
 	for {
-		if cycleCount == 10000 {
-			return
-		}
-		cycleCount++
-
-		if frame.JITInfo != nil {
-			dm := frame.JITInfo.(*DynamicModule)
-			var fRetVal int64
-			status := dm.Run(vm, &fRetVal)
-			if status < 0 {
-				panic(fmt.Errorf("status = %d", status))
-			}
-			//fmt.Printf("JIT: continuation = %d, ip = %d\n", status, int(fRetVal))
-			frame.Continuation = status
-			frame.IP = int(fRetVal)
-		}
-
 		valueID := int(LE.Uint32(frame.Code[frame.IP : frame.IP+4]))
 		ins := opcodes.Opcode(frame.Code[frame.IP+4])
 		frame.IP += 5
@@ -1281,6 +1264,19 @@ func (vm *VirtualMachine) Execute() {
 			target := int(LE.Uint32(frame.Code[frame.IP : frame.IP+4]))
 			vm.Yielded = frame.Regs[int(LE.Uint32(frame.Code[frame.IP+4:frame.IP+8]))]
 			frame.IP = target
+		case opcodes.JmpEither:
+			targetA := int(LE.Uint32(frame.Code[frame.IP : frame.IP+4]))
+			targetB := int(LE.Uint32(frame.Code[frame.IP+4 : frame.IP+8]))
+			cond := int(LE.Uint32(frame.Code[frame.IP+8 : frame.IP+12]))
+			yieldedReg := int(LE.Uint32(frame.Code[frame.IP+12 : frame.IP+16]))
+			frame.IP += 16
+
+			vm.Yielded = frame.Regs[yieldedReg]
+			if frame.Regs[cond] != 0 {
+				frame.IP = targetA
+			} else {
+				frame.IP = targetB
+			}
 		case opcodes.JmpIf:
 			target := int(LE.Uint32(frame.Code[frame.IP : frame.IP+4]))
 			cond := int(LE.Uint32(frame.Code[frame.IP+4 : frame.IP+8]))
@@ -1430,6 +1426,15 @@ func (vm *VirtualMachine) Execute() {
 
 		case opcodes.Phi:
 			frame.Regs[valueID] = vm.Yielded
+
+		case opcodes.AddGas:
+			delta := LE.Uint64(frame.Code[frame.IP : frame.IP+8])
+			frame.IP += 8
+			vm.AddAndCheckGas(delta)
+
+		case opcodes.FPDisabledError:
+			panic("wasm: floating point disabled")
+
 		default:
 			panic("unknown instruction")
 		}

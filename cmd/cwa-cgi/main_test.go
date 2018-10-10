@@ -17,6 +17,7 @@ import (
 	"github.com/Xe/ln/opname"
 	"github.com/Xe/olin/internal/abi/cwa"
 	"github.com/pborman/uuid"
+	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"
 )
 
@@ -149,7 +150,8 @@ func loadWasm(t *testing.T, fname, main string) *vmServer {
 		EnableJIT:          false,
 		DefaultMemoryPages: 32,
 	}
-	vm, err := exec.NewVirtualMachine(data, cfg, p)
+	gp := compiler.SimpleGasPolicy{}
+	vm, err := exec.NewVirtualMachine(data, cfg, p, &gp)
 	if err != nil {
 		t.Fatal(err)
 	}

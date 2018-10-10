@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/Xe/olin/internal/fileresolver"
+	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"
 )
 
@@ -89,7 +90,8 @@ func openAndRunWasmMain(t *testing.T, p *Process, fname string, isok func(int64)
 	}
 
 	cfg := exec.VMConfig{}
-	vm, err := exec.NewVirtualMachine(data, cfg, p)
+	gp := compiler.SimpleGasPolicy{}
+	vm, err := exec.NewVirtualMachine(data, cfg, p, &gp)
 	if err != nil {
 		t.Fatalf("%s: %v", fname, err)
 	}
