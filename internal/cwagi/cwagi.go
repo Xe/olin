@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"math/rand"
 	"net/http"
 	"sync"
@@ -16,10 +15,6 @@ import (
 	"github.com/Xe/ln"
 	"github.com/Xe/ln/opname"
 	"github.com/Xe/olin/internal/abi/cwa"
-	"github.com/Xe/olin/proto/brand"
-	"github.com/go-interpreter/wagon/wasm"
-	"github.com/golang/protobuf/proto"
-	"github.com/kr/pretty"
 	"github.com/pborman/uuid"
 	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"
@@ -29,52 +24,21 @@ import (
 func NewVM(data []byte, argv []string, name, mainFunc string) (*VMServer, error) {
 	myID := uuid.New()
 
-	mod, err := wasm.DecodeModule(bytes.NewBuffer(data))
-	if err != nil {
-		return nil, err
-	}
-	var b brand.Brand
-
-	for _, cs := range mod.Customs {
-		log.Printf("custom section %s", cs.Name)
-	}
-
-	if cs := mod.Custom("olin-settings"); cs != nil {
-		err = proto.Unmarshal(cs.Data, &b)
-		if err != nil {
-			return nil, err
-		}
-
-		pretty.Println(b)
-	}
-
-	if b.Opts == nil {
-		b.Opts = &brand.VMOptions{
-			EnableJit:    false,
-			DefaultPages: 32,
-			MaxPages:     48,
-			MainFunc:     mainFunc,
-		}
-	} else {
-		log.Printf("loading %s by %s", b.Meta.Name, b.Meta.Author)
-	}
-
 	p := cwa.NewProcess(name+"+"+myID, argv, map[string]string{
 		"RUN_ID": myID,
 	})
 
 	cfg := exec.VMConfig{
-		EnableJIT:          b.Opts.EnableJit,
-		DefaultMemoryPages: int(b.Opts.DefaultPages),
-		MaxMemoryPages:     int(b.Opts.MaxPages),
+		DefaultMemoryPages: 32, // 2 MB
+		MaxMemoryPages:     48, // 3 MB
 	}
-	gp := compiler.SimpleGasPolicy{GasPerInstruction :1}
+	gp := compiler.SimpleGasPolicy{GasPerInstruction: 1}
 	vm, err := exec.NewVirtualMachine(data, cfg, p, &gp)
 	if err != nil {
 		return nil, err
 	}
 
-	main, ok := vm.GetFunctionExport(b.Opts.MainFunc)
+	main, ok := vm.GetFunctionExport(mainFunc)
 	if !ok {
 		return nil, errors.New("cwagi: need main function to be exported")
 	}

@@ -12,6 +12,8 @@ require (
 	github.com/go-kit/kit v0.7.0
 	github.com/go-logfmt/logfmt v0.3.0 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
+	github.com/dustin/go-humanize v1.0.0
+	github.com/go-interpreter/wagon v0.0.0
 	github.com/golang/protobuf v1.2.0
 	github.com/google/uuid v1.0.0 // indirect
 	github.com/heroku/x v0.0.0-20180719221634-1de401e1ba0e

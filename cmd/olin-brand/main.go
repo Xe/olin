@@ -8,7 +8,7 @@ import (
 
 	"github.com/Xe/olin/internal/namegen"
 	"github.com/Xe/olin/internal/names"
-	"github.com/Xe/olin/proto/brand"
+	"github.com/Xe/olin/rpc/brand"
 	humanize "github.com/dustin/go-humanize"
 	"github.com/go-interpreter/wagon/wasm"
 	"github.com/golang/protobuf/proto"
@@ -19,7 +19,6 @@ var (
 	defaultPages = flag.Int("default-pages", 32, "default number of WebAssembly pages to use, default is 32 (~2MB)")
 	maxPages     = flag.Int("max-pages", 48, "maximum number of WebAssembly pages that can be used, default is 48 (~3MB)")
 	mainFunc     = flag.String("main-func", "cwa_main", "\"main\" entrypoint of the webassembly module provided via flags")
-	kind         = flag.String("kind", "cwagi", "binary kind")
 	name         = flag.String("name", "", "name of the person or group who created this software")
 )
 
@@ -36,12 +35,6 @@ func init() {
 
 		myname := string(out)
 		*name = myname[:len(myname)-1]
-	}
-
-	switch *kind {
-	case "cwagi", "daemon", "interactive":
-	default:
-		log.Fatalf("unknown -kind %s: want cwagi, daemon or interactive", *kind)
 	}
 }
 
@@ -66,9 +59,22 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Printf("%#v", mod.Customs[0].Name)
-
 	if sc := mod.Custom("olin-settings"); sc != nil {
+		var b brand.Brand
+		err := proto.Unmarshal(sc.Data, &b)
+		if err != nil {
+			log.Fatalf("can't unmarshal settings: %v", err)
+		}
+
+		log.Println("custom settings:")
+		log.Printf("JIT enabled: %v", b.Opts.EnableJit)
+		log.Printf("Default ram pages: %d", b.Opts.DefaultPages)
+		log.Printf("Max ram pages: %d", b.Opts.MaxPages)
+		log.Printf("Main func: %s", b.Opts.MainFunc)
+		log.Printf("Expected runtime: %s", b.Meta.ExpectedRuntime)
+		log.Printf("Author: %s", b.Meta.Author)
+		log.Printf("Name: %s", b.Meta.Name)
+
 		log.Fatal("custom settings already exist for this binary")
 	}
 
@@ -104,7 +110,7 @@ func main() {
 		Data: data,
 	}
 
-	mod.Customs = append(mod.Customs, sc)
+	mod.Sections = append(mod.Sections, sc)
 
 	fout, err := os.Create(fname + ".branded")
 	if err != nil {
