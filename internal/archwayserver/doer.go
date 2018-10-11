@@ -14,6 +14,7 @@ import (
 	"github.com/Xe/olin/rpc/archway"
 	pubsub "github.com/alash3al/go-pubsub"
 	"github.com/pborman/uuid"
+	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"
 )
 
@@ -93,7 +94,8 @@ func newHandler(h *archway.Handler) (*handler, error) {
 		EnableJIT:          false,
 		DefaultMemoryPages: 32, // 2 MB
 	}
-	vm, err := exec.NewVirtualMachine(h.Module, cfg, p)
+	gp := &compiler.SimpleGasPolicy{GasPerInstruction: 1}
+	vm, err := exec.NewVirtualMachine(h.Module, cfg, p, gp)
 	if err != nil {
 		return nil, err
 	}
