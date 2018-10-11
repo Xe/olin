@@ -11,12 +11,14 @@ github.com/beorn7/perks/quantile
 github.com/boltdb/bolt
 # github.com/djherbis/stow v2.2.0+incompatible
 github.com/djherbis/stow
+# github.com/dustin/go-humanize v1.0.0
+github.com/dustin/go-humanize
 # github.com/go-interpreter/wagon v0.0.0 => github.com/losfair/wagon v0.0.0-20180825141017-f8cb99b55a39
 github.com/go-interpreter/wagon/wasm
+github.com/go-interpreter/wagon/disasm
 github.com/go-interpreter/wagon/wasm/leb128
 github.com/go-interpreter/wagon/wasm/operators
 github.com/go-interpreter/wagon/wasm/internal/readpos
-github.com/go-interpreter/wagon/disasm
 # github.com/go-kit/kit v0.7.0
 github.com/go-kit/kit/metrics/provider
 github.com/go-kit/kit/metrics
@@ -37,8 +39,8 @@ github.com/go-logfmt/logfmt
 # github.com/go-stack/stack v1.8.0
 github.com/go-stack/stack
 # github.com/golang/protobuf v1.2.0
-github.com/golang/protobuf/jsonpb
 github.com/golang/protobuf/proto
+github.com/golang/protobuf/jsonpb
 github.com/golang/protobuf/ptypes/struct
 # github.com/google/uuid v1.0.0
 github.com/google/uuid
@@ -57,8 +59,8 @@ github.com/matttproud/golang_protobuf_extensions/pbutil
 # github.com/pborman/uuid v0.0.0-20180906182336-adf5a7427709
 github.com/pborman/uuid
 # github.com/perlin-network/life v0.0.0-20181005150058-1eb3d14cb6e7
-github.com/perlin-network/life/exec
 github.com/perlin-network/life/compiler
+github.com/perlin-network/life/exec
 github.com/perlin-network/life/compiler/opcodes
 github.com/perlin-network/life/utils
 # github.com/pkg/errors v0.8.0
