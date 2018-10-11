@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"flag"
 	"io/ioutil"
@@ -8,6 +9,9 @@ import (
 	"net/http"
 
 	"github.com/Xe/olin/rpc/archway"
+	"github.com/Xe/olin/rpc/brand"
+	"github.com/go-interpreter/wagon/wasm"
+	"github.com/golang/protobuf/proto"
 	"github.com/vutran/srgnt"
 )
 
@@ -28,6 +32,30 @@ func CreateHandler(fl *flag.FlagSet) {
 	data, err := ioutil.ReadFile(fname)
 	if err != nil {
 		log.Fatalf("can't read wasm file: %v", err)
+	}
+
+	mod, err := wasm.DecodeModule(bytes.NewBuffer(data))
+	if err != nil {
+		log.Fatalf("can't decode wasm file: %v", err)
+	}
+
+	if sc := mod.Custom("olin-settings"); sc != nil {
+		var b brand.Brand
+		err := proto.Unmarshal(sc.Data, &b)
+		if err != nil {
+			log.Fatalf("can't unmarshal settings: %v", err)
+		}
+
+		log.Println("custom settings:")
+		log.Printf("JIT enabled: %v", b.Opts.EnableJit)
+		log.Printf("Default ram pages: %d", b.Opts.DefaultPages)
+		log.Printf("Max ram pages: %d", b.Opts.MaxPages)
+		log.Printf("Main func: %s", b.Opts.MainFunc)
+		log.Printf("Expected runtime: %s", b.Meta.ExpectedRuntime)
+		log.Printf("Author: %s", b.Meta.Author)
+		log.Printf("Name: %s", b.Meta.Name)
+	} else {
+		log.Printf("Binary has no custom settings defined. This may result in undesirable performance.")
 	}
 
 	hdl := &archway.Handler{
