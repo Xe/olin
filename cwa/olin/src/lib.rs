@@ -1,7 +1,7 @@
 /// Main modules to perform the low-level operations
 /// described in the Olin specs. In particular the basic
 /// "actions": open, read, write, close, flush on files.
-/// 
+///
 /// Modules:
 /// * sys
 /// * err
@@ -15,13 +15,20 @@
 ///
 /// The ```Resource``` struct defines a high level wrapper
 /// to the more low level IO calls in sys.
-
 extern crate chrono;
 
 use std::io::{self, Read, Write};
 
 pub mod http;
 pub mod panic;
+
+// Replace the allocator
+
+extern crate wee_alloc;
+
+// Use `wee_alloc` as the global allocator.
+#[global_allocator]
+static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 /// system-level operations, interface and FFI access:
 /// * setup and low-level operations
@@ -32,7 +39,7 @@ pub mod sys {
         // https://github.com/CommonWA/cwa-spec/blob/master/ns/log.md#write
         pub fn log_write(level: i32, text_ptr: *const u8, text_len: usize);
 
-        // https://github.com/CommonWA/cwa-spec/blob/master/ns/env.md#get        
+        // https://github.com/CommonWA/cwa-spec/blob/master/ns/env.md#get
         pub fn env_get(
             key_ptr: *const u8,
             key_len: usize,
@@ -66,10 +73,10 @@ pub mod sys {
         pub fn resource_flush(id: i32) -> i32;
 
         // https://github.com/Xe/cwa-spec/blob/Xe/time/ns/time.md#now
-        // This is special-snowflaked at the moment because there's a disagreement 
+        // This is special-snowflaked at the moment because there's a disagreement
         // about how to do this in the spec at https://github.com/CommonWA/cwa-spec/pull/8
         pub fn time_now() -> i64;
-        
+
         // https://github.com/CommonWA/cwa-spec/blob/master/ns/random.md#i32
         pub fn random_i32() -> i32;
         // https://github.com/CommonWA/cwa-spec/blob/master/ns/random.md#i64
@@ -93,7 +100,7 @@ mod err {
     pub const INVALID_ARGUMENT: i32 = -2;
     pub const PERMISSION_DENIED: i32 = -3;
     pub const NOT_FOUND: i32 = -4;
-    
+
     /// An error abstraction, all of the following values are copied from the spec at:
     /// https://github.com/CommonWA/cwa-spec/blob/master/errors.md
     #[repr(i32)]
@@ -104,7 +111,7 @@ mod err {
         PermissionDenied = PERMISSION_DENIED,
         NotFound = NOT_FOUND,
     }
-    
+
     impl Error {
         pub fn check(n: i32) -> Result<i32, Error> {
             match n {
@@ -126,7 +133,7 @@ mod err {
     }
 
     impl self::error::Error for Error {}
-    
+
     pub fn check_io(error: i32) -> Result<i32, io::ErrorKind> {
         match error {
             n if n >= 0 => Ok(n),
@@ -160,12 +167,12 @@ pub mod log {
     pub fn error(text: &str) {
         write(Level::Error, text)
     }
-    
+
     /// Convenience wrapper for the warning level.
     pub fn warning(text: &str) {
         write(Level::Warning, text)
     }
-    
+
     /// Convenience wrapper for the info level.
     pub fn info(text: &str) {
         write(Level::Info, text)
@@ -182,7 +189,7 @@ pub mod env {
         NotFound,
         TooSmall(u32),
     }
-    
+
     pub fn get_buf<'a>(key: &[u8], value: &'a mut [u8]) -> Result<&'a mut [u8], Error> {
         let ret = unsafe { sys::env_get(key.as_ptr(), key.len(), value.as_mut_ptr(), value.len()) };
         match ret {
@@ -230,7 +237,7 @@ pub mod runtime {
             }
         }
     }
-    
+
     pub fn name() -> String {
         const MAX_LEN: usize = 32;
         let mut out = Vec::with_capacity(MAX_LEN);
@@ -282,15 +289,14 @@ pub mod startup {
     }
 }
 
-
-/// 
+///
 /// Resources are maybe readable, maybe writable, maybe flushable and closable
 /// streams of bytes. A resource is backed by implementation in the containing
 /// runtime based on the URL scheme used in the `open` call.
 ///
 /// Resources do not always have to be backed by things that exist. Resources
 /// may contain the transient results of API calls. Once the data in a Resource
-/// has been read, that may be the only time that data can ever be read. 
+/// has been read, that may be the only time that data can ever be read.
 ///
 /// Please take this into consideration when consuming the results of Resources.
 ///
@@ -304,16 +310,16 @@ impl Resource {
         let res = unsafe { sys::resource_open(url.as_ptr(), url.len()) };
         err::Error::check(res).map(Resource)
     }
-    
+
     /// For the few times you _actually_ do know the file descriptor.
-    /// 
+    ///
     /// The CommonWA spec doesn't mandate any properties about file descriptors.
     /// The implementation in Olin uses random file descriptors, meaning that
     /// unless the stdio module is used, this function should probably never be
     /// called unless you really know what you are doing.
     ///
     /// Passing an invalid file descriptor to this function will result in a
-    /// handle that returns errors on every call to it. This behavior may be 
+    /// handle that returns errors on every call to it. This behavior may be
     /// useful.
     pub unsafe fn from_raw(handle: i32) -> Resource {
         Resource(handle)
