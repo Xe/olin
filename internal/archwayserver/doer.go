@@ -32,6 +32,7 @@ type handler struct {
 	myTopic    string
 	cancel     context.CancelFunc
 	executions *expvar.Int
+	h          *archway.Handler
 }
 
 func (h *handler) handle(ctx context.Context, s *pubsub.Subscriber) {
@@ -50,12 +51,14 @@ func (h *handler) handle(ctx context.Context, s *pubsub.Subscriber) {
 			default:
 				runID := uuid.New()
 				ev := msg.GetPayload().(*archway.Event)
-				env := map[string]string{
-					"HANDLER_ID": h.myID,
-					"RUN_ID":     runID,
-					"EVENT_ID":   ev.Id,
-					"TOPIC":      h.myTopic,
+				env := map[string]string{}
+				for k, v := range h.h.Env {
+					env[k] = v
 				}
+				env["RUN_ID"] = runID
+				env["EVENT_ID"] = ev.Id
+				env["EVENT_MIME_TYPE"] = ev.MimeType
+				env["TOPIC"] = h.myTopic
 
 				f := ln.F{
 					"handler_id":    h.myID,
@@ -113,6 +116,7 @@ func newHandler(h *archway.Handler) (*handler, error) {
 		myID:       myID,
 		myTopic:    h.Topic,
 		executions: expvar.NewInt(h.Topic + "-" + myID),
+		h:          h,
 	}, nil
 }
 
