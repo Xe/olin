@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"sync"
 	"time"
+	"unicode/utf8"
 
 	"github.com/Xe/ln"
 	"github.com/Xe/olin/rpc/archway"
@@ -43,6 +44,16 @@ func New(db *bolt.DB, b *pubsub.Broker) Interop {
 func (i Interop) CreateHandler(ctx context.Context, hdl *archway.Handler) (*archway.Handler, error) {
 	if hdl.GetId() != "" {
 		return nil, errors.New("can't create a handler with an ID")
+	}
+
+	for k, v := range hdl.Env {
+		if !utf8.ValidString(k) {
+			return nil, fmt.Errorf("invalid unicode in envvar name: %x", k)
+		}
+
+		if !utf8.ValidString(v) {
+			return nil, fmt.Errorf("invalid unicode in envvar value: %x", v)
+		}
 	}
 
 	id := uuid.New()
