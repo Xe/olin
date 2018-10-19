@@ -20,6 +20,7 @@ COPY . /root/go/src/github.com/Xe/olin
 WORKDIR /root/go/src/github.com/Xe/olin
 COPY --from=rust-wasm-tools /olin/cwagi.wasm ./cmd/cwa-cgi/testdata/test.wasm
 COPY --from=rust-wasm-tools /olin/cwa-tests.wasm ./cmd/cwa/testdata/test.wasm
+COPY --from=rust-wasm-tools /olin/log-env-message.wasm ./internal/archwayserver/log-env-message.wasm
 RUN go test -v ./cmd/... ./internal/...
 RUN GOBIN=/usr/local/bin go install -tags heroku ./cmd/cwa-cgi
 RUN GOBIN=/usr/local/bin go install ./cmd/cwa
