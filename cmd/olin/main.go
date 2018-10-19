@@ -75,6 +75,7 @@ func CreateEvent(fl *flag.FlagSet) {
 
 	tp := fl.Lookup("topic")
 	archwayURL := fl.Lookup("url")
+	mimeType := fl.Lookup("mime")
 	cli := archway.NewInteropProtobufClient(archwayURL.Value.String(), http.DefaultClient)
 
 	fname := fl.Arg(1)
@@ -84,8 +85,9 @@ func CreateEvent(fl *flag.FlagSet) {
 	}
 
 	ev := &archway.Event{
-		Topic: tp.Value.String(),
-		Data:  data,
+		Topic:    tp.Value.String(),
+		Data:     data,
+		MimeType: mimeType.Value.String(),
 	}
 
 	_, err = cli.CreateEvent(ctx, ev)
@@ -99,6 +101,7 @@ func main() {
 
 	cli.AddStringFlag("url", "http://127.0.0.1:1324", "archwayd URL")
 	cli.AddStringFlag("topic", "", "topic for this command to relate to")
+	cli.AddStringFlag("mime", "", "mime-type for the event payload")
 
 	cli.AddCommand("event_create", CreateEvent, "creates a new event")
 	cli.AddCommand("handler_create", CreateHandler, "creates a WebAssembly handler")

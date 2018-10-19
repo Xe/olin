@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"net/url"
 	"sync"
 	"time"
@@ -33,6 +34,9 @@ func New(db *bolt.DB, b *pubsub.Broker) Interop {
 		hd: hd,
 		ev: ev,
 		b:  b,
+
+		lock: &sync.RWMutex{},
+		vals: map[string]*archway.Event{},
 	}
 }
 
@@ -113,6 +117,13 @@ func (i Interop) ListHandlers(ctx context.Context, _ *archway.Nil) (*archway.Han
 func (i *Interop) CreateEvent(ctx context.Context, e *archway.Event) (*archway.Nil, error) {
 	id := uuid.New()
 
+	var mimeType string
+	if e.MimeType == "" {
+		mimeType = http.DetectContentType(e.Data)
+	} else {
+		mimeType = e.MimeType
+	}
+
 	u := url.URL{
 		Scheme: "event",
 		Host:   e.Topic,
@@ -132,7 +143,7 @@ func (i *Interop) CreateEvent(ctx context.Context, e *archway.Event) (*archway.N
 	i.vals[e.Topic] = e
 	i.lock.Unlock()
 
-	ln.Log(ctx, ln.F{"topic": e.GetTopic()}, ln.Action("EventCreated"))
+	ln.Log(ctx, ln.F{"topic": e.GetTopic(), "mime_type": mimeType}, ln.Action("EventCreated"))
 
 	return &archway.Nil{}, nil
 }

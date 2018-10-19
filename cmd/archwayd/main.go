@@ -56,7 +56,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.Handle(archway.InteropPathPrefix, archway.NewInteropServer(
 		archway.NewInteropLogging(
-			archway.NewInteropMetrics(iop, provider.NewExpvarProvider()),
+			archway.NewInteropMetrics(&iop, provider.NewExpvarProvider()),
 		), nil,
 	))
 	mux.Handle("/", expvar.Handler())
