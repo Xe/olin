@@ -256,6 +256,24 @@ chance to read this input, so it is suggested that processes read the result and
 store it in some kind of immutable global variable, given the data in it won't 
 change for the lifetime of the process per invocation.
 
+### Environment Variables
+
+#### WORKER_ID
+
+Type-4 UUID that is random for every instansiation of this WebAssembly module.
+
+#### RUN_ID
+
+Type-4 UUID that is random for every invocation of this WebAssembly module.
+
+#### EVENT_ID
+
+The unique ID for this event, in `project://topic/event-id` format.
+
+#### EVENT\_MIME\_TYPE
+
+The mime-type of the event being processed.
+
 ## Introspection 
 
 ### Tracing

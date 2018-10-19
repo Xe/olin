@@ -86,9 +86,10 @@ func (h *handler) handle(ctx context.Context, s *pubsub.Subscriber) {
 func newHandler(h *archway.Handler) (*handler, error) {
 	myID := h.Id
 
-	p := cwa.NewProcess(h.Topic+"+"+myID, []string{"archway", h.Topic}, map[string]string{
-		"RUN_ID": myID,
-	})
+	// common environment variables
+	h.Env["WORKER_ID"] = myID
+
+	p := cwa.NewProcess(h.Topic+"+"+myID, []string{"archway", h.Topic}, h.Env)
 
 	cfg := exec.VMConfig{
 		EnableJIT:          false,
