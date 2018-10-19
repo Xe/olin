@@ -23,6 +23,8 @@ type InteropMetrics struct {
 	CreateEventDurationNS metrics.Histogram
 	GetEventErrorCount metrics.Counter
 	GetEventDurationNS metrics.Histogram
+	GetMostRecentEventErrorCount metrics.Counter
+	GetMostRecentEventDurationNS metrics.Histogram
 }
 
 func NewInteropMetrics(next Interop, prov provider.Provider) Interop {
@@ -40,6 +42,8 @@ func NewInteropMetrics(next Interop, prov provider.Provider) Interop {
 	result.CreateEventDurationNS = prov.NewHistogram(`twirp.within.olin.archway.interop.create_event.duration.ns`, 20)
 	result.GetEventErrorCount = prov.NewCounter(`twirp.within.olin.archway.interop.get_event.error.count`)
 	result.GetEventDurationNS = prov.NewHistogram(`twirp.within.olin.archway.interop.get_event.duration.ns`, 20)
+	result.GetMostRecentEventErrorCount = prov.NewCounter(`twirp.within.olin.archway.interop.get_most_recent_event.error.count`)
+	result.GetMostRecentEventDurationNS = prov.NewHistogram(`twirp.within.olin.archway.interop.get_most_recent_event.duration.ns`, 20)
 	return result
 }
 
@@ -112,6 +116,18 @@ func (i InteropMetrics) GetEvent(ctx context.Context, input *Id) (result *Event,
 	}(time.Now())
 
 	result, err = i.Next.GetEvent(ctx, input)
+	return
+}
+
+func (i InteropMetrics) GetMostRecentEvent(ctx context.Context, input *Topic) (result *Event, err error) {
+	defer func(begin time.Time) {
+		i.GetMostRecentEventDurationNS.Observe(float64(time.Since(begin)))
+		if err != nil {
+			i.GetMostRecentEventErrorCount.Add(1)
+		}
+	}(time.Now())
+
+	result, err = i.Next.GetMostRecentEvent(ctx, input)
 	return
 }
 

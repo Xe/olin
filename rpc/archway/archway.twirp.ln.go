@@ -95,6 +95,19 @@ func (i InteropLogging) GetEvent(ctx context.Context, input *Id) (result *Event,
 	return
 }
 
+func (i InteropLogging) GetMostRecentEvent(ctx context.Context, input *Topic) (result *Event, err error) {
+	ctx = ln.WithF(ctx, ln.F{
+		"twirp_package": "within.olin.archway",
+		"twirp_service": "Interop",
+		"twirp_method": "GetMostRecentEvent",
+	})
+	result, err = i.next.GetMostRecentEvent(ctx, input)
+	if err != nil {
+		ln.Error(ctx, err, input)
+	}
+	return
+}
+
 // F ields for logging.
 func (i Nil) F() ln.F {
 	return ln.F{
@@ -126,12 +139,20 @@ func (i Id) F() ln.F {
 }
 
 // F ields for logging.
+func (i Topic) F() ln.F {
+	return ln.F{
+		"topic_topic": i.Topic,
+	}
+}
+
+// F ields for logging.
 func (i Event) F() ln.F {
 	return ln.F{
 		"event_id": i.Id,
 		"event_created_at_unix_utc": i.CreatedAtUnixUtc,
 		"event_topic": i.Topic,
 		"event_data": i.Data,
+		"event_mime_type": i.MimeType,
 	}
 }
 

@@ -21,11 +21,16 @@ message Id {
   string topic = 2;
 }
 
+message Topic {
+  string topic = 1;
+}
+
 message Event {
   string id = 1;
   int64 created_at_unix_utc = 2;
   string topic = 3;
   bytes data = 4;
+  string mimeType = 5;
 }
 
 service Interop {
@@ -36,4 +41,5 @@ service Interop {
 
   rpc CreateEvent(Event) returns (Nil) {};
   rpc GetEvent(Id) returns (Event) {};
+  rpc GetMostRecentEvent(Topic) returns (Event) {};
 }
