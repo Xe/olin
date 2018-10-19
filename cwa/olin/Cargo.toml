@@ -15,6 +15,10 @@ path = "src/bin/shaman.rs"
 name = "olinfetch"
 path = "src/bin/olinfetch.rs"
 
+[[bin]]
+name = "log-env-message"
+path = "src/bin/log-env-message.rs"
+
 [dependencies]
 chrono = "0.4"
 http = "0.1"

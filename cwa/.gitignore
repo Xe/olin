@@ -1,3 +1,4 @@
 target
 *.wasm
 build-script-build
+bin
