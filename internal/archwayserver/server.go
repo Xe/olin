@@ -3,7 +3,9 @@ package archwayserver
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/url"
+	"sync"
 	"time"
 
 	"github.com/Xe/ln"
@@ -18,6 +20,9 @@ type Interop struct {
 	hd *stow.Store
 	ev *stow.Store
 	b  *pubsub.Broker
+
+	lock *sync.RWMutex
+	vals map[string]*archway.Event
 }
 
 func New(db *bolt.DB, b *pubsub.Broker) Interop {
@@ -105,7 +110,7 @@ func (i Interop) ListHandlers(ctx context.Context, _ *archway.Nil) (*archway.Han
 	return result, nil
 }
 
-func (i Interop) CreateEvent(ctx context.Context, e *archway.Event) (*archway.Nil, error) {
+func (i *Interop) CreateEvent(ctx context.Context, e *archway.Event) (*archway.Nil, error) {
 	id := uuid.New()
 
 	u := url.URL{
@@ -123,6 +128,9 @@ func (i Interop) CreateEvent(ctx context.Context, e *archway.Event) (*archway.Ni
 	}
 
 	i.b.Broadcast(e, e.GetTopic())
+	i.lock.Lock()
+	i.vals[e.Topic] = e
+	i.lock.Unlock()
 
 	ln.Log(ctx, ln.F{"topic": e.GetTopic()}, ln.Action("EventCreated"))
 
@@ -143,4 +151,16 @@ func (i Interop) GetEvent(ctx context.Context, id *archway.Id) (*archway.Event, 
 	}
 
 	return &e, nil
+}
+
+func (i *Interop) GetMostRecentEvent(ctx context.Context, top *archway.Topic) (*archway.Event, error) {
+	i.lock.RLock()
+	defer i.lock.RUnlock()
+
+	result, ok := i.vals[top.Topic]
+	if !ok {
+		return nil, fmt.Errorf("no recent value for topic %q", top.Topic)
+	}
+
+	return result, nil
 }
