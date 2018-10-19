@@ -10,6 +10,7 @@ message Handler {
   int64 created_at_unix_utc = 2;
   string topic = 3;
   bytes module = 4;
+  map<string, string> env = 5;
 }
 
 message Handlers {
