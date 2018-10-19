@@ -104,6 +104,7 @@ func main() {
 	cli.AddStringFlag("mime", "", "mime-type for the event payload")
 
 	cli.AddCommand("event_create", CreateEvent, "creates a new event")
+	cli.AddCommand("event_recent", RecentEvent, "gets the most recent event for a topic")
 	cli.AddCommand("handler_create", CreateHandler, "creates a WebAssembly handler")
 
 	cli.Run()
