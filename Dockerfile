@@ -14,7 +14,7 @@ RUN wasm-gc ./olinfetch.wasm \
  && wasm-gc ./cwa-tests.wasm \
  && du -hs ./*.wasm
 
-FROM xena/go:1.11.1 AS go
+FROM xena/go:1.11.2 AS go
 RUN apk add --no-cache build-base
 COPY . /root/go/src/github.com/Xe/olin
 WORKDIR /root/go/src/github.com/Xe/olin
