@@ -8,22 +8,22 @@ use std::vec::Vec;
 
 pub fn transport<'a>(
     req: http::Request<&'a mut Vec<u8>>,
-    resp_body: &'a mut Vec<u8>,
+    _resp_body: &'a mut Vec<u8>,
 ) -> Result<(http::Response<()>), io::Error> {
-    let mut fout: ::Resource = ::Resource::open("https://").map_err(|e| {
-        ::log::error(&format!("http: couldn't open {:?}", e));
-        io::Error::new(ErrorKind::Other, ::err::Error::Unknown)
+    let mut fout: crate::Resource = crate::Resource::open("https://").map_err(|e| {
+        crate::log::error(&format!("http: couldn't open {:?}", e));
+        io::Error::new(ErrorKind::Other, crate::err::Error::Unknown)
     })?;
 
     let req = serialize_req(req);
 
     fout.write(req.as_slice()).map_err(|e| {
-        ::log::error(&format!("http: couldn't write: {:?}", e));
+        crate::log::error(&format!("http: couldn't write: {:?}", e));
         e
     })?;
 
     fout.flush().map_err(|e| {
-        ::log::error(&format!("http: couldn't flush: {:?}", e));
+        crate::log::error(&format!("http: couldn't flush: {:?}", e));
         e
     })?;
 
@@ -41,7 +41,7 @@ pub fn transport<'a>(
         }
 
         data_pos += fout.read(&mut resp_data[data_pos..]).map_err(|e| {
-            ::log::error(&format!("http: couldn't read: {:?}", e));
+            crate::log::error(&format!("http: couldn't read: {:?}", e));
             e
         })?;
 
@@ -50,7 +50,7 @@ pub fn transport<'a>(
         let mut resp = httparse::Response::new(&mut headers);
 
         let res = resp.parse(&resp_data).map_err(|e| {
-            ::log::error(&format!("http: couldn't parse response: {:?}", e));
+            crate::log::error(&format!("http: couldn't parse response: {:?}", e));
             io::Error::new(ErrorKind::Other, e)
         })?;
 
