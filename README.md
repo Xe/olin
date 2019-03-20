@@ -74,7 +74,7 @@ extern int sync(int fd);
 
 ### Go
 
-Olin also includes support for running webassembly modules created by [Go 1.11's webassembly support](https://golang.org/wiki/WebAssembly).
+Olin also includes support for running webassembly modules created by [Go 1.12's webassembly support](https://golang.org/wiki/WebAssembly).
 It uses [the `wasmgo` ABI][wasmgo] package in order to do things. Right now
 this is incredibly basic, but should be extendable to more things in the future.
 
@@ -94,7 +94,7 @@ func main() {
 when compiled like this:
 
 ```console
-$ GOARCH=wasm GOOS=js go1.11 build -o hello_world.wasm hello_world.go
+$ GOARCH=wasm GOOS=js go1.12.1 build -o hello_world.wasm hello_world.go
 ```
 
 produces the following output when run with the testing shim:
