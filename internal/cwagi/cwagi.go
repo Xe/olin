@@ -12,27 +12,25 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Xe/ln"
-	"github.com/Xe/ln/opname"
 	"github.com/Xe/olin/internal/abi/cwa"
 	"github.com/pborman/uuid"
 	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"
+	"within.website/ln"
+	"within.website/ln/opname"
 )
 
 // NewVM creates a new virtual machine with the given WebAssembly binary code and name.
 func NewVM(data []byte, argv []string, name, mainFunc string) (*VMServer, error) {
 	myID := uuid.New()
 
-	p := cwa.NewProcess(name+"+"+myID, argv, map[string]string{
-		"RUN_ID": myID,
-	})
+	p := cwa.NewProcess(name+"+"+myID, argv, map[string]string{})
 
 	cfg := exec.VMConfig{
 		EnableJIT:          false,
 		DefaultMemoryPages: 32, // 2 MB
 	}
-	gp := compiler.SimpleGasPolicy{GasPerInstruction :1}
+	gp := compiler.SimpleGasPolicy{GasPerInstruction: 1}
 	vm, err := exec.NewVirtualMachine(data, cfg, p, &gp)
 	if err != nil {
 		return nil, err
@@ -51,6 +49,7 @@ func NewVM(data []byte, argv []string, name, mainFunc string) (*VMServer, error)
 	}, nil
 }
 
+// VMServer wraps a single WebAssembly virtual machine around a HTTP style handler.
 type VMServer struct {
 	VM       *exec.VirtualMachine
 	P        *cwa.Process

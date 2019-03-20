@@ -1,4 +1,4 @@
-// +build js,wasm go1.11
+// +build js,wasm go1.12
 
 package dagger
 
