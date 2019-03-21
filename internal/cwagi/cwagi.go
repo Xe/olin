@@ -107,7 +107,8 @@ func (v *VMServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	})
 
 	t0 := time.Now()
-	ret, err := v.VM.Run(v.mainFunc)
+	const gasLimit = 65536 * 4
+	ret, err := v.VM.RunWithGasLimit(v.mainFunc, gasLimit)
 	if err != nil {
 		http.Error(w, "internal server error: VM error, run ID: "+runID, http.StatusInternalServerError)
 		go func() {
