@@ -43,7 +43,7 @@ func NewPool(module []byte, name, mainFunc string, initSize, maxSize int) *VMPoo
 	go vp.monitor(ctx)
 
 	for range make([]struct{}, initSize) {
-		err := vp.createVM()
+		_, err := vp.createVM()
 		if err != nil {
 			log.Panicf("can't create VM??? %v", err)
 		}
@@ -141,7 +141,7 @@ func (vp *VMPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		if vpWorkLen > vpVmsLen {
 			if vpVmsLen < vp.maxSize {
-				err := vp.createVM()
+				_, err := vp.createVM()
 				if err != nil {
 					log.Panicf("can't create VM??? %v", err)
 				}
