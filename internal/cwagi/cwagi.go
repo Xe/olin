@@ -26,17 +26,17 @@ var (
 	ramUse = promauto.NewHistogramVec(prometheus.HistogramOpts{
 		Name: "ram_use",
 		Help: "The amount of ram in use per VM",
-	}, []string{"vm"})
+	}, []string{"path"})
 
 	executionTime = promauto.NewHistogramVec(prometheus.HistogramOpts{
 		Name: "execution_time",
 		Help: "The amount of time spent executing for the VM",
-	}, []string{"vm", "path"})
+	}, []string{"path"})
 
 	gasUsed = promauto.NewHistogramVec(prometheus.HistogramOpts{
 		Name: "gas_used",
 		Help: "The amount of VM gas used",
-	}, []string{"vm", "path"})
+	}, []string{"path"})
 )
 
 // NewVM creates a new virtual machine with the given WebAssembly binary code and name.
@@ -119,8 +119,9 @@ func (v *VMServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	dur := time.Since(t0)
 	f["exec_dur"] = dur
-	executionTime.With(prometheus.Labels{"vm": v.myID, "path": r.URL.Path}).Observe(float64(dur))
-	gasUsed.With(prometheus.Labels{"vm": v.myID, "path": r.URL.Path}).Observe(float64(v.VM.Gas))
+	executionTime.With(prometheus.Labels{"path": r.URL.Path}).Observe(float64(dur))
+	gasUsed.With(prometheus.Labels{"path": r.URL.Path}).Observe(float64(v.VM.Gas))
+	ramUse.With(prometheus.Labels{"path": r.URL.Path}).Observe(float64(len(v.VM.Memory)))
 
 	exitStatus.With(prometheus.Labels{"status": fmt.Sprint(ret)}).Inc()
 
