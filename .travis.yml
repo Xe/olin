@@ -11,4 +11,4 @@ language: go
 go: 
  - "1.x"
 
-script: docker build .
+script: docker build --no-cache .
