@@ -3,12 +3,31 @@ package cwagi
 import (
 	"context"
 	"errors"
-	"expvar"
 	"log"
 	"math/rand"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+)
+
+var (
+	vmCount = promauto.NewGauge(prometheus.GaugeOpts{
+		Name: "vm_count",
+		Help: "The number of active webassembly VM's",
+	})
+
+	exitStatus = promauto.NewCounterVec(prometheus.CounterOpts{
+		Name: "exit_status",
+		Help: "VM exit status",
+	}, []string{"status"})
+
+	requestCount = promauto.NewCounterVec(prometheus.CounterOpts{
+		Name: "requests",
+		Help: "The number of requests per VM",
+	}, []string{"vm"})
 )
 
 // VMPool is a group of WebAssembly virtual machines dynamically spun up and down.
@@ -20,24 +39,18 @@ type VMPool struct {
 	maxSize        int
 	work           chan workData
 	cancel         context.CancelFunc
-	vmCtr          *expvar.Int
-	busyCtr        *expvar.Int
-	requestCtr     *expvar.Int
 }
 
 // NewPool creates a new pool of WebAssembly workers with the given cwagi-linked code.
 func NewPool(module []byte, name, mainFunc string, initSize, maxSize int) *VMPool {
 	ctx, cancel := context.WithCancel(context.Background())
 	vp := &VMPool{
-		module:     module,
-		name:       name,
-		mainFunc:   mainFunc,
-		maxSize:    maxSize,
-		work:       make(chan workData, maxSize+initSize),
-		cancel:     cancel,
-		vmCtr:      expvar.NewInt("vm_count"),
-		busyCtr:    expvar.NewInt("busy_count"),
-		requestCtr: expvar.NewInt("request_count"),
+		module:   module,
+		name:     name,
+		mainFunc: mainFunc,
+		maxSize:  maxSize,
+		work:     make(chan workData, maxSize+initSize),
+		cancel:   cancel,
 	}
 
 	go vp.monitor(ctx)
@@ -95,10 +108,10 @@ func (vp *VMPool) createVM() (*managedVM, error) {
 		vms:    vs,
 		cancel: cancel,
 	}
-	go mvm.work(ctx, vp.work, vp.busyCtr)
+	go mvm.work(ctx, vp.work)
 
 	vp.vms = append(vp.vms, mvm)
-	vp.vmCtr.Add(1)
+	vmCount.Set(float64(len(vp.vms)))
 
 	return mvm, nil
 }
@@ -117,7 +130,7 @@ func (vp *VMPool) reapVM() {
 	vm := vp.vms[0]
 	vp.vms = vp.vms[1:]
 	vm.cancel()
-	vp.vmCtr.Add(-1)
+	vmCount.Set(float64(len(vp.vms)))
 }
 
 func (vp *VMPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -154,7 +167,6 @@ func (vp *VMPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	<-d.done
-	vp.requestCtr.Add(1)
 }
 
 type managedVM struct {
@@ -163,7 +175,7 @@ type managedVM struct {
 	cancel context.CancelFunc
 }
 
-func (mvm *managedVM) work(ctx context.Context, ch <-chan workData, busyCtr *expvar.Int) {
+func (mvm *managedVM) work(ctx context.Context, ch <-chan workData) {
 	for {
 		select {
 		case <-ctx.Done():
@@ -171,9 +183,8 @@ func (mvm *managedVM) work(ctx context.Context, ch <-chan workData, busyCtr *exp
 
 		case data := <-ch:
 			mvm.busy = true
-			busyCtr.Add(1)
 			mvm.vms.ServeHTTP(data.w, data.r)
-			busyCtr.Add(-1)
+			requestCount.With(prometheus.Labels{"vm": mvm.vms.myID}).Inc()
 			mvm.busy = false
 			data.done <- struct{}{}
 		}

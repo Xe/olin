@@ -6,5 +6,7 @@ require (
 	github.com/google/uuid v1.0.0 // indirect
 	github.com/pborman/uuid v0.0.0-20180906182336-adf5a7427709
 	github.com/perlin-network/life v0.0.0-20190204091834-d05763d11050
+	github.com/povilasv/prommod v0.0.11
+	github.com/prometheus/client_golang v0.9.2
 	within.website/ln v0.5.2
 )

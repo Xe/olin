@@ -16,6 +16,7 @@ import (
 	"github.com/pborman/uuid"
 	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"
+	"github.com/prometheus/client_golang/prometheus"
 	"within.website/ln"
 	"within.website/ln/opname"
 )
@@ -98,6 +99,8 @@ func (v *VMServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	f["exec_dur"] = time.Since(t0)
+
+	exitStatus.With(prometheus.Labels{"status": fmt.Sprint(ret)}).Inc()
 
 	if ret != 0 {
 		ln.Log(ctx, f, ln.F{
