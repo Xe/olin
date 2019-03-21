@@ -16,6 +16,7 @@ RUN wasm-gc ./olinfetch.wasm \
 
 FROM xena/go:1.12.1 AS go
 RUN apk add --no-cache build-base
+ENV GOPROXY https://cache.greedo.xeserv.us
 WORKDIR /olin
 COPY . .
 COPY --from=rust-wasm-tools /olin/cwagi.wasm ./cmd/cwa-cgi/testdata/test.wasm
