@@ -14,12 +14,12 @@ import (
 // NewProcess creates a new process with the given name, arguments and environment.
 func NewProcess(name string, argv []string, env map[string]string) *Process {
 	return &Process{
-		name:   name,
-		hc:     &http.Client{},
-		logger: log.New(os.Stdout, name+": ", log.LstdFlags),
-		env:    env,
-		argv:   argv,
-		FileHandles:  map[int32]abi.File{},
+		name:        name,
+		hc:          &http.Client{},
+		logger:      log.New(os.Stdout, name+": ", log.LstdFlags),
+		env:         env,
+		argv:        argv,
+		FileHandles: map[int32]abi.File{},
 
 		Stdin:  bytes.NewBuffer([]byte("")),
 		Stdout: os.Stdout,
@@ -32,12 +32,12 @@ func NewProcess(name string, argv []string, env map[string]string) *Process {
 type Process struct {
 	name string
 
-	hc     *http.Client
-	logger *log.Logger
-	env    map[string]string
-	vm     *exec.VirtualMachine
-	argv   []string
-	FileHandles  map[int32]abi.File
+	hc          *http.Client
+	logger      *log.Logger
+	env         map[string]string
+	vm          *exec.VirtualMachine
+	argv        []string
+	FileHandles map[int32]abi.File
 
 	Stdin          io.Reader
 	Stdout, Stderr io.Writer

@@ -143,7 +143,7 @@ native HTTP support, here is its test:
 If you would like to, please feel free to load test the route
 /cadey. That route does a minimal number of system calls, and
 should make for the best benchmarking results. There is a more
-detailed metrics view at /expvar. Olin does a level of automatic
+detailed metrics view at /metrics. Olin does a level of automatic
 load balancing that takes advantage of the Go runtime, so in
 theory the limits of this program approach the limits of how fast
 the code running in the WebAssembly environment is.

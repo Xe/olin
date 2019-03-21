@@ -2,13 +2,15 @@ package main
 
 import (
 	"context"
-	"expvar"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 
+	"github.com/povilasv/prommod"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/Xe/olin/internal/cwagi"
 	"within.website/ln"
 	"within.website/ln/opname"
@@ -37,6 +39,8 @@ func main() {
 		"addr":      *addr,
 	}
 
+	_ = prometheus.Register(prommod.NewCollector("cwa-cgi"))
+
 	argv := flag.Args()
 	if len(argv) == 0 {
 		flag.Usage()
@@ -55,7 +59,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.Handle("/", vp)
-	mux.Handle("/expvar", expvar.Handler())
+	mux.Handle("/metrics", promhttp.Handler())
 	mux.HandleFunc("/reboot", func(w http.ResponseWriter, r *http.Request) {
 		os.Exit(0)
 	})
