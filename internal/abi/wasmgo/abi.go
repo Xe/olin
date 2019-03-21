@@ -13,23 +13,23 @@ import (
 	"github.com/perlin-network/life/exec"
 )
 
-func (w *wasmGo) loadString(addr int32) string {
+func (w *WasmGo) loadString(addr int32) string {
 	saddr := w.getInt64(addr)
 	leng := w.getInt64(addr + 4)
 	return string(w.vm.Memory[saddr : saddr+leng])
 }
 
 // TODO properly endian
-func (w *wasmGo) getUint8(addr int32) uint8 {
+func (w *WasmGo) getUint8(addr int32) uint8 {
 	return uint8(w.vm.Memory[addr])
 }
 
 // TODO properly endian
-func (w *wasmGo) setUint8(addr int32, val uint8) {
+func (w *WasmGo) setUint8(addr int32, val uint8) {
 	w.vm.Memory[addr] = byte(val)
 }
 
-func (w *wasmGo) getFloat64(addr int32) float64 {
+func (w *WasmGo) getFloat64(addr int32) float64 {
 	mem := w.vm.Memory[addr : addr+8]
 	var result float64
 	err := binary.Read(bytes.NewReader(mem), binary.LittleEndian, &result)
@@ -40,7 +40,7 @@ func (w *wasmGo) getFloat64(addr int32) float64 {
 	return result
 }
 
-func (w *wasmGo) setFloat64(addr int32, val float64) {
+func (w *WasmGo) setFloat64(addr int32, val float64) {
 	data := make([]byte, 0, 8)
 	buf := bytes.NewBuffer(data)
 	err := binary.Write(buf, binary.LittleEndian, val)
@@ -54,7 +54,7 @@ func (w *wasmGo) setFloat64(addr int32, val float64) {
 	}
 }
 
-func (w *wasmGo) getInt32(addr int32) int32 {
+func (w *WasmGo) getInt32(addr int32) int32 {
 	mem := w.vm.Memory[addr : addr+4]
 	var result int32
 	err := binary.Read(bytes.NewReader(mem), binary.LittleEndian, &result)
@@ -65,7 +65,7 @@ func (w *wasmGo) getInt32(addr int32) int32 {
 	return result
 }
 
-func (w *wasmGo) setInt32(addr int32, val int32) {
+func (w *WasmGo) setInt32(addr int32, val int32) {
 	data := make([]byte, 0, 4)
 	buf := bytes.NewBuffer(data)
 	err := binary.Write(buf, binary.LittleEndian, val)
@@ -79,7 +79,7 @@ func (w *wasmGo) setInt32(addr int32, val int32) {
 	}
 }
 
-func (w *wasmGo) getUint32(addr int32) uint32 {
+func (w *WasmGo) getUint32(addr int32) uint32 {
 	mem := w.vm.Memory[addr : addr+4]
 	var result uint32
 	err := binary.Read(bytes.NewReader(mem), binary.LittleEndian, &result)
@@ -90,7 +90,7 @@ func (w *wasmGo) getUint32(addr int32) uint32 {
 	return result
 }
 
-func (w *wasmGo) setUint32(addr int32, val uint32) {
+func (w *WasmGo) setUint32(addr int32, val uint32) {
 	data := make([]byte, 0, 4)
 	buf := bytes.NewBuffer(data)
 	err := binary.Write(buf, binary.LittleEndian, val)
@@ -104,7 +104,7 @@ func (w *wasmGo) setUint32(addr int32, val uint32) {
 	}
 }
 
-func (w *wasmGo) getInt64(addr int32) int64 {
+func (w *WasmGo) getInt64(addr int32) int64 {
 	mem := w.vm.Memory[addr : addr+8]
 	var result int64
 	err := binary.Read(bytes.NewReader(mem), binary.LittleEndian, &result)
@@ -115,7 +115,7 @@ func (w *wasmGo) getInt64(addr int32) int64 {
 	return result
 }
 
-func (w *wasmGo) setInt64(addr int32, val int64) {
+func (w *WasmGo) setInt64(addr int32, val int64) {
 	data := make([]byte, 0, 8)
 	buf := bytes.NewBuffer(data)
 	err := binary.Write(buf, binary.LittleEndian, val)
@@ -129,7 +129,7 @@ func (w *wasmGo) setInt64(addr int32, val int64) {
 	}
 }
 
-func (w *wasmGo) loadValue(addr int32) interface{} {
+func (w *WasmGo) loadValue(addr int32) interface{} {
 	f := w.getFloat64(addr)
 	if f == 0 {
 		return Undefined
@@ -143,7 +143,7 @@ func (w *wasmGo) loadValue(addr int32) interface{} {
 	return w.values[id]
 }
 
-func (w *wasmGo) storeValue(addr int32, v interface{}) {
+func (w *WasmGo) storeValue(addr int32, v interface{}) {
 	const nanHead = 0x7FF80000
 	if i, ok := v.(int); ok {
 		v = float64(i)
@@ -202,7 +202,7 @@ func (w *wasmGo) storeValue(addr int32, v interface{}) {
 	w.setUint32(addr, uint32(ref))
 }
 
-func (w *wasmGo) loadSliceOfValues(addr int32) []interface{} {
+func (w *WasmGo) loadSliceOfValues(addr int32) []interface{} {
 	array := int(w.getInt64(addr))
 	leng := int(w.getInt64(addr + 8))
 	result := make([]interface{}, leng)
@@ -219,8 +219,8 @@ func (w *wasmGo) loadSliceOfValues(addr int32) []interface{} {
 //
 // This has the effective type of:
 //
-//     func (w *wasmGo) goRuntimeWasmExit(code int32)
-func (w *wasmGo) goRuntimeWasmExit(sp int32) {
+//     func (w *WasmGo) goRuntimeWasmExit(code int32)
+func (w *WasmGo) goRuntimeWasmExit(sp int32) {
 	exitCode := w.getInt32(sp + 8)
 	w.Exited = true
 	w.StatusCode = exitCode
@@ -230,8 +230,8 @@ func (w *wasmGo) goRuntimeWasmExit(sp int32) {
 //
 // This has the effective type of:
 //
-//     func (w *wasmGo) goRuntimeWasmWrite(fd int64, ptr int64, n int32)
-func (w *wasmGo) goRuntimeWasmWrite(sp int32) {
+//     func (w *WasmGo) goRuntimeWasmWrite(fd int64, ptr int64, n int32)
+func (w *WasmGo) goRuntimeWasmWrite(sp int32) {
 	fd := w.getInt64(sp + 8)
 	ptr := w.getInt64(sp + 16)
 	n := w.getInt32(sp + 24)
@@ -251,8 +251,8 @@ func (w *wasmGo) goRuntimeWasmWrite(sp int32) {
 //
 // This has the effective type of:
 //
-//     func (w *wasmGo) goRuntimeNanotime() int64
-func (w *wasmGo) goRuntimeNanotime(sp int32) {
+//     func (w *WasmGo) goRuntimeNanotime() int64
+func (w *WasmGo) goRuntimeNanotime(sp int32) {
 	now := time.Now().UnixNano()
 	w.setInt64(sp+8, int64(now))
 }
@@ -262,8 +262,8 @@ func (w *wasmGo) goRuntimeNanotime(sp int32) {
 //
 // This has the effective type of:
 //
-//     func (w *wasmGo) goRuntimeWalltime() (int64, int32)
-func (w *wasmGo) goRuntimeWalltime(sp int32) {
+//     func (w *WasmGo) goRuntimeWalltime() (int64, int32)
+func (w *WasmGo) goRuntimeWalltime(sp int32) {
 	now := time.Now()
 	w.setInt64(sp+8, now.Unix())
 	w.setInt32(sp+16, int32(now.Nanosecond()))
@@ -274,8 +274,8 @@ func (w *wasmGo) goRuntimeWalltime(sp int32) {
 //
 // This has the effective type of:
 //
-//     func (w *wasmGo) goSyscallJSValueGet(ref, string) ref
-func (w *wasmGo) goSyscallJSValueGet(sp int32) {
+//     func (w *WasmGo) goSyscallJSValueGet(ref, string) ref
+func (w *WasmGo) goSyscallJSValueGet(sp int32) {
 	name := string(w.goLoadSlice(sp + 16))
 	result, ok := w.loadValue(sp + 8).(*Object).Props[name]
 	if !ok {
@@ -290,8 +290,8 @@ func (w *wasmGo) goSyscallJSValueGet(sp int32) {
 //
 // This has the effective type of:
 //
-//     func (w *wasmGo) goSyscallJSValueSet(v ref, p string, x ref)
-func (w *wasmGo) goSyscallJSValueSet(sp int32) {
+//     func (w *WasmGo) goSyscallJSValueSet(v ref, p string, x ref)
+func (w *WasmGo) goSyscallJSValueSet(sp int32) {
 	w.loadValue(sp + 8).(*Object).Props[w.loadString(sp+16)] = w.loadValue(sp + 32)
 }
 
@@ -300,8 +300,8 @@ func (w *wasmGo) goSyscallJSValueSet(sp int32) {
 //
 // This has the effective type of:
 //
-//     func (w *wasmGo) goSyscallJSValueIndex(v ref, i int) ref
-func (w *wasmGo) goSyscallJSValueIndex(sp int32) {
+//     func (w *WasmGo) goSyscallJSValueIndex(v ref, i int) ref
+func (w *WasmGo) goSyscallJSValueIndex(sp int32) {
 	result := (*w.loadValue(sp + 8).(*[]interface{}))[w.getInt64(sp+16)]
 	w.storeValue(sp+24, result)
 }
@@ -311,8 +311,8 @@ func (w *wasmGo) goSyscallJSValueIndex(sp int32) {
 //
 // This has the effective type of:
 //
-//     func (w *wasmGo) goSyscallJSValueCall(v ref, m string, args []ref) (ref, bool)
-func (w *wasmGo) goSyscallJSValueCall(sp int32) {
+//     func (w *WasmGo) goSyscallJSValueCall(v ref, m string, args []ref) (ref, bool)
+func (w *WasmGo) goSyscallJSValueCall(sp int32) {
 	// TODO error handling
 	v := w.loadValue(sp + 8).(*Object)
 	name := w.loadString(sp + 16)
@@ -332,8 +332,8 @@ func (w *wasmGo) goSyscallJSValueCall(sp int32) {
 //
 // This has the effective type of:
 //
-//     func (w *wasmGo) goSyscallJSValueNew(v ref, args []ref) (ref, bool)
-func (w *wasmGo) goSyscallJSValueNew(sp int32) {
+//     func (w *WasmGo) goSyscallJSValueNew(v ref, args []ref) (ref, bool)
+func (w *WasmGo) goSyscallJSValueNew(sp int32) {
 	// TODO error handling
 	v := w.loadValue(sp + 8)
 	args := w.loadSliceOfValues(sp + 16)
@@ -348,20 +348,20 @@ func (w *wasmGo) goSyscallJSValueNew(sp int32) {
 //
 // This has the effective type of:
 //
-//     func (w *wasmGo) goSyscallJSValueLength(v ref) int
-func (w *wasmGo) goSyscallJSValueLength(sp int32) {
+//     func (w *WasmGo) goSyscallJSValueLength(v ref) int
+func (w *WasmGo) goSyscallJSValueLength(sp int32) {
 	array := w.loadValue(sp + 8).(*[]interface{})
 	w.setInt64(sp+16, int64(len(*array)))
 }
 
 // goLoadSlice loads a Go slice out of wasm memory. It uses the the Go abi.
-func (w *wasmGo) goLoadSlice(sp int32) []byte {
+func (w *WasmGo) goLoadSlice(sp int32) []byte {
 	arr := w.getInt64(sp)
 	len := w.getInt64(sp + 8)
 	return w.vm.Memory[arr : arr+len]
 }
 
-func (w *wasmGo) goRuntimeGetRandomData(sp int32) {
+func (w *WasmGo) goRuntimeGetRandomData(sp int32) {
 	data := w.goLoadSlice(sp + 8)
 	_, err := rand.Read(data)
 	if err != nil {
@@ -374,7 +374,7 @@ func (w *wasmGo) goRuntimeGetRandomData(sp int32) {
 	}
 }
 
-func (w *wasmGo) notImplemented(module, field string) goABIFunc {
+func (w *WasmGo) notImplemented(module, field string) goABIFunc {
 	return func(sp int32) {
 		w.vm.PrintStackTrace()
 		log.Panicf("not implemented: %s %s", module, field)
@@ -409,7 +409,7 @@ var (
 	}
 )
 
-func (w *wasmGo) runGoABI(doer func(int32)) exec.FunctionImport {
+func (w *WasmGo) runGoABI(doer func(int32)) exec.FunctionImport {
 	return func(vm *exec.VirtualMachine) int64 {
 		if w.vm == nil {
 			w.vm = vm
@@ -430,12 +430,12 @@ func getFunctionName(i interface{}) string {
 }
 
 // ResolveGlobal does nothing, currently.
-func (w *wasmGo) ResolveGlobal(module, field string) int64 { return 0 }
+func (w *WasmGo) ResolveGlobal(module, field string) int64 { return 0 }
 
-func (w *wasmGo) ResolveFunc(module, field string) exec.FunctionImport {
+func (w *WasmGo) ResolveFunc(module, field string) exec.FunctionImport {
 	log.Printf("wasmgo: resolving %s %s", module, field)
 
-	val := w.ResolveFunc(module, field)
+	val := w.Process.ResolveFunc(module, field)
 	if val != nil {
 		return val
 	}
@@ -476,9 +476,7 @@ func (w *wasmGo) ResolveFunc(module, field string) exec.FunctionImport {
 			log.Printf("unknown module+field %s %s, using shim", module, field)
 			return w.runGoABI(w.notImplemented(module, field))
 		}
-	default:
-		log.Panicf("unknown module+field %s %s", module, field)
 	}
 
-	panic("not implemented")
+	return nil
 }

@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Xe/olin/internal/abi/cwa"
+	"github.com/Xe/olin/internal/abi/wasmgo"
 	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"
 )
@@ -71,7 +71,7 @@ func main() {
 		}
 	}
 
-	p := cwa.NewProcess(fname, argv, environment)
+	p := wasmgo.New(fname, argv, environment)
 
 	if *doTest {
 		p.Stdin = bytes.NewBuffer([]byte("cwa test environment"))

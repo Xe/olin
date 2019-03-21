@@ -18,15 +18,15 @@ pub extern "C" fn cwa_main() -> i32 {
             1
         }).unwrap();
 
-    write!(out, "CPU:\t\t{}\n", "wasm32");
+    write!(out, "CPU:\t\t{}\n", "wasm32").unwrap();
     write!(
         out,
         "Runtime:\t{} {}.{}\n",
         runtime_name,
         runtime::spec_major(),
         runtime::spec_minor()
-    );
-    write!(out, "Now:\t\t{}\n", time::now().to_rfc3339());
+    ).unwrap();
+    write!(out, "Now:\t\t{}\n", time::now().to_rfc3339()).unwrap();
 
     0
 }

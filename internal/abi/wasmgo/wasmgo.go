@@ -5,13 +5,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Xe/olin/internal/abi"
 	"github.com/Xe/olin/internal/abi/cwa"
+	"github.com/Xe/olin/internal/fileresolver"
 	"github.com/perlin-network/life/exec"
 )
 
-// TODO(Xe): upgrade this to a CWA process
-type wasmGo struct {
+type WasmGo struct {
 	*cwa.Process
 
 	BootTime   time.Time
@@ -24,7 +23,7 @@ type wasmGo struct {
 	refs   map[interface{}]int
 }
 
-func New(name string, argv []string, env map[string]string) abi.ABI {
+func New(name string, argv []string, env map[string]string) *WasmGo {
 	memory := &ArrayBuffer{}
 
 	goObj := map[string]interface{}{
@@ -34,11 +33,15 @@ func New(name string, argv []string, env map[string]string) abi.ABI {
 		"_pendingEvent": nil,
 	}
 
-	w := &wasmGo{
-		Process:    cwa.NewProcess(name, argv, env),
+	w := &WasmGo{
+		Process:  cwa.NewProcess(name, argv, env),
 		BootTime: time.Now(),
 		refs:     make(map[interface{}]int),
 	}
+
+	w.Process.FileHandles[0] = fileresolver.NewOSFile(uintptr(syscall.Stdin), "stdin")
+	w.Process.FileHandles[1] = fileresolver.NewOSFile(uintptr(syscall.Stdout), "stdout")
+	w.Process.FileHandles[2] = fileresolver.NewOSFile(uintptr(syscall.Stderr), "stderr")
 
 	w.values = []interface{}{
 		math.NaN(),
@@ -114,7 +117,7 @@ func New(name string, argv []string, env map[string]string) abi.ABI {
 // TODO(Xe): replace with copy() or obviate the need to copy to begin with?
 // while this code is being run, the WebAssembly memory is considered locked
 // because this is a single-threaded environment at the moment.
-func (w *wasmGo) writeMem(ptr int32, data []byte) (int, error) {
+func (w *WasmGo) writeMem(ptr int32, data []byte) (int, error) {
 	ctr := 0
 	for i, d := range data {
 		w.vm.Memory[ptr+int32(i)] = d

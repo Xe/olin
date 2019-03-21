@@ -11,6 +11,8 @@ mod scheme;
 pub extern "C" fn cwa_main() -> i32 {
     olin::panic::set_hook();
 
+    let mut fail_count = 0;
+
     let funcs = [
         ns::env::test,
         ns::random::test,
@@ -33,11 +35,14 @@ pub extern "C" fn cwa_main() -> i32 {
     for func in &funcs {
         match func() {
             Ok(()) => {}
-            Err(e) => return e as i32,
+            Err(e) => {
+                olin::log::error(&format!("test error: {:?}", e));
+                fail_count += 1;
+            },
         }
     }
 
-    0
+    fail_count
 }
 
 fn main() {}

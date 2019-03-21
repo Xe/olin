@@ -11,8 +11,8 @@ pub extern "C" fn test() -> Result<(), i32> {
     let mut resp_body = Vec::<u8>::new();
     let mut req_body = Vec::<u8>::new();
     let req = http::Request::builder()
-        .uri("https://christine.website")
-        .header("User-Agent", "Olin/dev (Rust; bitbanging)")
+        .uri("http://bsnk.minipaas.xeserv.us")
+        .header("User-Agent", "Olin/dev")
         .body(&mut req_body)
         .map_err(|e| {
             log::error(&format!("request error: {:?}", e));
