@@ -53,25 +53,6 @@ the Common WebAssembly is fairly basic, but at the same time there are currently
 the most tests targeting Common Webassembly.
 The tests for the Common WebAssembly spec can be found [here](https://github.com/Xe/olin/blob/master/cmd/cwa/testdata/test.rs).
 
-### Dagger
-
-> The dagger of light that renders your self-importance a decisive death
-
-Dagger is currently in use for testing purposes. It defines five simple system 
-calls (`open`, `read`, `write`, `sync` and `close`) and allows the user to chain
-them as they wish. `open` returns the file descriptor that is going to be the 
-first argument of all of the other functions.
-
-To use these functions from C, import them like such from the `dagger` module:
-
-```c
-extern int open(const char *furl, int flags);
-extern int close(int fd);
-extern int read(int fd, void *buf, int nbyte);
-extern int write(int fd, void *buf, int nbyte);
-extern int sync(int fd);
-```
-
 ### Go
 
 Olin also includes support for running webassembly modules created by [Go 1.12's webassembly support](https://golang.org/wiki/WebAssembly).
