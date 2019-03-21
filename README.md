@@ -72,6 +72,47 @@ extern int write(int fd, void *buf, int nbyte);
 extern int sync(int fd);
 ```
 
+### Go
+
+Olin also includes support for running webassembly modules created by [Go 1.12's webassembly support](https://golang.org/wiki/WebAssembly).
+It uses [the `wasmgo` ABI][wasmgo] package in order to do things. Right now
+this is incredibly basic, but should be extendable to more things in the future.
+
+As an example:
+
+```go
+// +build js,wasm ignore
+// hello_world.go
+
+package main
+
+func main() {
+	println("Hello, world!")
+}
+```
+
+when compiled like this:
+
+```console
+$ GOARCH=wasm GOOS=js go1.12.1 build -o hello_world.wasm hello_world.go
+```
+
+produces the following output when run with the testing shim:
+
+```
+=== RUN   TestWasmGo/github.com/Xe/olin/internal/abi/wasmgo.testHelloWorld
+Hello, world!
+--- PASS: TestWasmGo (1.66s)
+    --- PASS: TestWasmGo/github.com/Xe/olin/internal/abi/wasmgo.testHelloWorld (1.66s)
+```
+
+Currently Go binaries cannot interface with the Dagger ABI. There is [an issue](https://github.com/Xe/olin/issues/5)
+open to track the solution to this.
+
+Future posts will include more detail about using Go on top of Olin. 
+
+Under the hood, the Olin implementation of the Go ABI currently uses Dagger.
+
 ## Project Meta
 
 To follow the project, check it on GitHub [here][olin]. To talk about it on Slack,

@@ -19,7 +19,7 @@ func NewProcess(name string, argv []string, env map[string]string) *Process {
 		logger: log.New(os.Stdout, name+": ", log.LstdFlags),
 		env:    env,
 		argv:   argv,
-		files:  map[int32]abi.File{},
+		FileHandles:  map[int32]abi.File{},
 
 		Stdin:  bytes.NewBuffer([]byte("")),
 		Stdout: os.Stdout,
@@ -37,7 +37,7 @@ type Process struct {
 	env    map[string]string
 	vm     *exec.VirtualMachine
 	argv   []string
-	files  map[int32]abi.File
+	FileHandles  map[int32]abi.File
 
 	Stdin          io.Reader
 	Stdout, Stderr io.Writer
@@ -60,7 +60,7 @@ func (Process) Open(abi.File) {}
 func (p *Process) Files() []abi.File {
 	var result []abi.File
 
-	for _, fi := range p.files {
+	for _, fi := range p.FileHandles {
 		result = append(result, fi)
 	}
 
@@ -271,11 +271,7 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 
 				return p.RandI64()
 			}
-		default:
-			log.Panicf("unknown import %s::%s", module, field)
 		}
-	default:
-		log.Panicf("unknown module %s", module)
 	}
 
 	return nil

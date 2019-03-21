@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Xe/ln"
-	"github.com/Xe/ln/opname"
 	"github.com/Xe/olin/internal/cwagi"
+	"within.website/ln"
+	"within.website/ln/opname"
 )
 
 var (
