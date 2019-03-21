@@ -413,15 +413,10 @@ func (w *WasmGo) runGoABI(doer func(int32)) exec.FunctionImport {
 		f := vm.GetCurrentFrame()
 		sp := int32(f.Locals[0])
 
-		//log.Printf("%s(%d)", getFunctionName(doer), sp)
 		doer(sp)
 
 		return 0
 	}
-}
-
-func getFunctionName(i interface{}) string {
-	return runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()
 }
 
 // ResolveGlobal does nothing, currently.
