@@ -10,6 +10,7 @@ github.com/pborman/uuid v0.0.0-20180906182336-adf5a7427709 h1:zNBQb37RGLmJybyMcs
 github.com/pborman/uuid v0.0.0-20180906182336-adf5a7427709/go.mod h1:VyrYX9gd7irzKovcSS6BIIEwPRkP2Wm2m9ufcdFSJ34=
 github.com/perlin-network/life v0.0.0-20190204091834-d05763d11050 h1:RVTDtMjSRp5M+Kns410nqtyUuoVKExgS0xgrh+9WGZc=
 github.com/perlin-network/life v0.0.0-20190204091834-d05763d11050/go.mod h1:fETv2DiCvuXiTsRHgPs2XQBvWqRGvnc59ZhCw9AtFA4=
+github.com/perlin-network/wagon v0.3.1-0.20180825141017-f8cb99b55a39 h1:CYHXy6CWxxL7ugjvCbTELOm2j5iRLEWGPl3AQYvretw=
 github.com/perlin-network/wagon v0.3.1-0.20180825141017-f8cb99b55a39/go.mod h1:zHOMvbitcZek8oshsMO5VpyBjWjV9X8cn8WTZwdebpM=
 github.com/pkg/errors v0.8.0 h1:WdK/asTD0HN+q6hsWO3/vpuAkAr+tw6aNJNDFFf0+qw=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=

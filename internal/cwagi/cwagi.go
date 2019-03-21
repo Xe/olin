@@ -17,8 +17,26 @@ import (
 	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"within.website/ln"
 	"within.website/ln/opname"
+)
+
+var (
+	ramUse = promauto.NewHistogramVec(prometheus.HistogramOpts{
+		Name: "ram_use",
+		Help: "The amount of ram in use per VM",
+	}, []string{"vm"})
+
+	executionTime = promauto.NewHistogramVec(prometheus.HistogramOpts{
+		Name: "execution_time",
+		Help: "The amount of time spent executing for the VM",
+	}, []string{"vm", "path"})
+
+	gasUsed = promauto.NewHistogramVec(prometheus.HistogramOpts{
+		Name: "gas_used",
+		Help: "The amount of VM gas used",
+	}, []string{"vm", "path"})
 )
 
 // NewVM creates a new virtual machine with the given WebAssembly binary code and name.
@@ -98,7 +116,10 @@ func (v *VMServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}()
 		return
 	}
-	f["exec_dur"] = time.Since(t0)
+	dur := time.Since(t0)
+	f["exec_dur"] = dur
+	executionTime.With(prometheus.Labels{"vm": v.myID, "path": r.URL.Path}).Observe(float64(dur))
+	gasUsed.With(prometheus.Labels{"vm": v.myID, "path": r.URL.Path}).Observe(float64(v.VM.Gas))
 
 	exitStatus.With(prometheus.Labels{"status": fmt.Sprint(ret)}).Inc()
 
