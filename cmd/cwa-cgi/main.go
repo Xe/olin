@@ -39,7 +39,7 @@ func main() {
 		"addr":      *addr,
 	}
 
-	prometheus.Register(prommod.NewCollector("cwa-cgi"))
+	_ = prometheus.Register(prommod.NewCollector("cwa-cgi"))
 
 	argv := flag.Args()
 	if len(argv) == 0 {
