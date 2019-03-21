@@ -1,8 +1,7 @@
 sudo: required
 
 env:
-  - GOPROXY=https://cache.greedo.xeserv.us
-  - GO111MODULE=on
+  - GOPROXY=https://cache.greedo.xeserv.us GO111MODULE=on
 
 services:
   - docker
