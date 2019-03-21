@@ -207,7 +207,7 @@ pub mod env {
         let key = key.as_bytes();
         let mut val = [0u8; ENVVAR_LEN];
         let val = get_buf(&key, &mut val).map_err(|e| {
-            ::log::error(&format!("can't get envvar: {:?}", e));
+            crate::log::error(&format!("can't get envvar: {:?}", e));
             e
         })?;
 
@@ -386,15 +386,15 @@ pub mod time {
 pub mod stdio {
     use super::Resource;
     pub fn inp() -> Resource {
-        unsafe { Resource::from_raw(::sys::io_get_stdin()) }
+        unsafe { Resource::from_raw(crate::sys::io_get_stdin()) }
     }
 
     pub fn out() -> Resource {
-        unsafe { Resource::from_raw(::sys::io_get_stdout()) }
+        unsafe { Resource::from_raw(crate::sys::io_get_stdout()) }
     }
 
     pub fn err() -> Resource {
-        unsafe { Resource::from_raw(::sys::io_get_stderr()) }
+        unsafe { Resource::from_raw(crate::sys::io_get_stderr()) }
     }
 }
 

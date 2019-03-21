@@ -6,6 +6,7 @@ description = "A small runtime library to help out programs linked against Commo
 license = "MIT"
 repository = "https://github.com/Xe/olin"
 homepage = "https://github.com/Xe/olin"
+edition = "2018"
 
 [[bin]]
 name = "shaman"
