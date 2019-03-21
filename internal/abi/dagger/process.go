@@ -205,7 +205,3 @@ func (p *Process) open(furl string, flags uint32) (int, error) {
 
 	return fd, nil
 }
-
-func (p *Process) close(fd int) int {
-	return 0
-}
