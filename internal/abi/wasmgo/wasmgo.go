@@ -88,9 +88,15 @@ func New(name string, argv []string, env map[string]string) *WasmGo {
 
 					if args[4] != nil {
 						position := int64(args[4].(float64))
-						syscall.Pwrite(fd, b, position)
+						_, err := syscall.Pwrite(fd, b, position)
+						if err != nil {
+							panic(err)
+						}
 					} else {
-						syscall.Write(fd, b)
+						_, err := syscall.Write(fd, b)
+						if err != nil {
+							panic(err)
+						}
 					}
 
 					goObj["_pendingEvent"] = &Object{Props: map[string]interface{}{

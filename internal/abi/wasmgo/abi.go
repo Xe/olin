@@ -20,11 +20,6 @@ func (w *WasmGo) loadString(addr int32) string {
 }
 
 // TODO properly endian
-func (w *WasmGo) getUint8(addr int32) uint8 {
-	return uint8(w.vm.Memory[addr])
-}
-
-// TODO properly endian
 func (w *WasmGo) setUint8(addr int32, val uint8) {
 	w.vm.Memory[addr] = byte(val)
 }
