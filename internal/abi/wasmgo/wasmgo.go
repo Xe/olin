@@ -16,7 +16,7 @@ type WasmGo struct {
 	BootTime   time.Time
 	Exited     bool
 	StatusCode int32
-	Memory *ArrayBuffer
+	Memory     *ArrayBuffer
 
 	vm *exec.VirtualMachine
 

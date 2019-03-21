@@ -6,8 +6,6 @@ import (
 	"encoding/binary"
 	"log"
 	"math"
-	"reflect"
-	"runtime"
 	"time"
 
 	"github.com/perlin-network/life/exec"
