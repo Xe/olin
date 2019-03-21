@@ -16,6 +16,7 @@ type WasmGo struct {
 	BootTime   time.Time
 	Exited     bool
 	StatusCode int32
+	Memory *ArrayBuffer
 
 	vm *exec.VirtualMachine
 
@@ -24,8 +25,6 @@ type WasmGo struct {
 }
 
 func New(name string, argv []string, env map[string]string) *WasmGo {
-	memory := &ArrayBuffer{}
-
 	goObj := map[string]interface{}{
 		"_makeFuncWrapper": func(this *Object, args []interface{}) interface{} {
 			return &FuncWrapper{id: args[0]}
@@ -34,6 +33,7 @@ func New(name string, argv []string, env map[string]string) *WasmGo {
 	}
 
 	w := &WasmGo{
+		Memory:   &ArrayBuffer{},
 		Process:  cwa.NewProcess(name, argv, env),
 		BootTime: time.Now(),
 		refs:     make(map[interface{}]int),
@@ -106,7 +106,7 @@ func New(name string, argv []string, env map[string]string) *WasmGo {
 			}},
 		}}, // global
 		&Object{Props: map[string]interface{}{
-			"buffer": memory,
+			"buffer": w.Memory,
 		}}, // memory
 		&Object{Props: goObj}, // go
 	}

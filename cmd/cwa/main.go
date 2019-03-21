@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Xe/olin/internal/abi/cwa"
 	"github.com/Xe/olin/internal/abi/wasmgo"
 	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"
@@ -22,6 +23,7 @@ var (
 	doTest     = flag.Bool("test", false, "unit testing?")
 	vmStats    = flag.Bool("vm-stats", false, "dump VM statistics?")
 	gas        = flag.Int("gas", 65536*64, "number of instructions the VM can perform")
+	goMode     = flag.Bool("go", false, "run in Go mode?")
 )
 
 func init() {
@@ -90,30 +92,23 @@ func main() {
 		log.Fatalf("%s: %v", fname, err)
 	}
 
-	if *doTest {
-		log.Printf("loading function %s", *mainFunc)
+	var ret int32
+	if *goMode {
+		ret, err = runGo(p, vm)
+	} else {
+		ret, err = runCWA(p.Process, vm)
 	}
-
-	main, ok := vm.GetFunctionExport(*mainFunc)
-	if !ok {
-		log.Fatalf("%s: no main function exported", fname)
-	}
-
-	if *doTest {
-		log.Printf("executing %s (%d)", *mainFunc, main)
-	}
-
-	t0 = time.Now()
-	ret, err := vm.RunWithGasLimit(main, *gas)
 	vmRunTime := time.Since(t0)
 	if err != nil {
 		log.Fatalf("%s: vm error: %v", fname, err)
 	}
 	if *vmStats || *doTest {
 		log.Printf("reading file time: %s", readingFileTime)
-		log.Printf("vm init time: %s", vmInitTime)
-		log.Printf("vm gas used: %v", vm.Gas)
-		log.Printf("execution time: %s", vmRunTime)
+		log.Printf("vm init time:      %s", vmInitTime)
+		log.Printf("vm gas limit:      %v", *gas)
+		log.Printf("vm gas used:       %v", vm.Gas)
+		log.Printf("vm gas percentage: %v", float64(float64(vm.Gas) / float64(*gas)))
+		log.Printf("execution time:    %s", vmRunTime)
 	}
 
 	if ret != 0 {
@@ -121,8 +116,57 @@ func main() {
 	}
 
 	if *vmStats {
-		log.Printf("memory pages: %d", len(vm.Memory)/65536)
+		log.Printf("memory pages:      %d", len(vm.Memory)/65536)
 	}
 
 	os.Exit(int(ret))
+}
+
+func runCWA(p *cwa.Process, vm *exec.VirtualMachine) (int32, error) {
+	if *doTest {
+		log.Printf("loading function %s", *mainFunc)
+	}
+
+	main, ok := vm.GetFunctionExport(*mainFunc)
+	if !ok {
+		return -1, fmt.Errorf("%s: no main function exported", p.Name())
+	}
+
+	if *doTest {
+		log.Printf("executing %s (%d)", *mainFunc, main)
+	}
+
+	ret, err := vm.RunWithGasLimit(main, *gas)
+	if err != nil {
+		return 1, err
+	}
+
+	return int32(ret), nil
+}
+
+func runGo(w *wasmgo.WasmGo, vm *exec.VirtualMachine) (int32, error) {
+	log.Printf("starting wasmgo...")
+	w.Memory.Data = vm.Memory
+
+	run, ok := vm.GetFunctionExport("run")
+	if !ok {
+		panic("function not found: run")
+	}
+
+	resume, ok := vm.GetFunctionExport("resume")
+	if !ok {
+		panic("function not found: resume")
+	}
+
+	if _, err := vm.RunWithGasLimit(run, *gas, 0, 0); err != nil {
+		return 1, err
+	}
+
+	for !vm.Exited {
+		if _, err := vm.RunWithGasLimit(resume, *gas); err != nil {
+			return w.StatusCode, err
+		}
+	}
+
+	return w.StatusCode, nil
 }

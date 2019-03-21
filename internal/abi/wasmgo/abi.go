@@ -433,8 +433,6 @@ func getFunctionName(i interface{}) string {
 func (w *WasmGo) ResolveGlobal(module, field string) int64 { return 0 }
 
 func (w *WasmGo) ResolveFunc(module, field string) exec.FunctionImport {
-	log.Printf("wasmgo: resolving %s %s", module, field)
-
 	val := w.Process.ResolveFunc(module, field)
 	if val != nil {
 		return val

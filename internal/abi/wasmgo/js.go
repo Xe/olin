@@ -11,7 +11,7 @@ type Object struct {
 
 // ArrayBuffer is a wrapper around arrays for "JS" interop
 type ArrayBuffer struct {
-	data []byte
+	Data []byte
 }
 
 // TypedArray is an ArrayBuffer with an offset and length
@@ -22,7 +22,7 @@ type TypedArray struct {
 }
 
 func (a *TypedArray) contents() []byte {
-	return a.Buffer.data[a.Offset : a.Offset+a.Length]
+	return a.Buffer.Data[a.Offset : a.Offset+a.Length]
 }
 
 var typedArrayClass = &Object{
