@@ -236,13 +236,13 @@ func (w *wasmGo) goRuntimeWasmWrite(sp int32) {
 	ptr := w.getInt64(sp + 16)
 	n := w.getInt32(sp + 24)
 
-	cnt, err := w.child.Files()[fd].Write(w.vm.Memory[ptr : ptr+int64(n)])
+	cnt, err := w.Files()[fd].Write(w.vm.Memory[ptr : ptr+int64(n)])
 	if err != nil {
-		log.Printf("goRuntimeWasmWrite(%d (%s), %x, %d): %v", fd, w.child.Files()[fd].Name(), ptr, n, err)
+		log.Printf("goRuntimeWasmWrite(%d (%s), %x, %d): %v", fd, w.Files()[fd].Name(), ptr, n, err)
 	}
 
 	if int32(cnt) != n {
-		log.Printf("goRuntimeWasmWrite(%d (%s), %x, %d): cnt: %d, err: nil", fd, w.child.Files()[fd].Name(), ptr, n, cnt)
+		log.Printf("goRuntimeWasmWrite(%d (%s), %x, %d): cnt: %d, err: nil", fd, w.Files()[fd].Name(), ptr, n, cnt)
 	}
 }
 
@@ -368,7 +368,10 @@ func (w *wasmGo) goRuntimeGetRandomData(sp int32) {
 		panic(err)
 	}
 
-	w.writeMem(sp+8, data)
+	_, err = w.writeMem(sp+8, data)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (w *wasmGo) notImplemented(module, field string) goABIFunc {
@@ -432,7 +435,7 @@ func (w *wasmGo) ResolveGlobal(module, field string) int64 { return 0 }
 func (w *wasmGo) ResolveFunc(module, field string) exec.FunctionImport {
 	log.Printf("wasmgo: resolving %s %s", module, field)
 
-	val := w.child.ResolveFunc(module, field)
+	val := w.ResolveFunc(module, field)
 	if val != nil {
 		return val
 	}
@@ -469,8 +472,6 @@ func (w *wasmGo) ResolveFunc(module, field string) exec.FunctionImport {
 			return w.runGoABI(w.goSyscallJSValueNew)
 		case "syscall/js.valueLength":
 			return w.runGoABI(w.goSyscallJSValueLength)
-		case "github.com/Xe/olin/dagger.openFD":
-			return w.runGoABI(w.daggerOpenFD)
 		default:
 			log.Printf("unknown module+field %s %s, using shim", module, field)
 			return w.runGoABI(w.notImplemented(module, field))

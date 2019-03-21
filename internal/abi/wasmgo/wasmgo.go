@@ -1,25 +1,114 @@
 package wasmgo
 
 import (
+	"math"
+	"syscall"
 	"time"
 
-	"github.com/Xe/olin/internal/abi/dagger"
+	"github.com/Xe/olin/internal/abi"
+	"github.com/Xe/olin/internal/abi/cwa"
 	"github.com/perlin-network/life/exec"
 )
 
 // TODO(Xe): upgrade this to a CWA process
 type wasmGo struct {
-	child *dagger.Process
+	*cwa.Process
 
 	BootTime   time.Time
 	Exited     bool
 	StatusCode int32
-	Callbacks  map[int32]time.Time
 
 	vm *exec.VirtualMachine
 
 	values []interface{}
 	refs   map[interface{}]int
+}
+
+func New(name string, argv []string, env map[string]string) abi.ABI {
+	memory := &ArrayBuffer{}
+
+	goObj := map[string]interface{}{
+		"_makeFuncWrapper": func(this *Object, args []interface{}) interface{} {
+			return &FuncWrapper{id: args[0]}
+		},
+		"_pendingEvent": nil,
+	}
+
+	w := &wasmGo{
+		Process:    cwa.NewProcess(name, argv, env),
+		BootTime: time.Now(),
+		refs:     make(map[interface{}]int),
+	}
+
+	w.values = []interface{}{
+		math.NaN(),
+		float64(0),
+		nil,
+		true,
+		false,
+		&Object{Props: map[string]interface{}{
+			"Object": &Object{
+				New: func(args []interface{}) interface{} {
+					panic("new Object")
+				},
+			},
+			"Array": &Object{
+				New: func(args []interface{}) interface{} {
+					panic("new Array")
+				},
+			},
+			"Int8Array":    typedArrayClass,
+			"Int16Array":   typedArrayClass,
+			"Int32Array":   typedArrayClass,
+			"Uint8Array":   typedArrayClass,
+			"Uint16Array":  typedArrayClass,
+			"Uint32Array":  typedArrayClass,
+			"Float32Array": typedArrayClass,
+			"Float64Array": typedArrayClass,
+			"process":      &Object{},
+			"fs": &Object{Props: map[string]interface{}{
+				"constants": &Object{Props: map[string]interface{}{
+					"O_WRONLY": syscall.O_WRONLY,
+					"O_RDWR":   syscall.O_RDWR,
+					"O_CREAT":  syscall.O_CREAT,
+					"O_TRUNC":  syscall.O_TRUNC,
+					"O_APPEND": syscall.O_APPEND,
+					"O_EXCL":   syscall.O_EXCL,
+				}},
+				"write": func(this *Object, args []interface{}) interface{} {
+					fd := int(args[0].(float64))
+					buffer := args[1].(*TypedArray)
+					offset := int(args[2].(float64))
+					length := int(args[3].(float64))
+					b := buffer.contents()[offset : offset+length]
+					callback := args[5].(*FuncWrapper)
+
+					if args[4] != nil {
+						position := int64(args[4].(float64))
+						syscall.Pwrite(fd, b, position)
+					} else {
+						syscall.Write(fd, b)
+					}
+
+					goObj["_pendingEvent"] = &Object{Props: map[string]interface{}{
+						"id":   callback.id,
+						"this": nil,
+						"args": &[]interface{}{
+							nil,
+							length,
+						},
+					}}
+					return nil
+				},
+			}},
+		}}, // global
+		&Object{Props: map[string]interface{}{
+			"buffer": memory,
+		}}, // memory
+		&Object{Props: goObj}, // go
+	}
+
+	return w
 }
 
 // TODO(Xe): replace with copy() or obviate the need to copy to begin with?
