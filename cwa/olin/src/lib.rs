@@ -82,10 +82,12 @@ pub mod sys {
         // https://github.com/CommonWA/cwa-spec/blob/master/ns/random.md#i64
         pub fn random_i64() -> i64;
 
-        // Not currently defined by a specification (TODO(Xe): this) but this mirrors
-        // the behavior here: https://github.com/CommonWA/cwa-rs/blob/master/src/raw.rs#L20-L22
+        // This api is a nonce.
+        // https://github.com/Xe/olin/blob/master/docs/cwa-spec/ns/io.md#io_get_stdin
         pub fn io_get_stdin() -> i32;
+        // https://github.com/Xe/olin/blob/master/docs/cwa-spec/ns/io.md#io_get_stdout
         pub fn io_get_stdout() -> i32;
+        // https://github.com/Xe/olin/blob/master/docs/cwa-spec/ns/io.md#io_get_stderr
         pub fn io_get_stderr() -> i32;
     }
 }
