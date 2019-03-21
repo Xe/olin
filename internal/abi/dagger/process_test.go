@@ -120,8 +120,7 @@ func processTestHelloWorld(t *testing.T, p *Process) {
 }
 
 func processTestHTTPFile(t *testing.T, p *Process) {
-	t.Skip("travis is broken for this test")
-
+	t.Skip("doesn't work in Travis")
 	hs := &http.Server{
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			log.Printf("got request from wasm :D")
@@ -130,10 +129,7 @@ func processTestHTTPFile(t *testing.T, p *Process) {
 		Addr: "127.0.0.1:30405",
 	}
 	go func() {
-		err := hs.ListenAndServe()
-		if err != nil {
-			t.Fatal(err)
-		}
+		_ = hs.ListenAndServe()
 	}()
 	defer hs.Close()
 

@@ -2,25 +2,23 @@ package cwa
 
 import (
 	"time"
-
-	"github.com/Xe/olin/internal/names"
 )
 
 func (p *Process) specMajor() int32 {
-	return names.CommonWASpecMajor
+	return SpecMajor
 }
 
 func (p *Process) specMinor() int32 {
-	return names.CommonWASpecMinor
+	return SpecMinor
 }
 
 func (p *Process) RuntimeName(namePtr, nameLen uint32) int32 {
-	if len(names.CommonWARuntimeName) < int(nameLen) {
-		for i, by := range []byte(names.CommonWARuntimeName) {
+	if len(RuntimeName) < int(nameLen) {
+		for i, by := range []byte(RuntimeName) {
 			p.vm.Memory[namePtr+uint32(i)] = by
 		}
 	}
-	return int32(len(names.CommonWARuntimeName))
+	return int32(len(RuntimeName))
 }
 
 func (p *Process) msleep(ms int32) {

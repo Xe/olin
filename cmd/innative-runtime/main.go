@@ -1,3 +1,5 @@
+// +build ignore
+
 package main
 
 import (
@@ -6,7 +8,6 @@ import (
 	"time"
 
 	"github.com/Xe/olin/internal/abi/cwa"
-	"github.com/Xe/olin/internal/names"
 	"github.com/perlin-network/life/exec"
 	"github.com/perlin-network/life/compiler"
 )
@@ -50,12 +51,12 @@ func envIREnvGet(keyPtr, keyLen, valPtr, valLen uint32) int64 {
 
 //export env_IR_runtime_spec_major
 func envRuntimeSpecMajor() int64 {
-	return names.CommonWASpecMajor
+	return cwa.CommonWASpecMajor
 }
 
 //export env_IR_runtime_spec_minor
 func envRuntimeSpecMinor() int64 {
-	return names.CommonWASpecMinor
+	return cwa.CommonWASpecMinor
 }
 
 //export env_IR_runtime_name

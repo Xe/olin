@@ -3,6 +3,7 @@ package fileresolver
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"log"
 	"net/http"
 	"net/url"
@@ -53,6 +54,9 @@ func (h *httpFile) Write(p []byte) (int, error) {
 }
 
 func (h *httpFile) Read(p []byte) (int, error) {
+	if !h.respGot {
+		return -1, errors.New("no response data yet")
+	}
 	return h.resp.Read(p)
 }
 
@@ -79,10 +83,15 @@ func (h *httpFile) Flush() error {
 		return err
 	}
 
+	resp.ProtoMajor = 1
+	resp.ProtoMinor = 1
+	resp.Proto = "HTTP/1.1"
+
 	err = resp.Write(h.resp)
 	if err != nil {
 		return err
 	}
+	h.respGot = true
 
 	log.Printf("%s: %d bytes waiting in resp", h.u, h.resp.Len())
 
