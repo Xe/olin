@@ -1,8 +1,0 @@
-language: go
-
-go:
-  - "1.x"
-  - "1.9"
-  
-script:
-  - go test -v -race -cover ./...
