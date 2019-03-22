@@ -10,11 +10,10 @@ import (
 	"github.com/Xe/olin/internal/fileresolver"
 )
 
-func (p *Process) ResourceOpen(urlPtr, urlLen uint32) (int32, error) {
-	u := string(readMem(p.vm.Memory, urlPtr, urlLen))
-	uu, err := url.Parse(u)
+func (p *Process) OpenFile(uri string) (int32, error) {
+	uu, err := url.Parse(uri)
 	if err != nil {
-		p.logger.Printf("can't parse url %s: %v, returning:  %v", u, err, InvalidArgumentError)
+		p.logger.Printf("can't parse url %s: %v, returning:  %v", uri, err, InvalidArgumentError)
 		return 0, InvalidArgumentError
 	}
 
@@ -34,7 +33,7 @@ func (p *Process) ResourceOpen(urlPtr, urlLen uint32) (int32, error) {
 		var err error
 		file, err = fileresolver.HTTP(p.hc, uu)
 		if err != nil {
-			p.logger.Printf("can't resource_open(%q): %v", u, err)
+			p.logger.Printf("can't resource_open(%q): %v", uri, err)
 			return 0, UnknownError
 		}
 	default:
@@ -45,6 +44,11 @@ func (p *Process) ResourceOpen(urlPtr, urlLen uint32) (int32, error) {
 	p.FileHandles[fid] = file
 
 	return fid, nil
+}
+
+func (p *Process) ResourceOpen(urlPtr, urlLen uint32) (int32, error) {
+	u := string(readMem(p.vm.Memory, urlPtr, urlLen))
+	return p.OpenFile(u)
 }
 
 func (p *Process) ResourceWrite(fid int32, dataPtr, dataLen uint32) (int32, error) {
