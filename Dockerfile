@@ -26,9 +26,15 @@ RUN go test -v ./cmd/... ./internal/...
 RUN GOBIN=/usr/local/bin go install ./cmd/cwa-cgi
 RUN GOBIN=/usr/local/bin go install ./cmd/cwa
 
+FROM xena/zig AS zig
+WORKDIR /olin
+COPY ./zig .
+RUN ./build.sh
+
 FROM xena/alpine
 COPY ./run/run.sh /run.sh
 COPY --from=rust-wasm-tools /olin/*.wasm /wasm/
+COPY --from=zig /olin/main /wasm/coi-zig.wasm
 COPY --from=go /usr/local/bin/cwa /usr/local/bin/cwa
 COPY --from=go /usr/local/bin/cwa-cgi /usr/local/bin/cwa-cgi
 WORKDIR /
