@@ -3,3 +3,5 @@ pub const log = @import("./log.zig");
 pub const random = @import("./random.zig");
 pub const resource = @import("./resource.zig");
 pub const time = @import("./time.zig");
+
+pub const panic = @import("./panic.zig");
