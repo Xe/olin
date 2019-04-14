@@ -29,6 +29,7 @@ RUN GOBIN=/usr/local/bin go install ./cmd/cwa
 FROM xena/zig:0.4.0 AS zig
 WORKDIR /olin
 COPY ./zig .
+COPY --from=go /usr/local/bin/cwa /usr/local/bin/cwa
 RUN ./build.sh
 
 FROM xena/alpine
