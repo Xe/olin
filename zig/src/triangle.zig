@@ -1,3 +1,4 @@
+// Ported from https://github.com/faithanalog/x/blob/master/zigtest/triangle.zig
 const std = @import("std");
 const log = @import("./olin/log.zig");
 const stdout = @import("./olin/resource.zig").Resource.stdout;
