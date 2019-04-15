@@ -1,4 +1,5 @@
 const olin = @import("./olin/olin.zig");
+const env = olin.env;
 const log = olin.log;
 const random = olin.random;
 const resource = olin.resource;
@@ -8,8 +9,6 @@ const std = @import("std");
 const assert = std.debug.assert;
 
 export fn cwa_main() i32 {
-    var fails: i32 = 0;
-
     log.info("hi");
     log.warning("hi");
     log.err("hi");
@@ -28,9 +27,10 @@ export fn cwa_main() i32 {
 
     assert(now != 0);
 
-    test_resource_log() catch unreachable;
+    test_resource_log() catch return 1;
+    test_env_get() catch return 2;
 
-    return fails;
+    return 0;
 }
 
 fn test_resource_log() !void {
@@ -38,4 +38,13 @@ fn test_resource_log() !void {
     const open = resource.Resource.open;
     const fout = try open("log://?prefix=test");
     const n = try fout.write(&msg, msg.len);
+}
+
+fn test_env_get() !void {
+    const key = "MAGIC_CONCH";
+    log.info("getting env");
+    const val = try olin.env.get(key);
+    const cmp = c"yes";
+
+    log.info(val);
 }

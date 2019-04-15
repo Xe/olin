@@ -11,55 +11,37 @@ extern fn io_get_stdin() i32;
 extern fn io_get_stdout() i32;
 extern fn io_get_stderr() i32;
 
+fn fd_check(fd: i32) errs.OlinError!Resource {
+    if(errs.parse(fd)) |fd_for_handle| {
+        return Resource {
+            .fd = fd_for_handle,
+        };
+    } else |err| {
+        return err;
+    }
+}
+
 pub const Resource = struct {
     fd: i32,
 
-    pub fn open(url: []const u8) errs.OlinError!Resource {
+    pub fn open(url: []const u8) !Resource {
         const fd = resource_open(url.ptr, url.len);
-
-        if(errs.parse(fd)) |fd_for_handle| {
-            return Resource {
-                .fd = fd_for_handle,
-            };
-        } else |err| {
-            return err;
-        }
+        return fd_check(fd);
     }
 
-    pub fn stdin() errs.OlinError!Resource{
+    pub fn stdin() !Resource{
         const fd = io_get_stdin();
-
-        if(errs.parse(fd)) |fd_for_handle| {
-            return Resource {
-                .fd = fd_for_handle,
-            };
-        } else |err| {
-            return err;
-        }
+        return fd_check(fd);
     }
 
-    pub fn stdout() errs.OlinError!Resource{
+    pub fn stdout() !Resource{
         const fd = io_get_stdout();
-
-        if(errs.parse(fd)) |fd_for_handle| {
-            return Resource {
-                .fd = fd_for_handle,
-            };
-        } else |err| {
-            return err;
-        }
+        return fd_check(fd);
     }
 
-    pub fn stderr() errs.OlinError!Resource{
+    pub fn stderr() !Resource{
         const fd = io_get_stderr();
-
-        if(errs.parse(fd)) |fd_for_handle| {
-            return Resource {
-                .fd = fd_for_handle,
-            };
-        } else |err| {
-            return err;
-        }
+        return fd_check(fd);
     }
 
     pub fn write(self: Resource, data: [*]const u8, len: usize) OlinError!i32 {
@@ -72,7 +54,7 @@ pub const Resource = struct {
         }
     }
 
-    pub fn read(self: Resource, data: [*]const u8, len: usize) OlinError!i32 {
+    pub fn read(self: Resource, data: [*]u8, len: usize) OlinError!i32 {
         const n = resource_read(self.fd, data, len);
 
         if (errs.parse(n)) |nresp| {
