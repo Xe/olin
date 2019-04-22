@@ -6,7 +6,7 @@ func (p *Process) EnvGet(keyPtr, keyLen, valPtr, valLen uint32) (int32, error) {
 		return 0, NotFoundError
 	}
 
-	if len(val) < int(valLen) {
+	if len(val) <= int(valLen) {
 		copy(p.vm.Memory[valPtr:], []byte(val))
 	}
 
