@@ -26,7 +26,7 @@ RUN go test -v ./cmd/... ./internal/...
 RUN GOBIN=/usr/local/bin go install ./cmd/cwa-cgi
 RUN GOBIN=/usr/local/bin go install ./cmd/cwa
 
-FROM xena/zig:0.4.0 AS zig
+FROM xena/zig:0.4.0-0f8fc3b9 AS zig
 WORKDIR /olin
 COPY ./zig .
 COPY --from=go /usr/local/bin/cwa /usr/local/bin/cwa
