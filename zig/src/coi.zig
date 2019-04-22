@@ -7,6 +7,7 @@ const time = olin.time;
 
 const std = @import("std");
 const assert = std.debug.assert;
+var alloc = std.heap.wasm_allocator;
 
 export fn cwa_main() i32 {
     log.info("hi");
@@ -28,7 +29,8 @@ export fn cwa_main() i32 {
     assert(now != 0);
 
     test_resource_log() catch return 1;
-    test_env_get() catch return 2;
+    test_resource_random() catch return 2;
+    test_env_get() catch return 3;
 
     return 0;
 }
@@ -40,10 +42,26 @@ fn test_resource_log() !void {
     const n = try fout.write(&msg, msg.len);
 }
 
+fn test_resource_random() !void {
+    const fin = try resource.Resource.open("random://");
+    var buf: [32]u8 = undefined;
+
+    const n = try fin.read(&buf, 32);
+
+    var last: u8 = undefined;
+    for (buf) |byte| {
+        if (byte != last) {
+            last = byte;
+        } else {
+            @panic("random data was not read");
+        }
+    }
+}
+
 fn test_env_get() !void {
     const key = "MAGIC_CONCH";
     log.info("getting env");
-    const val = try olin.env.get(key);
+    const val = try olin.env.get(alloc, key);
     const cmp = c"yes";
 
     log.info(val);
