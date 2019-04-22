@@ -64,6 +64,11 @@ pub const Resource = struct {
         }
     }
 
+    pub fn close(self: Resource) void {
+        resource_close(self.fd);
+        return;
+    }
+
     pub fn flush(self: Resource) OlinError!void {
         const n = resource_flush(self.fd);
 
