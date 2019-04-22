@@ -10,7 +10,6 @@ WORKDIR /olin
 COPY --from=rust /usr/src/olin/bin/*.wasm /olin/
 RUN wasm-gc ./olinfetch.wasm \
  && wasm-gc ./cwagi.wasm \
- && wasm-gc ./shaman.wasm \
  && wasm-gc ./cwa-tests.wasm \
  && du -hs ./*.wasm
 
@@ -35,7 +34,8 @@ RUN ./build.sh
 FROM xena/alpine
 COPY ./run/run.sh /run.sh
 COPY --from=rust-wasm-tools /olin/*.wasm /wasm/
-COPY --from=zig /olin/main /wasm/coi-zig.wasm
+COPY --from=zig /olin/coi.wasm /wasm/coi-zig.wasm
+COPY --from=zig /olin/shaman.wasm /wasm/shaman.wasm
 COPY --from=go /usr/local/bin/cwa /usr/local/bin/cwa
 COPY --from=go /usr/local/bin/cwa-cgi /usr/local/bin/cwa-cgi
 WORKDIR /
