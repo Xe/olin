@@ -4,6 +4,7 @@ const log = olin.log;
 const random = olin.random;
 const resource = olin.resource;
 const time = olin.time;
+const runtime = olin.runtime;
 
 const std = @import("std");
 const assert = std.debug.assert;
@@ -28,9 +29,12 @@ export fn cwa_main() i32 {
 
     assert(now != 0);
 
+    test_runtime_sleep();
+
     test_resource_log() catch return 1;
     test_resource_random() catch return 2;
     test_env_get() catch return 3;
+    test_runtime_metadata() catch return 4;
 
     return 0;
 }
@@ -61,8 +65,20 @@ fn test_resource_random() !void {
 fn test_env_get() !void {
     const key = "MAGIC_CONCH";
     log.info("getting env");
-    const val = try olin.env.get(alloc, key);
-    const cmp = c"yes";
+    const val = try env.get(alloc, key);
 
     log.info(val);
+    alloc.free(val);
+}
+
+fn test_runtime_sleep() void {
+    runtime.sleep(1);
+}
+
+fn test_runtime_metadata() !void {
+    const metadata = try runtime.metadata(alloc);
+
+    log.info(metadata.name);
+
+    alloc.destroy(metadata);
 }

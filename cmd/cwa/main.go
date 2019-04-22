@@ -24,6 +24,7 @@ var (
 	vmStats    = flag.Bool("vm-stats", false, "dump VM statistics?")
 	gas        = flag.Int("gas", 65536*64, "number of instructions the VM can perform")
 	goMode     = flag.Bool("go", false, "run in Go mode?")
+	writeMem   = flag.String("write-mem", "", "write memory heap to the given file on exit")
 )
 
 func init() {
@@ -107,7 +108,8 @@ func main() {
 		log.Printf("vm init time:      %s", vmInitTime)
 		log.Printf("vm gas limit:      %v", *gas)
 		log.Printf("vm gas used:       %v", vm.Gas)
-		log.Printf("vm gas percentage: %v", float64(float64(vm.Gas) / float64(*gas)))
+		log.Printf("vm gas percentage: %v", float64(float64(vm.Gas)/float64(*gas))*100)
+		log.Printf("vm syscalls:       %d", p.SyscallCount())
 		log.Printf("execution time:    %s", vmRunTime)
 	}
 
@@ -117,6 +119,10 @@ func main() {
 
 	if *vmStats {
 		log.Printf("memory pages:      %d", len(vm.Memory)/65536)
+	}
+
+	if fname := *writeMem; fname != "" {
+		ioutil.WriteFile(fname, vm.Memory, 0600)
 	}
 
 	os.Exit(int(ret))
