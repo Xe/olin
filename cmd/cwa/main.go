@@ -122,7 +122,10 @@ func main() {
 	}
 
 	if fname := *writeMem; fname != "" {
-		ioutil.WriteFile(fname, vm.Memory, 0600)
+		err := ioutil.WriteFile(fname, vm.Memory, 0600)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	os.Exit(int(ret))
