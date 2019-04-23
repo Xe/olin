@@ -4,12 +4,12 @@ const Allocator = @import("std").mem.Allocator;
 extern fn env_get(
     key_data: [*]const u8,
     key_len: usize,
-    value_data: [*]const u8,
+    value_data: [*]u8,
     value_len: usize,
 ) i32;
 
 pub fn get(allocator: *Allocator, key: []const u8) ![]u8 {
-    const needed_size_i = env_get(key.ptr, key.len, @intToPtr([*]const u8, 1), 0);
+    const needed_size_i = env_get(key.ptr, key.len, @intToPtr([*]u8, 1), 0);
     const needed_size_n = try errs.parse(needed_size_i);
     const needed_size = @intCast(usize, needed_size_n);
 

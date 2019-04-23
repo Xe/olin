@@ -21,6 +21,11 @@ fn fd_check(fd: i32) errs.OlinError!Resource {
     }
 }
 
+pub const open = Resource.open;
+pub const stdin = Resource.stdin;
+pub const stdout = Resource.stdout;
+pub const stderr = Resource.stderr;
+
 pub const Resource = struct {
     fd: i32,
 

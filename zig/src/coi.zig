@@ -5,6 +5,7 @@ const random = olin.random;
 const resource = olin.resource;
 const time = olin.time;
 const runtime = olin.runtime;
+const startup = olin.startup;
 
 const std = @import("std");
 const assert = std.debug.assert;
@@ -30,24 +31,26 @@ export fn cwa_main() i32 {
     assert(now != 0);
 
     test_runtime_sleep();
+    test_time();
 
     test_resource_log() catch return 1;
     test_resource_random() catch return 2;
     test_env_get() catch return 3;
     test_runtime_metadata() catch return 4;
+    test_startup_args() catch return 5;
 
     return 0;
 }
 
 fn test_resource_log() !void {
     const msg = "hi there";
-    const open = resource.Resource.open;
-    const fout = try open("log://?prefix=test");
+    const fout = try resource.open("log://?prefix=test");
     const n = try fout.write(&msg, msg.len);
+    fout.close();
 }
 
 fn test_resource_random() !void {
-    const fin = try resource.Resource.open("random://");
+    const fin = try resource.open("random://");
     var buf: [32]u8 = undefined;
 
     const n = try fin.read(&buf, 32);
@@ -81,4 +84,19 @@ fn test_runtime_metadata() !void {
     log.info(metadata.name);
 
     alloc.destroy(metadata);
+}
+
+fn test_time() void {
+    const now = time.unix();
+    @import("std").debug.assert(now != 0);
+}
+
+fn test_startup_args() !void {
+    var args = try startup.args(alloc);
+
+    for (args) |v| {
+        log.info(v);
+    }
+
+    startup.free_args(alloc, args);
 }
