@@ -36,6 +36,7 @@ COPY ./run/run.sh /run.sh
 COPY --from=rust-wasm-tools /olin/*.wasm /wasm/
 COPY --from=zig /olin/coi.wasm /wasm/coi-zig.wasm
 COPY --from=zig /olin/shaman.wasm /wasm/shaman.wasm
+COPY --from=zig /olin/cwagi.wasm /wasm/cwagi.wasm
 COPY --from=rust /usr/src/olin/bin/shaman.wasm /wasm/shaman_rust.wasm
 COPY --from=go /usr/local/bin/cwa /usr/local/bin/cwa
 COPY --from=go /usr/local/bin/cwa-cgi /usr/local/bin/cwa-cgi
