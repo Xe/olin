@@ -14,16 +14,16 @@ import (
 // NewProcess creates a new process with the given name, arguments and environment.
 func NewProcess(name string, argv []string, env map[string]string) *Process {
 	return &Process{
-		name:        name,
-		hc:          &http.Client{},
-		logger:      log.New(os.Stdout, name+": ", log.LstdFlags),
-		env:         env,
-		argv:        argv,
-		FileHandles: map[int32]abi.File{},
+		name:   name,
+		hc:     &http.Client{},
+		logger: log.New(os.Stdout, name+": ", log.LstdFlags),
+		env:    env,
+		argv:   argv,
 
-		Stdin:  bytes.NewBuffer([]byte("")),
-		Stdout: os.Stdout,
-		Stderr: os.Stderr,
+		FileHandles: map[int32]abi.File{},
+		Stdin:       bytes.NewBuffer([]byte("")),
+		Stdout:      os.Stdout,
+		Stderr:      os.Stderr,
 	}
 }
 
@@ -32,13 +32,14 @@ func NewProcess(name string, argv []string, env map[string]string) *Process {
 type Process struct {
 	name string
 
-	hc          *http.Client
-	logger      *log.Logger
-	env         map[string]string
-	vm          *exec.VirtualMachine
-	argv        []string
-	FileHandles map[int32]abi.File
+	hc           *http.Client
+	logger       *log.Logger
+	env          map[string]string
+	vm           *exec.VirtualMachine
+	argv         []string
+	syscallCount int64
 
+	FileHandles    map[int32]abi.File
 	Stdin          io.Reader
 	Stdout, Stderr io.Writer
 }
@@ -56,6 +57,10 @@ func (p *Process) SetVM(vm *exec.VirtualMachine) { p.vm = vm }
 // Open does nothing
 func (Process) Open(abi.File) {}
 
+func (p Process) SyscallCount() int64 {
+	return p.syscallCount
+}
+
 // Files returns the set of open files in use by this process.
 func (p *Process) Files() []abi.File {
 	var result []abi.File
@@ -72,6 +77,7 @@ func (p *Process) ResolveGlobal(module, field string) int64 { return 0 }
 
 // ResolveFunc resolves the CommonWA ABI and importable functions.
 func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
+	p.syscallCount++
 	switch module {
 	case "cwa", "env":
 		switch field {
