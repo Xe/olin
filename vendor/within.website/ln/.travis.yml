@@ -1,0 +1,13 @@
+language: go
+
+env:
+  - GOPROXY=https://cache.greedo.xeserv.us GO111MODULE=on
+
+go:
+  - "1.10"
+  - "1.11"
+
+go_import_path: within.website/ln
+
+script:
+  - go test -v -race -cover ./...
