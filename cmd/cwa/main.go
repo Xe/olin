@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"log"
 	"os"
 	"strings"
@@ -33,6 +34,8 @@ func init() {
 		fmt.Fprintf(flag.CommandLine.Output(), "  %s <file.wasm>\n\n", os.Args[0])
 		flag.PrintDefaults()
 	}
+
+	rand.Seed(time.Now().UnixNano())
 }
 
 func main() {
