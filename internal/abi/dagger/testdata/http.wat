@@ -2,7 +2,7 @@
  ;; import functions from env
  (func $open  (import "dagger" "open")  (param i32 i32)     (result i32))
  (func $write (import "dagger" "write") (param i32 i32 i32) (result i32))
- (func $sync  (import "dagger" "sync")  (param i32)         (result i32))
+ (func $flush (import "dagger" "flush") (param i32)         (result i32))
 
  ;; memory
  (memory $mem 1)
@@ -18,5 +18,5 @@
        (call $write (get_local $fd) (i32.const 250) (i32.const 69))
        (drop)
 
-       (call $sync (get_local $fd)))
+       (call $flush (get_local $fd)))
  (export "main" (func $main)))

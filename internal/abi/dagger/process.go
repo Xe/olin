@@ -2,6 +2,7 @@ package dagger
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -11,6 +12,7 @@ import (
 	"github.com/Xe/olin/internal/abi"
 	"github.com/Xe/olin/internal/fileresolver"
 	"github.com/perlin-network/life/exec"
+	"github.com/spf13/afero"
 )
 
 // Process is a higher level wrapper around a set of files for dagger
@@ -18,6 +20,13 @@ import (
 type Process struct {
 	name  string
 	files []abi.File
+
+	jail afero.Fs
+
+	Stdin          io.Reader
+	Stdout, Stderr io.Writer
+
+	syscalls int
 }
 
 // Files returns the process' list of open files.
@@ -26,12 +35,13 @@ func (p Process) Files() []abi.File {
 }
 
 // NewProcess creates a new process.
-func NewProcess(name string) *Process {
-	return &Process{name: name}
+func NewProcess(name string, jail afero.Fs) *Process {
+	return &Process{name: name, jail: jail}
 }
 
 // insertFile adds a file to the set of files and returns its descriptor.
 func (p *Process) insertFile(file abi.File) int {
+	// reclaim a closed descriptor
 	for i, f := range p.files {
 		if f == nil {
 			p.files[i] = file
@@ -39,6 +49,7 @@ func (p *Process) insertFile(file abi.File) int {
 		}
 	}
 
+	// otherwise assign a new one
 	i := len(p.files)
 	p.files = append(p.files, file)
 	return i
@@ -46,6 +57,11 @@ func (p *Process) insertFile(file abi.File) int {
 
 // Name returns this process's name.
 func (p *Process) Name() string { return p.name }
+
+// SyscallCount returns the number of tracked syscalls.
+func (p *Process) SyscallCount() int {
+	return p.syscalls
+}
 
 // OpenFD opens a file descriptor for this Process with the given file url
 // string and flags integer.
@@ -85,11 +101,11 @@ func (p *Process) WriteFD(fd int64, data []byte) int64 {
 	return int64(n)
 }
 
-// SyncFD runs a file's sync operation and returns -1 if it failed.
-func (p *Process) SyncFD(fd int64) int64 {
+// FlushFD runs a file's flush operation and returns -1 if it failed.
+func (p *Process) FlushFD(fd int64) int64 {
 	err := p.files[fd].Flush()
 	if err != nil {
-		log.Printf("%s: Sync(%d) %v", p.name, fd, err)
+		log.Printf("%s: Flush(%d) %v", p.name, fd, err)
 		return -1
 	}
 
@@ -109,8 +125,9 @@ func (p *Process) ReadFD(fd int64, buf []byte) int64 {
 
 // ResolveFunc resolves dagger's ABI and importable functions.
 func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
+	p.syscalls++
 	switch module {
-	case "dagger":
+	case "dagger", "env":
 		switch field {
 		case "open": // :: String -> Int32 -> Int64
 			return func(vm *exec.VirtualMachine) int64 {
@@ -138,12 +155,12 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 
 				return p.WriteFD(fd, mem)
 			}
-		case "sync": // :: Int64 -> IO Int64
+		case "flush": // :: Int64 -> IO Int64
 			return func(vm *exec.VirtualMachine) int64 {
 				f := vm.GetCurrentFrame()
 				fd := f.Locals[0]
 
-				return p.SyncFD(fd)
+				return p.FlushFD(fd)
 			}
 		case "read": // :: Int64 -> String -> IO Int64
 			return func(vm *exec.VirtualMachine) int64 {
@@ -186,13 +203,30 @@ func (p *Process) open(furl string, flags uint32) (int, error) {
 		q := u.Query()
 		file = fileresolver.Log(os.Stdout, q.Get("prefix"), log.LstdFlags)
 
-	case "fd":
+	case "file":
+		fref, err := p.jail.Open(u.Path)
+		if err != nil {
+			return -1, makeError(ErrorBadURLInput, err)
+		}
+
+		file = fileresolver.AferoFile{File: fref}
+
+	case "fd": // TODO(Xe): remove this?
 		fdNum, err := strconv.Atoi(u.Host)
 		if err != nil {
 			return -1, makeError(ErrorBadURLInput, err)
 		}
 
 		file = fileresolver.NewOSFile(uintptr(fdNum), u.Host)
+
+	case "stdin":
+		file = fileresolver.Reader(p.Stdin, "stdin")
+
+	case "stdout":
+		file = fileresolver.Writer(p.Stdout, "stdout")
+
+	case "stderr":
+		file = fileresolver.Writer(p.Stderr, "stderr")
 
 	case "http", "https":
 		file, _ = fileresolver.HTTP(&http.Client{}, u)
