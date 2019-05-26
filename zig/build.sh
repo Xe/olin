@@ -13,4 +13,4 @@ cwa -vm-stats -test coi.wasm a b c d
 cwa -vm-stats triangle.wasm
 
 zig build-lib -target wasm32-freestanding-none --release-fast src/dagger_test.zig
-
+rm *.h

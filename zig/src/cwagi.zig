@@ -5,6 +5,8 @@ const std = @import("std");
 const fmt = std.fmt;
 var alloc = std.heap.wasm_allocator;
 
+pub fn main() void {}
+
 export fn cwa_main() i32 {
     const ctx = cwagi.Context.init(alloc) catch return 1;
     const resp: cwagi.Response = helloWorld(ctx) catch return 1;

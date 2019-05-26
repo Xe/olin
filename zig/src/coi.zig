@@ -11,6 +11,8 @@ const std = @import("std");
 const assert = std.debug.assert;
 var alloc = std.heap.wasm_allocator;
 
+pub fn main() void {}
+
 export fn cwa_main() i32 {
     log.info("hi");
     log.warning("hi");

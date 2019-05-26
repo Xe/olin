@@ -62,6 +62,8 @@ fn clearFramebuffer() !void {
     }
 }
 
+pub fn main() void {}
+
 export fn cwa_main() i32 {
     const tri = Tri{
         .v0 = Vec2{

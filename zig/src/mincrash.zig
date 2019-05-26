@@ -4,6 +4,8 @@ export fn cwa_main() i32 {
     return 0;
 }
 
+pub fn main() void {}
+
 extern fn random_i32() i32;
 const ErrorStuff = error{
     Stuff,

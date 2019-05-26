@@ -13,6 +13,12 @@ RUN wasm-gc ./olinfetch.wasm \
  && wasm-gc ./cwa-tests.wasm \
  && du -hs ./*.wasm
 
+FROM xena/zig:0.4.0-0f8fc3b9 AS zig
+WORKDIR /olin
+COPY ./zig .
+COPY --from=go /usr/local/bin/cwa /usr/local/bin/cwa
+RUN ./build.sh
+
 FROM xena/go:1.12.1 AS go
 RUN apk add --no-cache build-base
 ENV GOPROXY https://cache.greedo.xeserv.us
@@ -20,16 +26,11 @@ WORKDIR /olin
 COPY . .
 COPY --from=rust-wasm-tools /olin/cwagi.wasm ./cmd/cwa-cgi/testdata/test.wasm
 COPY --from=rust-wasm-tools /olin/cwa-tests.wasm ./cmd/cwa/testdata/test.wasm
+COPY --from=zig /olin/dagger_test.wasm ./cmd/dagger/testdata/test.wasm
 RUN GOARCH=wasm GOOS=js go build -o ./cmd/cwa/testdata/go.wasm ./internal/abi/wasmgo/testdata/nothing.go
 RUN go test -v ./cmd/... ./internal/...
 RUN GOBIN=/usr/local/bin go install ./cmd/cwa-cgi
 RUN GOBIN=/usr/local/bin go install ./cmd/cwa
-
-FROM xena/zig:0.4.0-0f8fc3b9 AS zig
-WORKDIR /olin
-COPY ./zig .
-COPY --from=go /usr/local/bin/cwa /usr/local/bin/cwa
-RUN ./build.sh
 
 FROM xena/alpine
 COPY ./run/run.sh /run.sh
