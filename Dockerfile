@@ -16,7 +16,6 @@ RUN wasm-gc ./olinfetch.wasm \
 FROM xena/zig:0.4.0-0f8fc3b9 AS zig
 WORKDIR /olin
 COPY ./zig .
-COPY --from=go /usr/local/bin/cwa /usr/local/bin/cwa
 RUN ./build.sh
 
 FROM xena/go:1.12.1 AS go
