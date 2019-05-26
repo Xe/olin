@@ -3,7 +3,7 @@ package fileresolver
 import (
 	"crypto/rand"
 
-	"github.com/Xe/olin/internal/abi"
+	"github.com/Xe/olin/abi"
 )
 
 // Random returns a file that reads cryptographically random data.

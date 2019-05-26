@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/Xe/olin/internal/abi"
+	"github.com/Xe/olin/abi"
 	"github.com/Xe/olin/internal/fileresolver"
 )
 

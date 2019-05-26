@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Xe/olin/internal/abi/cwa"
+	"github.com/Xe/olin/abi/cwa"
 	"github.com/pborman/uuid"
 	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"

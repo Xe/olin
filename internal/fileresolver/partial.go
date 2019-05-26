@@ -4,7 +4,7 @@ import (
 	"errors"
 	"io"
 
-	"github.com/Xe/olin/internal/abi"
+	"github.com/Xe/olin/abi"
 )
 
 // Errors exposed by partial.go

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Xe/olin/internal/abi"
+	"github.com/Xe/olin/abi"
 	"github.com/perlin-network/life/exec"
 )
 

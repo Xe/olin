@@ -5,14 +5,14 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"math/rand"
 	"log"
+	"math/rand"
 	"os"
 	"strings"
 	"time"
 
-	"github.com/Xe/olin/internal/abi/cwa"
-	"github.com/Xe/olin/internal/abi/wasmgo"
+	"github.com/Xe/olin/abi/cwa"
+	"github.com/Xe/olin/abi/wasmgo"
 	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"
 )

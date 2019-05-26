@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/Xe/olin/internal/abi/dagger"
+	"github.com/Xe/olin/abi/dagger"
 	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"
 	"github.com/spf13/afero"

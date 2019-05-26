@@ -9,7 +9,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/Xe/olin/internal/abi"
+	"github.com/Xe/olin/abi"
 	"github.com/Xe/olin/internal/fileresolver"
 	"github.com/perlin-network/life/exec"
 	"github.com/spf13/afero"

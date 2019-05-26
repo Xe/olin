@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/Xe/olin/internal/abi"
+	"github.com/Xe/olin/abi"
 )
 
 // HTTP creates a new HTTP transport that pretends to be a file. A process can

@@ -4,7 +4,7 @@ import (
 	"io"
 	"log"
 
-	"github.com/Xe/olin/internal/abi"
+	"github.com/Xe/olin/abi"
 )
 
 // Log returns a file that redirects all write calls to a standard library logger
