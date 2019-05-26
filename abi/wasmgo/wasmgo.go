@@ -5,7 +5,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Xe/olin/internal/abi/cwa"
+	"github.com/Xe/olin/abi/cwa"
 	"github.com/Xe/olin/internal/fileresolver"
 	"github.com/perlin-network/life/exec"
 )
