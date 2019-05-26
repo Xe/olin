@@ -3,7 +3,7 @@ package fileresolver
 import (
 	"testing"
 
-	"github.com/Xe/olin/internal/abi"
+	"github.com/Xe/olin/abi"
 )
 
 func TestAferoFileIsABIFile(t *testing.T) {
