@@ -129,7 +129,7 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 	switch module {
 	case "dagger", "env":
 		switch field {
-		case "open": // :: String -> Int32 -> Int64
+		case "open": // (String, StringLength) -> Either<Error, Descriptor>
 			return func(vm *exec.VirtualMachine) int64 {
 				f := vm.GetCurrentFrame()
 				furlPtr := uint32(f.Locals[0])
@@ -138,14 +138,15 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 
 				return p.OpenFD(furl, flags)
 			}
-		case "close": // :: Int64 -> IO Int64
+		case "close": // (Descriptor) -> Either<Error, Nothing>
 			return func(vm *exec.VirtualMachine) int64 {
 				f := vm.GetCurrentFrame()
 				fd := f.Locals[0]
 
 				return p.CloseFD(fd)
 			}
-		case "write": // :: Int64 -> String -> IO Int64
+		case "write": // (Descriptor, Pointer, Length) ->
+			//           Either<Error, BytesWritten>
 			return func(vm *exec.VirtualMachine) int64 {
 				f := vm.GetCurrentFrame()
 				fd := f.Locals[0]
@@ -155,14 +156,15 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 
 				return p.WriteFD(fd, mem)
 			}
-		case "flush": // :: Int64 -> IO Int64
+		case "flush": // (Descriptor) -> Either<Error, Nothing>
 			return func(vm *exec.VirtualMachine) int64 {
 				f := vm.GetCurrentFrame()
 				fd := f.Locals[0]
 
 				return p.FlushFD(fd)
 			}
-		case "read": // :: Int64 -> String -> IO Int64
+		case "read": // (Descriptor, Pointer, Length)
+			//          -> Either<Error, BytesRead)
 			return func(vm *exec.VirtualMachine) int64 {
 				f := vm.GetCurrentFrame()
 				fd := f.Locals[0]
