@@ -133,10 +133,10 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 			return func(vm *exec.VirtualMachine) int64 {
 				f := vm.GetCurrentFrame()
 				furlPtr := uint32(f.Locals[0])
-				flags := uint32(f.Locals[1])
-				furl := string(readMem(vm.Memory, furlPtr))
+				len := uint32(f.Locals[1])
+				furl := string(vm.Memory[furlPtr : furlPtr+len])
 
-				return p.OpenFD(furl, flags)
+				return p.OpenFD(furl, 0)
 			}
 		case "close": // (Descriptor) -> Either<Error, Nothing>
 			return func(vm *exec.VirtualMachine) int64 {
