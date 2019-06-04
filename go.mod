@@ -8,5 +8,5 @@ require (
 	github.com/perlin-network/life v0.0.0-20190204091834-d05763d11050
 	github.com/povilasv/prommod v0.0.11
 	github.com/prometheus/client_golang v0.9.3
-	within.website/ln v0.5.2
+	within.website/ln v0.6.0
 )
