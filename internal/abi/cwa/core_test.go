@@ -1,6 +1,6 @@
 package cwa
 
-import "github.com/Xe/olin/internal/abi"
+import "within.website/olin/internal/abi"
 
 var (
 	_ abi.ABI = &Process{}

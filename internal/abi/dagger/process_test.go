@@ -9,9 +9,9 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/Xe/olin/internal/fileresolver"
 	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"
+	"within.website/olin/internal/fileresolver"
 )
 
 func getFunctionName(i interface{}) string {

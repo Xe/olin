@@ -11,9 +11,9 @@ import (
 	"github.com/povilasv/prommod"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/Xe/olin/internal/cwagi"
 	"within.website/ln"
 	"within.website/ln/opname"
+	"within.website/olin/internal/cwagi"
 )
 
 var (

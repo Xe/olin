@@ -8,9 +8,9 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/Xe/olin/internal/abi"
-	"github.com/Xe/olin/internal/fileresolver"
 	"github.com/perlin-network/life/exec"
+	"within.website/olin/internal/abi"
+	"within.website/olin/internal/fileresolver"
 )
 
 // Process is a higher level wrapper around a set of files for dagger
