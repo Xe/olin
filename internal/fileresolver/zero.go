@@ -1,6 +1,6 @@
 package fileresolver
 
-import "github.com/Xe/olin/internal/abi"
+import "within.website/olin/internal/abi"
 
 // Zero is a file that does nothing.
 //

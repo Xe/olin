@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/Xe/olin/internal/abi"
-	"github.com/Xe/olin/internal/fileresolver"
+	"within.website/olin/internal/abi"
+	"within.website/olin/internal/fileresolver"
 )
 
 func (p *Process) ResourceOpen(urlPtr, urlLen uint32) (int32, error) {

@@ -12,7 +12,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Xe/olin/internal/abi/cwa"
 	"github.com/pborman/uuid"
 	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"
@@ -20,6 +19,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"within.website/ln"
 	"within.website/ln/opname"
+	"within.website/olin/internal/abi/cwa"
 )
 
 var (

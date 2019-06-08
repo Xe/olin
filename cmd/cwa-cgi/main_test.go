@@ -13,12 +13,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Xe/olin/internal/abi/cwa"
 	"github.com/pborman/uuid"
 	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"
 	"within.website/ln"
 	"within.website/ln/opname"
+	"within.website/olin/internal/abi/cwa"
 )
 
 type vmServer struct {
