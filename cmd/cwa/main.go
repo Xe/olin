@@ -23,7 +23,7 @@ var (
 	jitEnabled = flag.Bool("jit-enabled", false, "enable jit?")
 	doTest     = flag.Bool("test", false, "unit testing?")
 	vmStats    = flag.Bool("vm-stats", false, "dump VM statistics?")
-	gas        = flag.Int("gas", 65536*64, "number of instructions the VM can perform")
+	gas        = flag.Int("gas", 65536*256, "number of instructions the VM can perform")
 	goMode     = flag.Bool("go", false, "run in Go mode?")
 	writeMem   = flag.String("write-mem", "", "write memory heap to the given file on exit")
 )

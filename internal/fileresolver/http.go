@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 
 	"within.website/olin/internal/abi"
 )
@@ -31,11 +32,13 @@ func HTTP(cl *http.Client, u *url.URL) (abi.File, error) {
 		u:    u,
 		req:  bytes.NewBuffer(nil),
 		resp: bytes.NewBuffer(nil),
+		l:    log.New(os.Stdout, "[http] ", log.LstdFlags),
 	}, nil
 
 }
 
 type httpFile struct {
+	l         *log.Logger
 	cl        *http.Client
 	u         *url.URL
 	req, resp *bytes.Buffer
@@ -93,7 +96,7 @@ func (h *httpFile) Flush() error {
 	}
 	h.respGot = true
 
-	log.Printf("%s: %d bytes waiting in resp", h.u, h.resp.Len())
+	h.l.Printf("%s: %d bytes waiting in resp", h.u, h.resp.Len())
 
 	return nil
 }
