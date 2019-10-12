@@ -59,11 +59,11 @@ pub const Resource = struct {
         }
     }
 
-    pub fn read(self: Resource, data: [*]u8, len: usize) OlinError!i32 {
+    pub fn read(self: Resource, data: [*]u8, len: usize) OlinError!usize {
         const n = resource_read(self.fd, data, len);
 
         if (errs.parse(n)) |nresp| {
-            return nresp;
+            return @intCast(usize, nresp);
         } else |err| {
             return err;
         }
