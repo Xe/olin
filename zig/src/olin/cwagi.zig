@@ -20,6 +20,7 @@ pub const Context = struct {
     pub fn destroy(self: Context, allocator: *Allocator) void {
         allocator.free(self.method);
         allocator.free(self.request_uri);
+        self.body.close() catch unreachable;
     }
 };
 
@@ -31,15 +32,13 @@ pub const Response = struct {
         var header_tmp = try allocator.alloc(u8, 2048);
 
         const preamble = try fmt.bufPrint(header_tmp, "HTTP/1.1 {}\n", self.status);
-        var n = try fout.write(preamble.ptr, preamble.len);
-
         const headers = @embedFile("./headers.txt");
-        n = try fout.write(&headers, headers.len);
-
         const twoLines = "\n\n";
-        n = try fout.write(&twoLines, twoLines.len);
 
-        n = try fout.write(self.body.ptr, self.body.len);
+        _ = try fout.write(preamble);
+        _ = try fout.write(headers);
+        _ = try fout.write(twoLines);
+        _ = try fout.write(self.body);
 
         allocator.free(header_tmp);
     }

@@ -8,7 +8,7 @@ export fn cwa_main() i32 {
 fn main() !i32 {
     const fout = try Resource.stdout();
     const data = @embedFile("./shaman.aa");
-    const n = try fout.write(&data, data.len);
+    const n = try fout.write(data);
     fout.close();
     return 0;
 }

@@ -29,7 +29,7 @@ fn doRequest(alloc: *mem.Allocator) !void {
     try h.append("Host", "127.0.0.1:3000", null);
 
     var res = try fmt.bufPrint(buf[0..], "GET /foo.txt HTTP/1.1\n{}\n\n", h);
-    const n = try fout.write(res.ptr, res.len);
+    const n = try fout.write(res);
     log.info(res);
 
     try fout.flush();
@@ -38,6 +38,6 @@ fn doRequest(alloc: *mem.Allocator) !void {
     resp = try alloc.alloc(u8, 2048);
     defer alloc.free(resp);
 
-    const nresp = try fout.read(resp.ptr, resp.len);
+    const nresp = try fout.read(resp);
     log.info(resp[0..nresp]);
 }

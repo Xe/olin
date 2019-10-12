@@ -45,15 +45,16 @@ export fn cwa_main() i32 {
 fn test_resource_log() !void {
     const msg = "hi there";
     const fout = try resource.open("log://?prefix=test");
-    const n = try fout.write(&msg, msg.len);
+    const n = try fout.write(msg);
     fout.close();
 }
 
 fn test_resource_random() !void {
     const fin = try resource.open("random://");
-    var buf: [32]u8 = undefined;
+    var buf: []u8 = try alloc.alloc(u8, 32);
+    defer alloc.free(buf);
 
-    const n = try fin.read(&buf, 32);
+    const n = try fin.read(buf);
 
     var last: u8 = undefined;
     for (buf) |byte| {
