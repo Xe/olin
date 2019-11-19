@@ -18,7 +18,7 @@ import (
 	"github.com/perlin-network/life/exec"
 	"within.website/ln"
 	"within.website/ln/opname"
-	"within.website/olin/internal/abi/cwa"
+	"within.website/olin/abi/cwa"
 )
 
 type vmServer struct {
