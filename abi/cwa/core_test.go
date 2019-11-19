@@ -1,6 +1,6 @@
 package cwa
 
-import "within.website/olin/internal/abi"
+import "within.website/olin/abi"
 
 var (
 	_ abi.ABI = &Process{}

@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/perlin-network/life/exec"
-	"within.website/olin/internal/abi/cwa"
-	"within.website/olin/internal/fileresolver"
+	"within.website/olin/abi/cwa"
+	"within.website/olin/fileresolver"
 )
 
 type WasmGo struct {

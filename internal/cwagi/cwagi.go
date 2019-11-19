@@ -19,7 +19,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"within.website/ln"
 	"within.website/ln/opname"
-	"within.website/olin/internal/abi/cwa"
+	"within.website/olin/abi/cwa"
 )
 
 var (

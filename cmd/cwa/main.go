@@ -13,8 +13,8 @@ import (
 
 	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"
-	"within.website/olin/internal/abi/cwa"
-	"within.website/olin/internal/abi/wasmgo"
+	"within.website/olin/abi/cwa"
+	"within.website/olin/abi/wasmgo"
 )
 
 var (

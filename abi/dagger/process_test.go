@@ -11,7 +11,7 @@ import (
 
 	"github.com/perlin-network/life/compiler"
 	"github.com/perlin-network/life/exec"
-	"within.website/olin/internal/fileresolver"
+	"within.website/olin/fileresolver"
 )
 
 func getFunctionName(i interface{}) string {

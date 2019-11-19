@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/perlin-network/life/exec"
-	"within.website/olin/internal/abi"
+	"within.website/olin/abi"
 )
 
 // NewProcess creates a new process with the given name, arguments and environment.
