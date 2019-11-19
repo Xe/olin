@@ -20,12 +20,12 @@ WORKDIR /olin
 COPY . .
 COPY --from=rust-wasm-tools /olin/cwagi.wasm ./cmd/cwa-cgi/testdata/test.wasm
 COPY --from=rust-wasm-tools /olin/cwa-tests.wasm ./cmd/cwa/testdata/test.wasm
-RUN GOARCH=wasm GOOS=js go build -o ./cmd/cwa/testdata/go.wasm ./internal/abi/wasmgo/testdata/nothing.go
+RUN GOARCH=wasm GOOS=js go build -o ./cmd/cwa/testdata/go.wasm ./abi/wasmgo/testdata/nothing.go
 RUN go test -v ./cmd/... ./internal/...
 RUN GOBIN=/usr/local/bin go install ./cmd/cwa-cgi
 RUN GOBIN=/usr/local/bin go install ./cmd/cwa
 
-FROM xena/zig:0.4.0-0f8fc3b9 AS zig
+FROM xena/zig:0.5.0 AS zig
 WORKDIR /olin
 COPY ./zig .
 COPY --from=go /usr/local/bin/cwa /usr/local/bin/cwa

@@ -5,7 +5,7 @@ package fileresolver
 import (
 	"syscall"
 
-	"within.website/olin/internal/abi"
+	"within.website/olin/abi"
 )
 
 // OSFile implements File backed by a raw operating system file.

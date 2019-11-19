@@ -4,7 +4,7 @@ import (
 	"io"
 	"log"
 
-	"within.website/olin/internal/abi"
+	"within.website/olin/abi"
 )
 
 // Log returns a file that redirects all write calls to a standard library logger

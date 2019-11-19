@@ -3,7 +3,7 @@ package cwa
 import (
 	"math/rand"
 
-	"within.website/olin/internal/fileresolver"
+	"within.website/olin/fileresolver"
 )
 
 func (p *Process) IOGetStdin() int32 {

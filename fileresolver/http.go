@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"os"
 
-	"within.website/olin/internal/abi"
+	"within.website/olin/abi"
 )
 
 // HTTP creates a new HTTP transport that pretends to be a file. A process can

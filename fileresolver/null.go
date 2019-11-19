@@ -1,6 +1,6 @@
 package fileresolver
 
-import "within.website/olin/internal/abi"
+import "within.website/olin/abi"
 
 // Null is a file that emulates /dev/null on Linux.
 //
