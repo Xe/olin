@@ -7,8 +7,8 @@ require (
 	github.com/pborman/uuid v0.0.0-20180906182336-adf5a7427709
 	github.com/perlin-network/life v0.0.0-20190204091834-d05763d11050
 	github.com/povilasv/prommod v0.0.12
-	github.com/prometheus/client_golang v1.1.0
-	within.website/ln v0.7.0
+	github.com/prometheus/client_golang v1.2.1
+  within.website/ln v0.7.0
 )
 
 go 1.13
