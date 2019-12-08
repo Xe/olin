@@ -14,7 +14,7 @@ func (p *Process) ResourceOpen(urlPtr, urlLen uint32) (int32, error) {
 	u := string(readMem(p.vm.Memory, urlPtr, urlLen))
 	uu, err := url.Parse(u)
 	if err != nil {
-		p.logger.Printf("can't parse url %s: %v, returning:  %v", u, err, InvalidArgumentError)
+		p.Logger.Printf("can't parse url %s: %v, returning:  %v", u, err, InvalidArgumentError)
 		return 0, InvalidArgumentError
 	}
 
@@ -34,7 +34,7 @@ func (p *Process) ResourceOpen(urlPtr, urlLen uint32) (int32, error) {
 		var err error
 		file, err = fileresolver.HTTP(p.hc, uu)
 		if err != nil {
-			p.logger.Printf("can't resource_open(%q): %v", u, err)
+			p.Logger.Printf("can't resource_open(%q): %v", u, err)
 			return 0, UnknownError
 		}
 	default:
@@ -55,11 +55,11 @@ func (p *Process) ResourceWrite(fid int32, dataPtr, dataLen uint32) (int32, erro
 		return 0, InvalidArgumentError
 	}
 
-	//p.logger.Printf("writing %d bytes to %d (%s)", dataLen, fid, f.Name())
+	//p.Logger.Printf("writing %d bytes to %d (%s)", dataLen, fid, f.Name())
 
 	n, err := f.Write(mem)
 	if err != nil {
-		p.logger.Printf("write error for fid %d (%s): %v", fid, f.Name(), err)
+		p.Logger.Printf("write error for fid %d (%s): %v", fid, f.Name(), err)
 		return 0, UnknownError
 	}
 
@@ -72,12 +72,12 @@ func (p *Process) ResourceRead(fid int32, dataPtr, dataLen uint32) (int32, error
 		return 0, InvalidArgumentError
 	}
 
-	//p.logger.Printf("reading %d bytes from %d (%s)", dataLen, fid, f.Name())
+	//p.Logger.Printf("reading %d bytes from %d (%s)", dataLen, fid, f.Name())
 
 	outp := make([]byte, int(dataLen))
 	n, err := f.Read(outp)
 	if err != nil {
-		p.logger.Printf("read error for fid %d (%s): %v", fid, f.Name(), err)
+		p.Logger.Printf("read error for fid %d (%s): %v", fid, f.Name(), err)
 		return 0, UnknownError
 	}
 
@@ -96,7 +96,7 @@ func (p *Process) ResourceClose(fid int32) error {
 
 	err := f.Close()
 	if err != nil {
-		p.logger.Printf("close error for fid %d (%s): %v", fid, f.Name(), err)
+		p.Logger.Printf("close error for fid %d (%s): %v", fid, f.Name(), err)
 		return UnknownError
 	}
 
@@ -113,7 +113,7 @@ func (p *Process) ResourceFlush(fid int32) error {
 
 	err := f.Flush()
 	if err != nil {
-		p.logger.Printf("flush error for fid %d (%s): %v", fid, f.Name(), err)
+		p.Logger.Printf("flush error for fid %d (%s): %v", fid, f.Name(), err)
 		return UnknownError
 	}
 

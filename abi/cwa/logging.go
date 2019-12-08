@@ -4,7 +4,7 @@ import "strconv"
 
 func (p *Process) LogWrite(level int32, msgPtr, msgLen uint32) {
 	msg := string(readMem(p.vm.Memory, msgPtr, msgLen))
-	p.logger.Printf("%s: %s", levelToString(level), msg)
+	p.Logger.Printf("%s: %s", levelToString(level), msg)
 }
 
 // Log levels
