@@ -1,6 +1,5 @@
 const olin = @import("./olin/olin.zig");
 const std = @import("std");
-var alloc = @import("std").heap.wasm_allocator;
 
 export fn cwa_main() i32 {
     if (inner_main()) {} else |err| {
@@ -16,7 +15,7 @@ fn inner_main() !void {
     defer fin.close();
     const fout = try olin.resource.stdout();
     defer fout.close();
-    const buflen = 2048;
+    const buflen = 928;
     var buf: [buflen]u8 = undefined;
     var bufSlice = buf[0..];
 

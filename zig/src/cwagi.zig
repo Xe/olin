@@ -3,7 +3,7 @@ const cwagi = olin.cwagi;
 
 const std = @import("std");
 const fmt = std.fmt;
-var alloc = std.heap.wasm_allocator;
+var alloc = std.heap.page_allocator;
 
 export fn cwa_main() i32 {
     const ctx = cwagi.Context.init(alloc) catch return 1;
@@ -23,12 +23,12 @@ fn helloWorld(ctx: cwagi.Context) !cwagi.Response {
     var buf = try std.Buffer.init(alloc, message);
     const runtime_meta = try olin.runtime.metadata(alloc);
 
-    try buf.append(try fmt.bufPrint(line, "- I am running in {} which implements version {}.{} of the Common WebAssembly ABI.\n", runtime_meta.name, runtime_meta.spec_major, runtime_meta.spec_minor));
-    try buf.append(try fmt.bufPrint(line, "- I think the time is {}\n", olin.time.unix()));
-    try buf.append(try fmt.bufPrint(line, "- RUN_ID:    {}\n", try olin.env.get(alloc, "RUN_ID")));
-    try buf.append(try fmt.bufPrint(line, "- WORKER_ID: {}\n", try olin.env.get(alloc, "WORKER_ID")));
-    try buf.append(try fmt.bufPrint(line, "- Method:    {}\n", ctx.method));
-    try buf.append(try fmt.bufPrint(line, "- URI:       {}\n", ctx.request_uri));
+    try buf.append(try fmt.bufPrint(line, "- I am running in {} which implements version {}.{} of the Common WebAssembly ABI.\n", .{runtime_meta.name, runtime_meta.spec_major, runtime_meta.spec_minor}));
+    try buf.append(try fmt.bufPrint(line, "- I think the time is {}\n", .{olin.time.unix()}));
+    try buf.append(try fmt.bufPrint(line, "- RUN_ID:    {}\n", .{try olin.env.get(alloc, "RUN_ID")}));
+    try buf.append(try fmt.bufPrint(line, "- WORKER_ID: {}\n", .{try olin.env.get(alloc, "WORKER_ID")}));
+    try buf.append(try fmt.bufPrint(line, "- Method:    {}\n", .{ctx.method}));
+    try buf.append(try fmt.bufPrint(line, "- URI:       {}\n", .{ctx.request_uri}));
 
     alloc.free(line);
 

@@ -13,7 +13,7 @@ const userAgent = "Olin+Zig@master";
 export fn cwa_main() i32 {
     log.info("making request to https://xena.greedo.xeserv.us/files/hello_olin.txt");
 
-    doRequest(heap.wasm_allocator) catch return 1;
+    doRequest(heap.page_allocator) catch return 1;
 
     return 0;
 }
@@ -28,7 +28,7 @@ fn doRequest(alloc: *mem.Allocator) !void {
     try h.append("User-Agent", userAgent, null);
     try h.append("Host", "xena.greedo.xeserv.us", null);
 
-    var res = try fmt.bufPrint(buf[0..], "GET /files/hello_olin.txt HTTP/1.1\n{}\n\n", h);
+    var res = try fmt.bufPrint(buf[0..], "GET /files/hello_olin.txt HTTP/1.1\n{}\n\n", .{ h });
     const n = try fout.write(res);
     log.info(res);
 

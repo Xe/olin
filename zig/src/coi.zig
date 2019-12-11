@@ -9,7 +9,7 @@ const startup = olin.startup;
 
 const std = @import("std");
 const assert = std.debug.assert;
-var alloc = std.heap.wasm_allocator;
+var alloc = std.heap.page_allocator;
 
 export fn cwa_main() i32 {
     log.info("hi");

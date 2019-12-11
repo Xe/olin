@@ -31,7 +31,7 @@ pub const Response = struct {
     pub fn writeTo(self: Response, allocator: *Allocator, fout: Resource) !void {
         var header_tmp = try allocator.alloc(u8, 2048);
 
-        const preamble = try fmt.bufPrint(header_tmp, "HTTP/1.1 {}\n", self.status);
+        const preamble = try fmt.bufPrint(header_tmp, "HTTP/1.1 {}\n", .{self.status});
         const headers = @embedFile("./headers.txt");
         const twoLines = "\n\n";
 

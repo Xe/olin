@@ -142,7 +142,7 @@ export fn cwa_main() i32 {
     fbNum = fbNum + reset.len;
 
     if(stdout()) |fout| {
-        if (fout.write(fbChars)) |n| {
+        if (fout.write(fbChars[0..])) |n| {
             return 0;
         } else |err| {
             log.err(@errorName(err));
