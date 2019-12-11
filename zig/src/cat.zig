@@ -22,7 +22,7 @@ fn inner_main() !void {
 
     while (true) {
         const n = try fin.read(bufSlice);
-        const nn = try fout.write(bufSlice);
+        const nn = try fout.write(bufSlice[0..n]);
 
         if (n != nn) {
             unreachable;
