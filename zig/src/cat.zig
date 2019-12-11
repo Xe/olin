@@ -12,9 +12,7 @@ export fn cwa_main() i32 {
 
 fn inner_main() !void {
     const fin = try olin.resource.stdin();
-    defer fin.close();
     const fout = try olin.resource.stdout();
-    defer fout.close();
     const buflen = 928;
     var buf: [buflen]u8 = undefined;
     var bufSlice = buf[0..];

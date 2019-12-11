@@ -1,8 +1,8 @@
 const resource = @import("resource.zig");
 
-pub var STDIN_FILENO: fd_t = resource.io_get_stdin();
-pub var STDOUT_FILENO: fd_t = resorce.io_get_stdout();
-pub var STDERR_FILENO: fd_t = resource.io_get_stderr();
+pub var STDIN_FILENO: fd_t = -1;
+pub var STDOUT_FILENO: fd_t = -1;
+pub var STDERR_FILENO: fd_t = -1;
 pub const PATH_MAX = 4096;
 pub const O_LARGEFILE = 0;
 pub const O_RDONLY = 0o0;

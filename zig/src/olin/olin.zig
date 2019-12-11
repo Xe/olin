@@ -22,6 +22,32 @@ fn hack(inp: i32) usize {
     }
 }
 
+pub const io = struct {
+    pub fn getStdInHandle() bits.fd_t {
+        if (bits.STDIN_FILENO == -1) {
+            bits.STDIN_FILENO = resource.io_get_stdin();
+        }
+
+        return bits.STDIN_FILENO;
+    }
+
+    pub fn getStdErrHandle() bits.fd_t {
+        if (bits.STDERR_FILENO == -1) {
+            bits.STDERR_FILENO = resource.io_get_stderr();
+        }
+
+        return bits.STDERR_FILENO;
+    }
+
+    pub fn getStdOutHandle() bits.fd_t {
+        if (bits.STDOUT_FILENO == -1) {
+            bits.STDOUT_FILENO = resource.io_get_stdout();
+        }
+
+        return bits.STDOUT_FILENO;
+    }
+};
+
 pub const system = struct {
     const std = @import("std");
     const mem = std.mem;
