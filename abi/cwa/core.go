@@ -20,7 +20,7 @@ func NewProcess(name string, argv []string, env map[string]string) *Process {
 		env:    env,
 		argv:   argv,
 
-		FileHandles: map[int32]abi.File{},
+		FileHandles: make(map[int32]abi.File, 16),
 		Stdin:       bytes.NewBuffer([]byte("")),
 		Stdout:      os.Stdout,
 		Stderr:      os.Stderr,
