@@ -13,7 +13,7 @@ RUN wasm-gc ./olinfetch.wasm \
  && wasm-gc ./cwa-tests.wasm \
  && du -hs ./*.wasm
 
-FROM xena/go:1.12.1 AS go
+FROM xena/go:1.13.5 AS go
 RUN apk add --no-cache build-base
 ENV GOPROXY https://cache.greedo.xeserv.us
 WORKDIR /olin
@@ -25,7 +25,7 @@ RUN go test -v ./cmd/... ./internal/...
 RUN GOBIN=/usr/local/bin go install ./cmd/cwa-cgi
 RUN GOBIN=/usr/local/bin go install ./cmd/cwa
 
-FROM xena/zig:0.5.0 AS zig
+FROM xena/zig:0.5.0-c3d8b1ffe as zig
 WORKDIR /olin
 COPY ./zig .
 COPY --from=go /usr/local/bin/cwa /usr/local/bin/cwa
