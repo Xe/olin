@@ -2,12 +2,12 @@
 
 [![Build Status](https://travis-ci.org/Xe/olin.svg?branch=master)](https://travis-ci.org/Xe/olin) [![Go Report Card](https://goreportcard.com/badge/github.com/Xe/olin)](https://goreportcard.com/report/github.com/Xe/olin) [![GoDoc](https://godoc.org/github.com/Xe/olin?status.svg)](https://godoc.org/github.com/Xe/olin) ![powered by WebAssembly](https://img.shields.io/badge/powered%20by-WebAssembly-orange.svg)
 
-Olin is an environment to run and operate functions as a service projects using
-event sourcing and webassembly under the hood. Your handler code shouldn't need
-to care that there is an event queue involved. Your handler should just do what
-your handler needs to do.
+Olin is like the JVM for WebAssembly. It wraps WebAssembly with a set of
+functions to access the outside world and keeps track of things like how
+many instructions were used, how many syscalls were made and how much memory
+was used. This helps with profiling code.
 
-To view Olin in action, click [here](https://olin-http-example.herokuapp.com/).
+To view Olin in action, click [here](https://olin.within.website/).
 
 ## Background
 
