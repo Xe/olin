@@ -1,15 +1,15 @@
 const errs = @import("./error.zig");
 const OlinError = errs.OlinError;
 
-extern fn resource_open(data: [*]const u8, len: usize) i32;
-extern fn resource_read(fd: i32, data: [*]const u8, len: usize) i32;
-extern fn resource_write(fd: i32, data: [*]const u8, len: usize) i32;
-extern fn resource_close(fd: i32) void;
-extern fn resource_flush(fd: i32) i32;
+pub extern fn resource_open(data: [*]const u8, len: usize) i32;
+pub extern fn resource_read(fd: i32, data: [*]const u8, len: usize) i32;
+pub extern fn resource_write(fd: i32, data: [*]const u8, len: usize) i32;
+pub extern fn resource_close(fd: i32) void;
+pub extern fn resource_flush(fd: i32) i32;
 
-extern fn io_get_stdin() i32;
-extern fn io_get_stdout() i32;
-extern fn io_get_stderr() i32;
+pub extern fn io_get_stdin() i32;
+pub extern fn io_get_stdout() i32;
+pub extern fn io_get_stderr() i32;
 
 fn fd_check(fd: i32) errs.OlinError!Resource {
     if(errs.parse(fd)) |fd_for_handle| {
