@@ -6,7 +6,7 @@ require (
 	github.com/perlin-network/life v0.0.0-20191203030451-05c0e0f7eaea
 	github.com/povilasv/prommod v0.0.12
 	github.com/prometheus/client_golang v1.2.1
-  within.website/ln v0.7.0
+	within.website/ln v0.7.0
 )
 
 go 1.13
