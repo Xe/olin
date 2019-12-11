@@ -1,6 +1,7 @@
 const errs = @import("./error.zig");
 const Allocator = @import("std").mem.Allocator;
 
+extern fn runtime_exit(i32) noreturn;
 extern fn runtime_spec_minor() i32;
 extern fn runtime_spec_major() i32;
 extern fn runtime_name(name_data: [*]const u8, name_len: usize) i32;
@@ -34,4 +35,6 @@ pub fn sleep(ms_len: i32) void {
     runtime_msleep(ms_len);
 }
 
-
+pub fn exit(status: i32) noreturn {
+    runtime_exit(status);
+}

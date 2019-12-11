@@ -111,6 +111,17 @@ func (p *Process) ResolveFunc(module, field string) exec.FunctionImport {
 
 				return int64(result)
 			}
+		case "runtime_exit":
+			return func(vm *exec.VirtualMachine) int64 {
+				p.SetVM(vm)
+				f := vm.GetCurrentFrame()
+				status := int32(f.Locals[0])
+
+				vm.Exited = true
+				vm.ReturnValue = int64(status)
+
+				return int64(status)
+			}
 		case "runtime_spec_major":
 			return func(vm *exec.VirtualMachine) int64 {
 				p.SetVM(vm)

@@ -4,6 +4,14 @@ Control and obtain information about the runtime environment.
 
 ## Functions
 
+### exit
+
+**Parameters:**
+
+- `status`: `i32`
+
+Immediately exits the VM and returns the status code passed to this function.
+
 ### spec_major
 
 **Parameters:**
