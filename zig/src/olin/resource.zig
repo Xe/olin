@@ -49,11 +49,11 @@ pub const Resource = struct {
         return fd_check(fd);
     }
 
-    pub fn write(self: Resource, data: []const u8) OlinError!i32 {
+    pub fn write(self: Resource, data: []const u8) OlinError!usize {
         const n = resource_write(self.fd, data.ptr, data.len);
 
         if (errs.parse(n)) |nresp| {
-            return nresp;
+            return @intCast(usize, nresp);
         } else |err| {
             return err;
         }

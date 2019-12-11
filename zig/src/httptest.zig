@@ -11,7 +11,7 @@ const Headers = @import("std").http.Headers;
 const userAgent = "Olin+Zig@master";
 
 export fn cwa_main() i32 {
-    log.info("making request to http://127.0.0.1:3000/foo.txt");
+    log.info("making request to https://xena.greedo.xeserv.us/files/hello_olin.txt");
 
     doRequest(heap.wasm_allocator) catch return 1;
 
@@ -19,16 +19,16 @@ export fn cwa_main() i32 {
 }
 
 fn doRequest(alloc: *mem.Allocator) !void {
-    const fout = try resource.open("http://127.0.0.1:3000");
+    const fout = try resource.open("https://xena.greedo.xeserv.us/files/hello_olin.txt");
     var buf: []u8 = undefined;
     buf = try alloc.alloc(u8, 256);
     defer alloc.free(buf);
     var h = Headers.init(alloc);
     defer h.deinit();
     try h.append("User-Agent", userAgent, null);
-    try h.append("Host", "127.0.0.1:3000", null);
+    try h.append("Host", "xena.greedo.xeserv.us", null);
 
-    var res = try fmt.bufPrint(buf[0..], "GET /foo.txt HTTP/1.1\n{}\n\n", h);
+    var res = try fmt.bufPrint(buf[0..], "GET /files/hello_olin.txt HTTP/1.1\n{}\n\n", h);
     const n = try fout.write(res);
     log.info(res);
 

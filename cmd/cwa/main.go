@@ -78,6 +78,9 @@ func main() {
 	}
 
 	p := wasmgo.New(fname, argv, environment)
+	p.Stdin = os.Stdin
+	p.Stdout = os.Stdout
+	p.Stderr = os.Stderr
 
 	if *doTest {
 		p.Stdin = bytes.NewBuffer([]byte("cwa test environment"))
