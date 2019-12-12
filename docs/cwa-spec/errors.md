@@ -21,3 +21,7 @@ The application is trying to perform an operation that is not allowed by the sec
 ### NotFoundError: -4
 
 The requested resource is not found.
+
+### EndOfFile: -5
+
+The requested resource has no more data to be read.
