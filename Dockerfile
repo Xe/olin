@@ -1,6 +1,6 @@
 FROM rustlang/rust:nightly AS rust
 WORKDIR /usr/src/olin
-COPY ./cwa/ .
+COPY ./rust .
 RUN rustup target add wasm32-unknown-unknown --toolchain nightly \
  && ./build.sh
 
