@@ -102,6 +102,7 @@ mod err {
     pub const INVALID_ARGUMENT: i32 = -2;
     pub const PERMISSION_DENIED: i32 = -3;
     pub const NOT_FOUND: i32 = -4;
+    pub const EOF: i32 = -5;
 
     /// An error abstraction, all of the following values are copied from the spec at:
     /// https://github.com/CommonWA/cwa-spec/blob/master/errors.md
@@ -112,6 +113,7 @@ mod err {
         InvalidArgument = INVALID_ARGUMENT,
         PermissionDenied = PERMISSION_DENIED,
         NotFound = NOT_FOUND,
+        EOF = EOF,
     }
 
     impl Error {
@@ -121,6 +123,7 @@ mod err {
                 INVALID_ARGUMENT => Err(Error::InvalidArgument),
                 PERMISSION_DENIED => Err(Error::PermissionDenied),
                 NOT_FOUND => Err(Error::NotFound),
+                EOF => Err(Error::EOF),
                 _ => Err(Error::Unknown),
             }
         }
@@ -142,6 +145,7 @@ mod err {
             INVALID_ARGUMENT => Err(io::ErrorKind::InvalidInput),
             PERMISSION_DENIED => Err(io::ErrorKind::PermissionDenied),
             NOT_FOUND => Err(io::ErrorKind::NotFound),
+            EOF => Err(io::ErrorKind::UnexpectedEof),
             _ => Err(io::ErrorKind::Other),
         }
     }

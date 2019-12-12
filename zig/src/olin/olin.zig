@@ -22,9 +22,9 @@ fn hack(inp: i32) usize {
     }
 }
 
-pub export fn _start() noreturn {
-    runtime.exit(@intCast(i32, @import("std").special.start.callMain()));
-}
+//pub export fn _start() noreturn {
+//    runtime.exit(@intCast(i32, @import("std").special.start.callMain()));
+//}
 
 pub const io = struct {
     pub fn getStdInHandle() bits.fd_t {

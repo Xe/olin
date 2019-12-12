@@ -1,6 +1,7 @@
 package cwa
 
 import (
+	"io"
 	"log"
 	"math/rand"
 	"net/url"
@@ -60,6 +61,9 @@ func (p *Process) ResourceWrite(fid int32, dataPtr, dataLen uint32) (int32, erro
 	n, err := f.Write(mem)
 	if err != nil {
 		p.Logger.Printf("write error for fid %d (%s): %v", fid, f.Name(), err)
+		if err == io.EOF {
+			return -5, EndOfFileError
+		}
 		return 0, UnknownError
 	}
 
@@ -78,6 +82,9 @@ func (p *Process) ResourceRead(fid int32, dataPtr, dataLen uint32) (int32, error
 	n, err := f.Read(outp)
 	if err != nil {
 		p.Logger.Printf("read error for fid %d (%s): %v", fid, f.Name(), err)
+		if err == io.EOF {
+			return 0, EndOfFileError
+		}
 		return 0, UnknownError
 	}
 
