@@ -11,15 +11,19 @@ pub const startup = @import("./startup.zig");
 pub const cwagi = @import("./cwagi.zig");
 
 // not directly used, but imported like this to force the compiler to actually consider it.
-pub const panic = @import("./panic.zig");
+pub const panic = @import("./panic.zig").panic;
 
 fn hack(inp: i32) usize {
     if (err.parse(inp)) |resp| {
         return @intCast(usize, resp);
     } else |errVal| {
-        log.err(@errorName(errVal));
-        unreachable;
+        errno = @intCast(u12, inp*-1);
+        return 0;
     }
+}
+
+pub export fn _start() noreturn {
+    runtime.exit(@intCast(i32, @import("std").special.start.callMain()));
 }
 
 pub const io = struct {
@@ -52,6 +56,10 @@ pub const system = struct {
     const std = @import("std");
     const mem = std.mem;
 
+    pub fn raise(sig: bits.signal_t) noreturn {
+        runtime.exit(sig);
+    }
+
     pub fn write(fd: i32, buf: [*]const u8, count: usize) usize {
         return hack(resource.resource_write(fd, buf, count));
     }
@@ -79,6 +87,14 @@ pub const system = struct {
 
     pub fn getErrno(arg: i64) u12 {
         return errno;
+    }
+
+    pub fn exit(status: u8) noreturn {
+        runtime.exit(@intCast(i32, status));
+    }
+
+    pub fn abort() noreturn {
+        exit(1);
     }
 };
 

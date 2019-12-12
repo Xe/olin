@@ -1,5 +1,9 @@
 const resource = @import("resource.zig");
 
+pub const signal_t = i32;
+pub const SIGABRT = 1;
+pub const SIGKILL = 9;
+
 pub var STDIN_FILENO: fd_t = -1;
 pub var STDOUT_FILENO: fd_t = -1;
 pub var STDERR_FILENO: fd_t = -1;
