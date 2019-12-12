@@ -39,23 +39,6 @@ for i, v in pairs(status_codes) do
 end
 
 fout:write("};\n\n")
-fout:write([[pub fn stringify(inp: status_code) []u8 {
-  switch (status_code) {]])
-
-for i, v in pairs(status_codes) do
-  local found = string.find(v["code"], "xx")
-  if not found then
-    local name = string.gsub(v["phrase"], " ", "")
-    name = string.gsub(name, "-", "")
-    name = string.gsub(name, "'", "")
-    fout:write(string.format([[StatusCode.%s => return "%s",
-      ]], name, name))
-  end
-end
-
-fout:write("  }\n")
-fout:write("  return \"Unknown\";\n")
-fout:write("}")
 fout:close()
 
 os.execute("zig fmt status_codes.zig")
