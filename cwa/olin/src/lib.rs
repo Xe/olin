@@ -145,6 +145,7 @@ mod err {
             INVALID_ARGUMENT => Err(io::ErrorKind::InvalidInput),
             PERMISSION_DENIED => Err(io::ErrorKind::PermissionDenied),
             NOT_FOUND => Err(io::ErrorKind::NotFound),
+            EOF => Err(io::ErrorKind::UnexpectedEOF),
             _ => Err(io::ErrorKind::Other),
         }
     }
