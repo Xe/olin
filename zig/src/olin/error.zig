@@ -3,6 +3,7 @@ pub const OlinError = error {
     InvalidArgument,
     PermissionDenied,
     NotFound,
+    EOF,
 };
 
 pub fn parse(inp: i32) OlinError!i32 {
@@ -18,6 +19,9 @@ pub fn parse(inp: i32) OlinError!i32 {
         },
         -4 => {
             return error.NotFound;
+        },
+        -5 => {
+            return error.EOF;
         },
         else => {
             return inp;

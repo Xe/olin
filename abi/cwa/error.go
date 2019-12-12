@@ -14,6 +14,7 @@ const (
 	InvalidArgumentError
 	PermissionDeniedError
 	NotFoundError
+	EndOfFileError
 )
 
 func (e Error) Error() string {

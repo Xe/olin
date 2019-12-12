@@ -4,14 +4,26 @@ package cwa
 
 import "strconv"
 
-const _Error_name = "NotFoundErrorPermissionDeniedErrorInvalidArgumentErrorUnknownErrorErrNone"
+func _() {
+	// An "invalid array index" compiler error signifies that the constant values have changed.
+	// Re-run the stringer command to generate them again.
+	var x [1]struct{}
+	_ = x[ErrNone-0]
+	_ = x[UnknownError - -1]
+	_ = x[InvalidArgumentError - -2]
+	_ = x[PermissionDeniedError - -3]
+	_ = x[NotFoundError - -4]
+	_ = x[EndOfFileError - -5]
+}
 
-var _Error_index = [...]uint8{0, 13, 34, 54, 66, 73}
+const _Error_name = "EndOfFileErrorNotFoundErrorPermissionDeniedErrorInvalidArgumentErrorUnknownErrorErrNone"
+
+var _Error_index = [...]uint8{0, 14, 27, 48, 68, 80, 87}
 
 func (i Error) String() string {
-	i -= -4
+	i -= -5
 	if i < 0 || i >= Error(len(_Error_index)-1) {
-		return "Error(" + strconv.FormatInt(int64(i+-4), 10) + ")"
+		return "Error(" + strconv.FormatInt(int64(i+-5), 10) + ")"
 	}
 	return _Error_name[_Error_index[i]:_Error_index[i+1]]
 }
