@@ -12,7 +12,7 @@ import (
 func DeriveEnv(r *http.Request, runID, workerID string) map[string]string {
 	result := map[string]string{
 		"REQUEST_METHOD":    r.Method,
-		"PATH_INFO":         r.RequestURI,
+		"PATH_INFO":         r.URL.Path,
 		"QUERY_STRING":      r.URL.Query().Encode(),
 		"RUN_ID":            runID,
 		"WORKER_ID":         workerID,
