@@ -61,5 +61,3 @@ fn helloWorld(ctx: cwagi.Context, headers: *Headers) !cwagi.Response {
          .body = buf.toSlice(),
     };
 }
-
-

@@ -2,7 +2,8 @@ const fmt = @import("std").fmt;
 const Allocator = @import("std").mem.Allocator;
 const Headers = @import("std").http.Headers;
 
-const StatusCode = @import("./http/status_codes.zig").StatusCode; 
+const http = @import("./http.zig");
+const StatusCode = http.StatusCode;
 const env_get = @import("./env.zig").get;
 const Resource = @import("./resource.zig").Resource;
 
@@ -44,7 +45,7 @@ pub const Response = struct {
         const clLen = fmt.formatIntBuf(contentLength[0..], self.body.len, 10, false, fmt.FormatOptions{});
         try headers.append("Content-Length", contentLength[0..clLen], null);
 
-        const preamble = try fmt.bufPrint(header_tmp[0..], "Status: {} {}\n{}\n", .{@enumToInt(self.status), @tagName(self.status), headers});
+        const preamble = try fmt.bufPrint(header_tmp[0..], "Status: {} {}\n{}\n", .{@enumToInt(self.status), http.reasonPhrase(self.status), headers});
 
         _ = try fout.write(preamble);
         _ = try fout.write(self.body);
