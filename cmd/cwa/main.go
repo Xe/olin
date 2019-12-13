@@ -19,7 +19,7 @@ import (
 
 var (
 	minPages   = flag.Int("min-pages", 32, "number of memory pages to open (default is 2 MB)")
-	mainFunc   = flag.String("main-func", "cwa_main", "main function to call (because rust is broken)")
+	mainFunc   = flag.String("main-func", "_start", "main function to call (because rust is broken)")
 	jitEnabled = flag.Bool("jit-enabled", false, "enable jit?")
 	doTest     = flag.Bool("test", false, "unit testing?")
 	vmStats    = flag.Bool("vm-stats", false, "dump VM statistics?")
