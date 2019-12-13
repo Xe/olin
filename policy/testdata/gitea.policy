@@ -1,0 +1,20 @@
+## This is an example policy
+
+## These are the URL patterns that this handler can open
+allow (
+  https://tulpa.dev
+  https://discordapp.com/api/webhooks/
+  random://
+)
+
+## These are the URL patterns that this handler cannot open
+disallow (
+  file://
+  .*
+)
+
+## This is the ram limit in pages
+ram-page-limit 128
+
+## This is the gas limit in instructions
+gas-limit 1048576

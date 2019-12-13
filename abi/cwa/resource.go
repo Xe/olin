@@ -11,12 +11,39 @@ import (
 	"within.website/olin/fileresolver"
 )
 
+func (p *Process) checkPolicy(uri string) bool {
+	if p.Policy == nil {
+		return true // yolo
+	}
+
+	for _, allow := range p.Policy.Allowed {
+		if allow.MatchString(uri) {
+			return true
+		}
+	}
+
+	for _, disallow := range p.Policy.Disallowed {
+		if disallow.MatchString(uri) {
+			return false
+		}
+	}
+
+	return false
+}
+
 func (p *Process) ResourceOpen(urlPtr, urlLen uint32) (int32, error) {
 	u := string(readMem(p.vm.Memory, urlPtr, urlLen))
 	uu, err := url.Parse(u)
 	if err != nil {
 		p.Logger.Printf("can't parse url %s: %v, returning:  %v", u, err, InvalidArgumentError)
 		return 0, InvalidArgumentError
+	}
+
+	if !p.checkPolicy(u) {
+		p.Logger.Printf("vibe check failed: %s forbidden by policy", u)
+		p.vm.Exited = true
+		p.vm.ReturnValue = -1
+		return 0, PermissionDeniedError
 	}
 
 	q := uu.Query()
