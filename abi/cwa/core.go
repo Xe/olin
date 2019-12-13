@@ -15,7 +15,7 @@ import (
 func NewProcess(name string, argv []string, env map[string]string) *Process {
 	return &Process{
 		name:   name,
-		hc:     &http.Client{},
+		HC:     &http.Client{},
 		Logger: log.New(os.Stdout, name+": ", log.LstdFlags),
 		env:    env,
 		argv:   argv,
@@ -32,7 +32,7 @@ func NewProcess(name string, argv []string, env map[string]string) *Process {
 type Process struct {
 	name string
 
-	hc           *http.Client
+	HC           *http.Client
 	Logger       *log.Logger
 	env          map[string]string
 	vm           *exec.VirtualMachine

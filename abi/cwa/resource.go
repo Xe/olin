@@ -33,7 +33,7 @@ func (p *Process) ResourceOpen(urlPtr, urlLen uint32) (int32, error) {
 		file = fileresolver.Zero()
 	case "http", "https":
 		var err error
-		file, err = fileresolver.HTTP(p.hc, uu)
+		file, err = fileresolver.HTTP(p.HC, uu)
 		if err != nil {
 			p.Logger.Printf("can't resource_open(%q): %v", u, err)
 			return 0, UnknownError
