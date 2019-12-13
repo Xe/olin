@@ -47,6 +47,8 @@ pub mod sys {
             value_buf_len: usize,
         ) -> i32;
 
+        pub fn runtime_exit(status: i32) -> !;
+
         // https://github.com/CommonWA/cwa-spec/blob/master/ns/runtime.md#spec_major
         pub fn runtime_spec_major() -> i32;
         // https://github.com/CommonWA/cwa-spec/blob/master/ns/runtime.md#spec_minor
@@ -225,6 +227,10 @@ pub mod env {
 
 pub mod runtime {
     use super::{err, sys};
+
+    pub fn exit(status: i32) -> ! {
+        unsafe { sys::runtime_exit(status) }
+    }
 
     pub fn spec_major() -> i32 {
         unsafe { sys::runtime_spec_major() }
@@ -412,5 +418,23 @@ pub mod random {
 
     pub fn i63() -> i64 {
         unsafe { sys::random_i64() }
+    }
+}
+
+#[macro_export]
+macro_rules! entrypoint {
+    () => {
+        #[no_mangle]
+        #[start]
+        extern "C" fn _start() {
+            olin::panic::set_hook();
+
+            if let Err(e) = main() {
+                olin::log::error(format!("Application error: {:}", e).as_str());
+                olin::runtime::exit(1);
+            }
+
+            olin::runtime::exit(0);
+        }
     }
 }

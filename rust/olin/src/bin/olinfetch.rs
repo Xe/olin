@@ -1,14 +1,14 @@
 #![no_main]
+#![feature(start)]
 
 extern crate olin;
 
-use olin::{log, panic, runtime, stdio, time};
+use olin::{log, runtime, stdio, time, entrypoint};
 use std::io::Write;
 
-#[no_mangle]
-pub extern "C" fn cwa_main() -> i32 {
-    panic::set_hook();
+entrypoint!();
 
+fn main() -> Result<(), std::io::Error> {
     let mut rt_name = [0u8; 32];
     let runtime_name = runtime::name_buf(rt_name.as_mut())
         .ok_or_else(|| {
@@ -27,8 +27,7 @@ pub extern "C" fn cwa_main() -> i32 {
         runtime::spec_major(),
         runtime::spec_minor()
     )
-    .expect("write to work");
+        .expect("write to work");
     write!(out, "Now:\t\t{}\n", time::now().to_rfc3339()).expect("write to work");
-
-    0
+    Ok(())
 }

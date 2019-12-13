@@ -1,4 +1,6 @@
 #![allow(unused_must_use)]
+#![no_main]
+#![feature(start)]
 
 extern crate olin;
 
@@ -7,10 +9,9 @@ mod olintest;
 mod regression;
 mod scheme;
 
-#[no_mangle]
-pub extern "C" fn cwa_main() -> i32 {
-    olin::panic::set_hook();
+olin::entrypoint!();
 
+fn main() -> Result<(), std::io::Error> {
     let mut fail_count = 0;
 
     let funcs = [
@@ -42,7 +43,5 @@ pub extern "C" fn cwa_main() -> i32 {
         }
     }
 
-    fail_count
+    olin::runtime::exit(fail_count);
 }
-
-fn main() {}
