@@ -8,4 +8,8 @@ take a look at the following links:
 
 And this is just the beginning.
 
+This doesn't look like much, but this is a WebAssembly program writing a CGI
+response to an _unmodified webserver_. This is most of what you need for HTTP
+responses.
+
 Have a good day and be well, Creator.
