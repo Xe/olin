@@ -17,7 +17,7 @@ if err then
 end
 
 fout:write([[
-/// StatusCode is a HTTP status code.
+/// StatusCode is a HTTP status code. This matches the list at https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
 pub const StatusCode = enum(u32) {
 ]])
 
