@@ -1,5 +1,6 @@
 pub const env = @import("./env.zig");
 pub const err = @import("./error.zig");
+pub const http = @import("./http.zig");
 pub const log = @import("./log.zig");
 pub const random = @import("./random.zig");
 pub const resource = @import("./resource.zig");

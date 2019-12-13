@@ -4,23 +4,23 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"net/http"
+	"net/http/cgi"
 	"os"
+	"os/exec"
 
+	"github.com/google/uuid"
 	"github.com/povilasv/prommod"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"within.website/ln"
 	"within.website/ln/opname"
-	"within.website/olin/internal/cwagi"
 )
 
 var (
-	mainFunc    = flag.String("main-func", "main", "main function to call (because rust takes over the name main)")
-	addr        = flag.String("addr", ":8400", "TCP host:port to listen on")
-	poolSize    = flag.Int("pool-size", 1, "initial worker pool size")
-	maxPoolSize = flag.Int("max-pool-size", 32, "maximum worker pool size")
+	mainFunc = flag.String("main-func", "_start", "main function to call (because rust takes over the name main)")
+	addr     = flag.String("addr", ":8400", "TCP host:port to listen on")
+	bin      = flag.String("bin", "cwagi.wasm", "cgi handler to run")
 )
 
 func init() {
@@ -41,24 +41,20 @@ func main() {
 
 	_ = prometheus.Register(prommod.NewCollector("cwa-cgi"))
 
-	argv := flag.Args()
-	if len(argv) == 0 {
-		flag.Usage()
-		os.Exit(2)
-	}
-
-	fname := argv[0]
-
-	data, err := ioutil.ReadFile(fname)
+	cwaPath, err := exec.LookPath("cwa")
 	if err != nil {
-		ln.FatalErr(ctx, err, f)
+		ln.FatalErr(ctx, err)
 	}
 
-	vp := cwagi.NewPool(data, fname, *mainFunc, *poolSize, *maxPoolSize)
-	defer vp.Close()
+	h := &cgi.Handler{
+		Path: cwaPath,
+		Env:  []string{"RUN_ID=" + uuid.New().String(), "WORKER_ID=" + uuid.New().String()},
+		Args: []string{*bin},
+		Dir:  "/tmp",
+	}
 
 	mux := http.NewServeMux()
-	mux.Handle("/", vp)
+	mux.Handle("/", h)
 	mux.Handle("/metrics", promhttp.Handler())
 	mux.HandleFunc("/reboot", func(w http.ResponseWriter, r *http.Request) {
 		os.Exit(0)

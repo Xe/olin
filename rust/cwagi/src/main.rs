@@ -38,7 +38,7 @@ pub fn friendly_main() -> Result<(), i32> {
         log::error(&format!("error getting REQUEST_METHOD: {:?}", e));
         1
     })?;
-    let request_uri = env::get("REQUEST_URI").map_err(|e| {
+    let request_uri = env::get("PATH_INFO").map_err(|e| {
         log::error(&format!("error getting REQUEST_URI: {:?}", e));
         1
     })?;
@@ -172,8 +172,9 @@ fn respond_to(ctx: &Context) -> Response {
 fn serialize(response: &Response) -> Vec<u8> {
     let mut output = String::new();
     output.push_str(&format!(
-        "HTTP/1.1 {}\nContent-Type: text/plain\nCetacean-Powered-By: Cadey~#1337\n\n",
-        response.status
+        "Status: {}\nContent-Type: text/plain\nCetacean-Powered-By: Cadey~#1337\nContent-Length: {}\n\n",
+        response.status,
+        response.body.len(),
     ));
 
     output.push_str(&response.body);
