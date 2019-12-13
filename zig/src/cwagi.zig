@@ -6,12 +6,12 @@ const fmt = std.fmt;
 const Headers = std.http.Headers;
 var alloc = std.heap.page_allocator;
 
-export fn cwa_main() i32 {
+export fn _start() noreturn {
     if (main()) {
-        return 0;
+        olin.runtime.exit(0);
     } else |errVal| {
         olin.log.err(@errorName(errVal));
-        return 1;
+        olin.runtime.exit(1);
     }
 }
 

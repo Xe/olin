@@ -1,8 +1,8 @@
 const olin = @import("./olin/olin.zig");
 const Resource = olin.resource.Resource;
 
-export fn cwa_main() i32 {
-    return main() catch 1;
+export fn _start() noreturn {
+    olin.runtime.exit(main() catch olin.runtime.exit(1));
 }
 
 fn main() !i32 {

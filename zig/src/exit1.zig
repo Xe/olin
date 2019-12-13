@@ -1,5 +1,5 @@
 const exit = @import("./olin/olin.zig").runtime.exit;
 
-export fn cwa_main() i32 {
+export fn _start() noreturn {
     exit(1);
 }

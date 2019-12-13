@@ -1,7 +1,7 @@
 const olin = @import("./olin/olin.zig");
 const std = @import("std");
 
-export fn cwa_main() i32 {
+export fn _start() i32 {
     if (inner_main()) {} else |err| {
         olin.log.err(@errorName(err));
         return 1;

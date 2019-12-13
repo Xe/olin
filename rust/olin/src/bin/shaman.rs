@@ -1,13 +1,13 @@
 #![no_main]
+#![feature(start)]
 
 extern crate olin;
 
 use std::io::Write;
 
-#[no_mangle]
-pub extern "C" fn cwa_main() -> i32 {
-    olin::panic::set_hook();
+olin::entrypoint!();
 
+fn main() -> Result<(), std::io::Error> {
     let bytes = include_bytes!("shaman.aa");
     let mut out = olin::stdio::out();
 
@@ -17,5 +17,5 @@ pub extern "C" fn cwa_main() -> i32 {
             1
         }).unwrap();
 
-    0
+    Ok(())
 }

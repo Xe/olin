@@ -1,4 +1,5 @@
 #![no_main]
+#![feature(start)]
 
 extern crate olin;
 
@@ -9,6 +10,15 @@ use olin::startup;
 use olin::stdio;
 use std::io::Write;
 use std::string::String;
+
+olin::entrypoint!();
+
+fn main() -> Result<(), std::io::Error> {
+    olin::runtime::exit(match friendly_main() {
+        Ok(()) => 0,
+        Err(e) => e as i32,
+    });
+}
 
 #[no_mangle]
 pub extern "C" fn cwa_main() -> i32 {
