@@ -1,0 +1,6 @@
+## Allow HTTP access
+allow ^https://xena.greedo.xeserv.us
+
+## small limits
+ram-page-limit 16
+gas-limit 65536

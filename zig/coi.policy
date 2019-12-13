@@ -1,0 +1,7 @@
+allow (
+      ^log://
+      ^random://
+)
+
+ram-page-limit 10
+gas-limit 160000

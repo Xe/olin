@@ -3,16 +3,16 @@
 set -e
 set -x
 
-cwa -main-func _start -vm-stats allyourbase.wasm
-cwa -vm-stats -test coi.wasm a b c d
-cwa -vm-stats triangle.wasm
-cwa -vm-stats httptest.wasm
-uname -av | cwa -vm-stats cat.wasm
+cwa -vm-stats -policy allyourbase.policy allyourbase.wasm
+cwa -vm-stats -policy coi.policy -test coi.wasm a b c d
+cwa -vm-stats -policy triangle.policy triangle.wasm
+cwa -vm-stats -policy httptest.policy httptest.wasm
+uname -av | cwa -policy cat.policy -vm-stats cat.wasm
 
-cwa exit0.wasm
+cwa -policy exit.policy exit0.wasm
 
 set +e
-cwa exit1.wasm
+cwa -policy exit.policy exit1.wasm
 status=$?
 if [ $status -ne 1 ]
 then
