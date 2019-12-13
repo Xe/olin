@@ -28,6 +28,7 @@ RUN GOARCH=wasm GOOS=js go build -o ./cmd/cwa/testdata/go.wasm ./abi/wasmgo/test
  && go test -v ./cmd/... \
  && GOBIN=/usr/local/bin go install ./cmd/cwa-cgi \
  && GOBIN=/usr/local/bin go install ./cmd/cwa
+COPY --from=zig /olin/*.wasm ./zig/
 RUN cd zig && ./test.sh
 
 FROM xena/alpine
