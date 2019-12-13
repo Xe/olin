@@ -13,7 +13,7 @@ RUN wasm-gc ./olinfetch.wasm \
  && wasm-gc ./cwa-tests.wasm \
  && du -hs ./*.wasm
 
-FROM xena/zig:0.5.0-c3d8b1ffe as zig
+FROM xena/zig:0.5.0-81f1f7219 as zig
 WORKDIR /olin
 COPY ./zig .
 RUN ./build.sh

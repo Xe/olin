@@ -3,6 +3,7 @@
 set -e
 set -x
 
+zig build-lib -target wasm32-freestanding-none --release-fast src/allyourbase.zig
 zig build-lib -target wasm32-freestanding-none --release-fast src/cat.zig
 zig build-lib -target wasm32-freestanding-none --release-fast src/httptest.zig
 zig build-lib -target wasm32-freestanding-none --release-fast src/shaman.zig
