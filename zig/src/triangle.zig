@@ -1,5 +1,6 @@
 // Ported from https://github.com/faithanalog/x/blob/master/zigtest/triangle.zig
 const std = @import("std");
+const olin = @import("./olin/olin.zig");
 const log = @import("./olin/log.zig");
 const stdout = @import("./olin/resource.zig").Resource.stdout;
 
@@ -62,7 +63,7 @@ fn clearFramebuffer() !void {
     }
 }
 
-export fn cwa_main() i32 {
+export fn _start() i32 {
     const tri = Tri{
         .v0 = Vec2{
             .x = 75,
@@ -143,15 +144,15 @@ export fn cwa_main() i32 {
 
     if(stdout()) |fout| {
         if (fout.write(fbChars[0..])) |n| {
-            return 0;
+            olin.runtime.exit(0);
         } else |err| {
             log.err(@errorName(err));
-            return 1;
+            olin.runtime.exit(1);
         }
     } else |err| {
         log.err(@errorName(err));
-        return 1;
+        olin.runtime.exit(1);
     }
 
-    return 0;
+    olin.runtime.exit(0);
 }

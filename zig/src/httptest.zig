@@ -10,12 +10,12 @@ const Headers = @import("std").http.Headers;
 
 const userAgent = "Olin+Zig@master";
 
-export fn cwa_main() i32 {
+export fn _start() noreturn {
     log.info("making request to https://xena.greedo.xeserv.us/files/hello_olin.txt");
 
-    doRequest(heap.page_allocator) catch return 1;
+    doRequest(heap.page_allocator) catch olin.runtime.exit(1);
 
-    return 0;
+    olin.runtime.exit(0);
 }
 
 fn doRequest(alloc: *mem.Allocator) !void {
