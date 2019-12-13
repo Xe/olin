@@ -9,6 +9,7 @@ import (
 
 	"github.com/perlin-network/life/exec"
 	"within.website/olin/abi"
+	"within.website/olin/policy"
 )
 
 // NewProcess creates a new process with the given name, arguments and environment.
@@ -38,6 +39,7 @@ type Process struct {
 	vm           *exec.VirtualMachine
 	argv         []string
 	syscallCount int64
+	Policy       *policy.Policy
 
 	FileHandles    map[int32]abi.File
 	Stdin          io.Reader

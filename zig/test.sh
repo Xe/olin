@@ -19,3 +19,11 @@ then
     echo "expected exit status 1, got: $status"
     exit 1
 fi
+
+cwa -policy ../policy/testdata/gitea.policy httptest.wasm
+status=$?
+if [ $status -ne 1 ]
+then
+    echo "expected exit status 1, got: $status"
+    exit 1
+fi

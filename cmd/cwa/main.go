@@ -15,17 +15,20 @@ import (
 	"github.com/perlin-network/life/exec"
 	"within.website/olin/abi/cwa"
 	"within.website/olin/abi/wasmgo"
+	"within.website/olin/policy"
 )
 
 var (
 	minPages   = flag.Int("min-pages", 32, "number of memory pages to open (default is 2 MB)")
-	mainFunc   = flag.String("main-func", "_start", "main function to call (because rust is broken)")
+	mainFunc   = flag.String("main-func", "_start", "main function to call")
+	policyFile = flag.String("policy", "", "if set, the file of policies to enable for this run")
 	jitEnabled = flag.Bool("jit-enabled", false, "enable jit?")
 	doTest     = flag.Bool("test", false, "unit testing?")
 	vmStats    = flag.Bool("vm-stats", false, "dump VM statistics?")
-	gas        = flag.Int("gas", 65536*256, "number of instructions the VM can perform")
+	gas        = flag.Int("gas", 32*1024*1024, "number of instructions the VM can perform")
 	goMode     = flag.Bool("go", false, "run in Go mode?")
 	writeMem   = flag.String("write-mem", "", "write memory heap to the given file on exit")
+	maxPages   = flag.Int("max-pages", 128, "limit to the number of wasm pages")
 )
 
 func init() {
@@ -82,6 +85,22 @@ func main() {
 	p.Stdout = os.Stdout
 	p.Stderr = os.Stderr
 
+	if *policyFile != "" {
+		policyData, err := ioutil.ReadFile(*policyFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		pcy, err := policy.Parse(*policyFile, policyData)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		p.Policy = &pcy
+		*maxPages = int(pcy.RamPageLimit)
+		*gas = int(pcy.GasLimit)
+	}
+
 	if *doTest {
 		p.Stdin = bytes.NewBuffer([]byte("cwa test environment"))
 	}
@@ -89,6 +108,7 @@ func main() {
 	cfg := exec.VMConfig{
 		EnableJIT:          *jitEnabled,
 		DefaultMemoryPages: *minPages,
+		MaxMemoryPages:     *maxPages,
 	}
 
 	gp := &compiler.SimpleGasPolicy{GasPerInstruction: 1}
