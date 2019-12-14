@@ -1,5 +1,7 @@
-const exit = @import("./olin/olin.zig").runtime.exit;
+pub const os = @import("./olin/olin.zig");
+pub const panic = os.panic;
+pub const std = @import("std");
 
-export fn _start() noreturn {
-    exit(1);
+pub fn main() anyerror!void {
+    std.os.exit(1);
 }

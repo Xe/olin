@@ -11,6 +11,8 @@ pub const startup = @import("./startup.zig");
 // cwagi
 pub const cwagi = @import("./cwagi.zig");
 
+pub const ReadError = err.OlinError;
+
 // not directly used, but imported like this to force the compiler to actually consider it.
 pub const panic = @import("./panic.zig").panic;
 
@@ -23,9 +25,9 @@ fn hack(inp: i32) usize {
     }
 }
 
-//pub export fn _start() noreturn {
-//    runtime.exit(@intCast(i32, @import("std").special.start.callMain()));
-//}
+pub export fn _start() noreturn {
+    runtime.exit(@intCast(i32, @import("std").start.callMain()));
+}
 
 pub const io = struct {
     pub fn getStdInHandle() bits.fd_t {

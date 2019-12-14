@@ -1,4 +1,6 @@
 const olin = @import("./olin/olin.zig");
+pub const os = olin;
+pub const panic = os.panic;
 const log = olin.log;
 const resource = olin.resource;
 
@@ -10,12 +12,10 @@ const Headers = @import("std").http.Headers;
 
 const userAgent = "Olin+Zig@master";
 
-export fn _start() noreturn {
+pub fn main() anyerror!void {
     log.info("making request to https://xena.greedo.xeserv.us/files/hello_olin.txt");
 
-    doRequest(heap.page_allocator) catch olin.runtime.exit(1);
-
-    olin.runtime.exit(0);
+    try doRequest(heap.page_allocator);
 }
 
 fn doRequest(alloc: *mem.Allocator) !void {

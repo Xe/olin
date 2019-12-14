@@ -1,6 +1,8 @@
 // Ported from https://github.com/faithanalog/x/blob/master/zigtest/triangle.zig
 const std = @import("std");
 const olin = @import("./olin/olin.zig");
+pub const os = olin;
+pub const panic = os.panic;
 const log = @import("./olin/log.zig");
 const stdout = @import("./olin/resource.zig").Resource.stdout;
 
@@ -63,7 +65,11 @@ fn clearFramebuffer() !void {
     }
 }
 
-export fn _start() i32 {
+pub fn main() anyerror!void {
+    std.os.exit(do());
+}
+
+fn do() u8 {
     const tri = Tri{
         .v0 = Vec2{
             .x = 75,

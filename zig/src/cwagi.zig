@@ -1,4 +1,6 @@
 const olin = @import("./olin/olin.zig");
+pub const os = olin;
+pub const panic = os.panic;
 const cwagi = olin.cwagi;
 
 const std = @import("std");
@@ -6,16 +8,7 @@ const fmt = std.fmt;
 const Headers = std.http.Headers;
 var alloc = std.heap.page_allocator;
 
-export fn _start() noreturn {
-    if (main()) {
-        olin.runtime.exit(0);
-    } else |errVal| {
-        olin.log.err(@errorName(errVal));
-        olin.runtime.exit(1);
-    }
-}
-
-fn main() anyerror!void {
+pub fn main() anyerror!void {
     const fout = try olin.resource.stdout();
     const ctx = try cwagi.Context.init(alloc);
     defer ctx.destroy(alloc);

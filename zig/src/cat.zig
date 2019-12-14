@@ -1,29 +1,22 @@
-const olin = @import("./olin/olin.zig");
+pub const os = @import("./olin/olin.zig");
+pub const panic = os.panic;
 const std = @import("std");
 
-export fn _start() i32 {
-    if (inner_main()) {} else |err| {
-        olin.log.err(@errorName(err));
-        return 1;
-    }
-
-    return 0;
-}
-
-fn inner_main() !void {
-    const fin = try olin.resource.stdin();
-    const fout = try olin.resource.stdout();
+pub fn main() anyerror!void {
+    const fin = std.io.getStdIn();
+    const fout = std.io.getStdOut();
     const buflen = 928;
     var buf: [buflen]u8 = undefined;
     var bufSlice = buf[0..];
 
     while (true) {
-        const n = try fin.read(bufSlice);
-        const nn = try fout.write(bufSlice[0..n]);
-
-        if (n != nn) {
-            unreachable;
+        var n: usize = undefined;
+        if (fin.read(bufSlice)) |retVal| {
+            n = retVal;
+        } else |errVal| {
+            @panic(@errorName(errVal));
         }
+        try fout.write(bufSlice[0..n]);
 
         if (n < buflen) {
             break;

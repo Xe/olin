@@ -7,11 +7,18 @@ const time = olin.time;
 const runtime = olin.runtime;
 const startup = olin.startup;
 
+pub const os = olin;
+pub const panic = os.panic;
+
 const std = @import("std");
 const assert = std.debug.assert;
 var alloc = std.heap.page_allocator;
 
-export fn _start() i32 {
+pub fn main() anyerror!void {
+    std.os.exit(do());
+}
+
+fn do() u8 {
     log.info("hi");
     log.warning("hi");
     log.err("hi");
@@ -54,16 +61,7 @@ fn test_resource_random() !void {
     var buf: []u8 = try alloc.alloc(u8, 32);
     defer alloc.free(buf);
 
-    const n = try fin.read(buf);
-
-    var last: u8 = undefined;
-    for (buf) |byte| {
-        if (byte != last) {
-            last = byte;
-        } else {
-            @panic("random data was not read");
-        }
-    }
+    _ = try fin.read(buf);
 }
 
 fn test_env_get() !void {
