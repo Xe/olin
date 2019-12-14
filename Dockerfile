@@ -40,5 +40,9 @@ COPY --from=zig /olin/cwagi.wasm /wasm/cwagi_zig.wasm
 COPY --from=rust /usr/src/olin/bin/shaman.wasm /wasm/shaman_rust.wasm
 COPY --from=go /usr/local/bin/cwa /usr/local/bin/cwa
 COPY --from=go /usr/local/bin/cwa-cgi /usr/local/bin/cwa-cgi
+COPY --from=go /olin/run/olin-policy-mode.el /olin/olin-policy-mode.el
+COPY --from=go /olin/docs /olin/docs
+COPY --from=go /olin/LICENSE /olin/LICENSE
+COPY --from=go /olin/README.md /olin/README.md
 WORKDIR /
 CMD ["/run.sh"]
