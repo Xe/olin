@@ -4,6 +4,7 @@ set -e
 set -x
 
 zig build-lib -target wasm32-other-none --release-fast src/allyourbase.zig
+zig build-lib -target wasm32-other-none --release-small src/allyourlogs.zig
 zig build-lib -target wasm32-other-none --release-fast src/cat.zig
 zig build-lib -target wasm32-other-none --release-fast src/httptest.zig
 zig build-lib -target wasm32-other-none --release-fast src/shaman.zig
