@@ -1,3 +1,3 @@
 #!/bin/sh
 
-cwa-cgi -addr ":$PORT" -main-func cwa_main -bin /wasm/cwagi_zig.wasm inside:docker
+cwa-cgi -addr ":$PORT" -main-func _start -bin /wasm/cwagi_zig.wasm inside:docker
