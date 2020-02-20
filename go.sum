@@ -154,3 +154,5 @@ within.website/confyg v1.1.0 h1:FIOQfsKwZyjiqKE8NGlmqe9DzMPHMruuK0I/2cnmTIs=
 within.website/confyg v1.1.0/go.mod h1:KD5rDgkE3B+vbDiH/usiuK+CfiOkCiuD87NEF3/budk=
 within.website/ln v0.7.0 h1:cZUc53cZF/+hWuEAv1VbqlYJ5czuPFHKfH0hLKmlIUA=
 within.website/ln v0.7.0/go.mod h1:ifURKqsCJekcsdUE+hyCdcuhQqQ+9v9DfA++ZqYxZFE=
+within.website/ln v0.8.0 h1:NX6Eo3LkM9RU8lLRbWpmR5/jQRYKtZ8zuiYi7mmKa6w=
+within.website/ln v0.8.0/go.mod h1:I+Apk8qxMStNXTZdyDMqDqe6CB8Hn6+W/Gyf5QbY+2E=
