@@ -32,8 +32,8 @@
     fetch = {
       type = "git";
       url = "https://github.com/cespare/xxhash";
-      rev = "v2.1.0";
-      sha256 = "12ad3z7ki9j07c4kx3ywkl6188i2afsjg7sl60wd21p6zkkpfjxq";
+      rev = "v2.1.1";
+      sha256 = "0rl5rs8546zj1vzggv38w93wx0b5dvav7yy5hzxa8kw7iikv1cgr";
     };
   }
   {
@@ -113,8 +113,8 @@
     fetch = {
       type = "git";
       url = "https://github.com/google/go-cmp";
-      rev = "v0.3.0";
-      sha256 = "1hyxx3434zshl2m9ja78gwlkg1rx9yl6diqa7dnjb31xz5x4gbjj";
+      rev = "v0.4.0";
+      sha256 = "1x5pvl3fb5sbyng7i34431xycnhmx8xx94gq2n19g6p0vz68z2v2";
     };
   }
   {
@@ -149,8 +149,8 @@
     fetch = {
       type = "git";
       url = "https://github.com/json-iterator/go";
-      rev = "v1.1.7";
-      sha256 = "0n79p4s67zl5zprxv7diayw3vavnmmfqkmd6snz0i9bxp825dsyz";
+      rev = "v1.1.9";
+      sha256 = "0pkn2maymgl9v6vmq9q1si8xr5bbl88n6981y0lx09px6qxb29qx";
     };
   }
   {
@@ -302,8 +302,8 @@
     fetch = {
       type = "git";
       url = "https://github.com/prometheus/client_golang";
-      rev = "v1.2.1";
-      sha256 = "0zs49psk23n9z8wrl02d5vib5wclpym8kaxcy6n5pk696i419065";
+      rev = "v1.4.1";
+      sha256 = "1kx461i7kw6y8s98774d0aasagzjh60ijsg3ikzxrfcc6adjmhz2";
     };
   }
   {
@@ -311,8 +311,8 @@
     fetch = {
       type = "git";
       url = "https://github.com/prometheus/client_model";
-      rev = "14fe0d1b01d4";
-      sha256 = "0zdmk6rbbx39cvfz0r59v2jg5sg9yd02b4pds5n5llgvivi99550";
+      rev = "v0.2.0";
+      sha256 = "0jffnz94d6ff39fr96b5w8i8yk26pwnrfggzz8jhi8k0yihg2c9d";
     };
   }
   {
@@ -320,8 +320,8 @@
     fetch = {
       type = "git";
       url = "https://github.com/prometheus/common";
-      rev = "v0.7.0";
-      sha256 = "0a8yc0ppp50479sdhg9zbjnc4p7sqs6pdzvp27wzvccagbcy310c";
+      rev = "v0.9.1";
+      sha256 = "12pyywb02p7d30ccm41mwn69qsgqnsgv1w9jlqrrln2f1svnbqch";
     };
   }
   {
@@ -329,8 +329,8 @@
     fetch = {
       type = "git";
       url = "https://github.com/prometheus/procfs";
-      rev = "v0.0.5";
-      sha256 = "1nqn8ip9f4f6kqrvand4lxhcxrkk19dwf8s3nh336i9wr2jfhbwa";
+      rev = "v0.0.8";
+      sha256 = "076wblhz8fjdc73fmz1lg0hafbwg1xv8hszm78lbg9anjpfgacvq";
     };
   }
   {
@@ -356,8 +356,8 @@
     fetch = {
       type = "git";
       url = "https://github.com/stretchr/testify";
-      rev = "v1.3.0";
-      sha256 = "0wjchp2c8xbgcbbq32w3kvblk6q6yn533g78nxl6iskq6y95lxsy";
+      rev = "v1.4.0";
+      sha256 = "187i5g88sxfy4vxpm7dw1gwv29pa2qaq475lxrdh5livh69wqfjb";
     };
   }
   {
@@ -401,8 +401,8 @@
     fetch = {
       type = "git";
       url = "https://go.googlesource.com/sync";
-      rev = "37e7f081c4d4";
-      sha256 = "1bb0mw6ckb1k7z8v3iil2qlqwfj408fvvp8m1cik2b46p7snyjhm";
+      rev = "cd5d95a43a6e";
+      sha256 = "1nqkyz2y1qvqcma52ijh02s8aiqmkfb95j08f6zcjhbga3ds6hds";
     };
   }
   {
@@ -410,8 +410,8 @@
     fetch = {
       type = "git";
       url = "https://go.googlesource.com/sys";
-      rev = "b09406accb47";
-      sha256 = "00lbhsr2p3mi2n35mv3yy6lmgzjjav45yv9bmrxgyahbac5qnz5m";
+      rev = "e047566fdf82";
+      sha256 = "1xazqxggwb834clbdqxl65xkbb45jich0nb09b4gynrp27wyy7h4";
     };
   }
   {
@@ -430,6 +430,15 @@
       url = "https://go.googlesource.com/tools";
       rev = "90fa682c2a6e";
       sha256 = "03ic2xsy51jw9749wl7gszdbz99iijbd2bckgygl6cm9w5m364ak";
+    };
+  }
+  {
+    goPackagePath = "golang.org/x/xerrors";
+    fetch = {
+      type = "git";
+      url = "https://go.googlesource.com/xerrors";
+      rev = "9bdfabe68543";
+      sha256 = "1yjfi1bk9xb81lqn85nnm13zz725wazvrx3b50hx19qmwg7a4b0c";
     };
   }
   {
@@ -455,8 +464,8 @@
     fetch = {
       type = "git";
       url = "https://gopkg.in/check.v1";
-      rev = "20d25e280405";
-      sha256 = "0k1m83ji9l1a7ng8a7v40psbymxasmssbrrhpdv2wl4rhs0nc3np";
+      rev = "41f04d3bba15";
+      sha256 = "0vfk9czmlxmp6wndq8k17rhnjxal764mxfhrccza7nwlia760pjy";
     };
   }
   {
@@ -464,8 +473,8 @@
     fetch = {
       type = "git";
       url = "https://gopkg.in/yaml.v2";
-      rev = "v2.2.2";
-      sha256 = "01wj12jzsdqlnidpyjssmj0r4yavlqy7dwrg7adqd8dicjc4ncsa";
+      rev = "v2.2.5";
+      sha256 = "08smz8dfyxp02ha74my9iszqa5qzgl3ksi28ilyp8lqipssiq6fg";
     };
   }
   {
