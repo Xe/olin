@@ -4,11 +4,10 @@ set -e
 set -x
 
 ZIGFLAGS="-target wasm32-other-none --release-fast"
-env
 
 if [ -n "$HOME" -a "$HOME" = "/homeless-shelter" ]
 then
-    ZIGFLAGS="${ZIGFLAGS} --cache-dir /build"
+    export HOME=$TMPDIR;
 fi
 
 zig build-lib $ZIGFLAGS src/allyourargs.zig
