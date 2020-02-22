@@ -22,5 +22,12 @@
         "type": "tarball",
         "url": "https://github.com/NixOS/nixpkgs-channels/archive/cc1ae9f21b9e0ce998e706a3de1bad0b5259f22d.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "zig": {
+        "sha256": "0g97p539sdsgc428mirs54zpw638098691gaaidw96pm96wa3i82",
+        "type": "file",
+        "version": "0.5.0+dca19b675",
+        "url": "https://ziglang.org/builds/zig-linux-x86_64-0.5.0+dca19b675.tar.xz",
+        "url_template": "https://ziglang.org/builds/zig-linux-x86_64-<version>.tar.xz"
     }
 }
