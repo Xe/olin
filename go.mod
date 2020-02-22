@@ -11,7 +11,7 @@ require (
 	github.com/prometheus/client_golang v1.4.1
 	golang.org/x/net v0.0.0-20190620200207-3b0461eec859 // indirect
 	within.website/confyg v1.1.0
-	within.website/ln v0.7.0
+	within.website/ln v0.8.0
 )
 
 go 1.13
