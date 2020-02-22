@@ -8,7 +8,7 @@ env
 
 if [ -n "$HOME" -a "$HOME" = "/homeless-shelter" ]
 then
-    ZIGFLAGS="${ZIGFLAGS} --cache-dir $(mktemp -d)"
+    ZIGFLAGS="${ZIGFLAGS} --cache-dir /build"
 fi
 
 zig build-lib $ZIGFLAGS src/allyourargs.zig
