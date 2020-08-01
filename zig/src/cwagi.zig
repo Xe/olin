@@ -27,14 +27,14 @@ fn helloWorld(ctx: cwagi.Context, headers: *Headers) !cwagi.Response {
     try headers.append("Content-Type", "text/plain", null);
     try headers.append("Olin-Lang", "Zig", null);
 
-    var buf = try std.Buffer.init(alloc, message);
+    var buf = try std.ArrayListSentineled(u8, 0).init(alloc, message);
     const runtime_meta = try olin.runtime.metadata(alloc);
     const runID = try olin.env.get(alloc, "RUN_ID");
     defer alloc.free(runID);
     const workerID = try olin.env.get(alloc, "WORKER_ID");
     defer alloc.free(workerID);
 
-    try buf.append(try fmt.bufPrint(line[0..], "- I am running in {} which implements version {}.{} of the Common WebAssembly ABI.\n- I think the time is {}\n- RUN_ID:    {}\n- WORKER_ID: {}\n- Method:    {}\n- URI:       {}\n\n",
+    try buf.appendSlice(try fmt.bufPrint(line[0..], "- I am running in {} which implements version {}.{} of the Common WebAssembly ABI.\n- I think the time is {}\n- RUN_ID:    {}\n- WORKER_ID: {}\n- Method:    {}\n- URI:       {}\n\n",
                                     .{
                                         runtime_meta.name,
                                         runtime_meta.spec_major,
@@ -47,10 +47,10 @@ fn helloWorld(ctx: cwagi.Context, headers: *Headers) !cwagi.Response {
                                      }
                                     ));
 
-    try buf.append(@embedFile("./cwagi_message.txt"));
+    try buf.appendSlice(@embedFile("./cwagi_message.txt"));
 
     return cwagi.Response {
          .status = olin.http.StatusCode.OK,
-         .body = buf.toSlice(),
+         .body = buf.toOwnedSlice(),
     };
 }

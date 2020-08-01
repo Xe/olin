@@ -16,7 +16,7 @@ pub fn main() anyerror!void {
         } else |errVal| {
             @panic(@errorName(errVal));
         }
-        try fout.write(bufSlice[0..n]);
+        _ = try fout.write(bufSlice[0..n]);
 
         if (n < buflen) {
             break;

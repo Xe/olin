@@ -23,5 +23,5 @@ zig build-lib $ZIGFLAGS src/coi.zig
 zig build-lib $ZIGFLAGS src/exit0.zig
 zig build-lib $ZIGFLAGS src/exit1.zig
 
-rm *.h *.o
+rm *.o
 
