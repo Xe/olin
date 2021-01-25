@@ -1,7 +1,7 @@
 module within.website/olin
 
 require (
-	github.com/google/uuid v1.1.2
+	github.com/google/uuid v1.2.0
 	github.com/iancoleman/strcase v0.0.0-20191112232945-16388991a334
 	github.com/kr/pretty v0.1.0
 	github.com/mkmik/stringlist v1.0.1
